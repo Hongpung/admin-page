@@ -18,7 +18,8 @@
       }
     ],
     "paths": {
-      "@admin/*": ["./src/*"]
+      "@admin/*": ["./src/*"],
+      "@fonts":["./src/fonts/fonts.ts"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

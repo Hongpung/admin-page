@@ -1,100 +1,99 @@
-import Image from "next/image";
+'use client'
+import { useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const [isOpen, setOpen] = useState([false, false, false, false])
+
+  const toggleOpen = (number: number) => {
+    console.log(number)
+    const newState = [...isOpen];
+    newState[number] = !newState[number];
+
+    setOpen(newState);
+  };
+
+  return (
+    <div className="font-[family-name:var(--font-geist-sans)]">
+      <header className=" bg-slate-300 h-24"></header>
+      <main className=" flex flex-row mx-14 h-svh mt-4">
+
+        <div id="left-menu" className=" rounded-md mr-2 h-max sticky top-0 w-auto" >
+          <ul>
+            <li className="w-40 bg-gray-100 text-sm/4 cursor-pointer px-2 py-2 my-2 flex flex-row justify-between" onClick={() => toggleOpen(0)}>
+              <div>유저 관리</div>
+              <div>▼</div>
+            </li>
+            {isOpen[0] &&
+              <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2">
+                가입요청 관리
+              </li>
+            }
+            {isOpen[0] &&
+              <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2">
+                유저 권한 관리
+              </li>
+            }
+            <li className="w-40 bg-gray-100 text-sm/4 cursor-pointer px-2 py-2 my-2 flex flex-row justify-between" onClick={() => toggleOpen(1)}>
+              <div>예약 관리</div>
+              <div>▼</div>
+            </li>
+            {isOpen[1] &&
+              <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2">
+                실시간 예약 관리
+              </li>
+            }
+            {isOpen[1] &&
+              <li className="w-40 text-sm/4 cursor-pointer text-gray-500  px-2 pl-6 py-1 my-2">
+                정기 예약 관리
+              </li>
+            }
+            <li className="w-40 bg-gray-100 text-sm/4 cursor-pointer px-2 py-2 my-2 ">
+              <div>1:1 채팅</div>
+            </li>
+            <li className="w-40 bg-gray-100 text-sm/4 cursor-pointer px-2 py-2 my-2 flex flex-row justify-between" onClick={() => toggleOpen(2)}>
+              <div>메인 페이지 관리</div>
+              <div>▼</div>
+            </li>
+            {isOpen[2] &&
+              <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2">
+                배너 관리
+              </li>
+            }
+            {isOpen[2] &&
+              <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2">
+                공지사항
+              </li>
+            }
+            <li className="w-40 bg-gray-100 text-sm/4 cursor-pointer px-2 py-2 my-2 flex flex-row justify-between" onClick={() => toggleOpen(3)}>
+              <div>관리자 관리</div>
+              <div>▼</div>
+            </li>
+            {isOpen[3] &&
+              <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2">
+                관리자 권한 관리
+              </li>
+            }
+            {isOpen[3] &&
+              <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2">
+                로그인 정보 확인
+              </li>
+            }
+          </ul>
+        </div>
+        <div id="main-contents" className="my-2 flex flex-col border-gray-200 h-1svh border-solid border rounded-md w-dvw">
+          <div className="mx-2 my-2">
+            <div className="w-full flex flex-row justify-evenly">
+              <div>s</div>
+              <div>1</div>
+              ss
+            </div>
+          </div>
+          <div>sss</div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      <footer className=" flex gap-6 flex-wrap items-center justify-center h-40 bg-gray-500 mt-2">
+
       </footer>
     </div>
   );
