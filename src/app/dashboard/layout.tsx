@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "@admin/app/globals.css";
-
+import SideMenu from "./sidemenu";
 
 export const metadata: Metadata = {
     title: "Admin dashboard",
@@ -13,10 +13,13 @@ export default function DashBoardLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="ko">
-            <body>
-                {children}
-            </body>
-        </html>
+        <div>
+            <main className=" flex flex-row mx-14 h-auto my-4">
+                <SideMenu/>
+                <div id="main-contents" className="w-dvw">
+                    {children}
+                </div>
+            </main>
+        </div>
     );
 }

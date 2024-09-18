@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 
-export default function Home() {
+export default function User() {
 
-  redirect('/dashboard')
+  redirect('/dashboard/reserve/live')
 
   return (
     null
