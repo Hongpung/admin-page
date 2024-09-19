@@ -51,7 +51,7 @@ export function LoginForm() {
         setValid(false)
         console.log({ email, password });
 
-        router.replace("/dashboard");
+        router.replace("/home");
     };
 
     return (

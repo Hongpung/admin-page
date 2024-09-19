@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 
-export default function Home() {
+export default function User() {
 
-  redirect('/home')
+  redirect('/user/accept')
 
   return (
     null

@@ -22,13 +22,13 @@ export default function SideMenu() {
                 </li>
                 {isOpen[0] &&
                     <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2"
-                        onClick={() => router.push('/dashboard/user/accept')}>
+                        onClick={() => router.push('/user/accept')}>
                         가입요청 관리
                     </li>
                 }
                 {isOpen[0] &&
                     <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2"
-                        onClick={() => router.push('/dashboard/user/manage')}>
+                        onClick={() => router.push('/user/manage')}>
                         유저 권한 관리
                     </li>
                 }
@@ -43,17 +43,19 @@ export default function SideMenu() {
                     <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2"
                         onClick={() => {
                             const today = new Date();
-                            router.push(`/dashboard/reserve/live/${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`)}}>
+                            router.push(`/reserve/live/${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`)
+                        }}>
                         실시간 예약 관리
                     </li>
                 }
                 {isOpen[1] &&
                     <li className="w-40 text-sm/4 cursor-pointer text-gray-500  px-2 pl-6 py-1 my-2"
-                        onClick={() => router.push('/dashboard/reserve/regular')}>
+                        onClick={() => router.push('/reserve/regular')}>
                         정기 예약 관리
                     </li>
                 }
-                <li className="w-40 bg-gray-100 text-sm/4 cursor-pointer px-2 py-2 my-2 ">
+                <li className="w-40 bg-gray-100 text-sm/4 cursor-pointer px-2 py-2 my-2 "
+                    onClick={() => router.push('/chat/index')}>
                     <div>1:1 채팅</div>
                 </li>
                 <li className="w-40 bg-gray-100 text-sm/4 cursor-pointer px-2 py-2 my-2 flex flex-row justify-between" onClick={() => toggleOpen(2)}>

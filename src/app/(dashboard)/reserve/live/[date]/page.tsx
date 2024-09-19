@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react';
-import Modal from '@admin/app/dashboard/modal';
+import Modal from '@admin/app/(dashboard)/modal';
 import loadDailyReserves from './utils';
 
 export default function DateReservesPage({ params }: { params: { date: string } }) {

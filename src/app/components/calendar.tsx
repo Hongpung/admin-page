@@ -81,7 +81,7 @@ export const Calendar: React.FC<{ calendarDate?: Date }> = ({ calendarDate }) =>
                 days.push(
                     <div key={`date-${day}`}
                         className={`w-8 h-8 cursor-pointer ${((day == calendarDate?.getDate()) && (calendarMonth.getMonth() == calendarDate?.getMonth())) ?  'rounded-md bg-blue-100' : ''}`}
-                        onClick={() => router.replace(`/dashboard/reserve/live/${calendarMonth.getFullYear()}-${calendarMonth.getMonth() + 1}-${day}`)}
+                        onClick={() => router.replace(`/reserve/live/${calendarMonth.getFullYear()}-${calendarMonth.getMonth() + 1}-${day}`)}
                     >
                         <div className={`w-7 text-center text-base text-gray-400 mx-0.5 ${((day == calendarDate?.getDate()) && (calendarMonth.getMonth() == calendarDate?.getMonth())) ? 'text-blue-500' : ''}`} >{day}</div>
                         <div className="mx-1 h-4 flex-col-reverse mt-1">

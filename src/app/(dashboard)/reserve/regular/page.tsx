@@ -105,7 +105,7 @@ export default function RegularReservePage() {
             <table className="border-collapse m-4">
                 <thead>
                     <tr>
-                        {weekdays_ko.map(weekday => (<th key={weekday} className="border w-12 h-8">{weekday}</th>))}
+                        {weekdays_ko.map(weekday => (<th key={weekday} className="border border-gray-200 w-12 h-8">{weekday}</th>))}
                     </tr>
                     {times.map(time => {
                         const weeks: JSX.Element[] = [];
@@ -117,10 +117,10 @@ export default function RegularReservePage() {
                             );
                             const matchedReservation = matchedIndex !== -1 ? reservations[matchedIndex] : null;
                             const bgClass = matchedReservation ? renderColor[matchedReservation.club] : 'bg-white';
-
+                            const borderOption = matchedReservation? '':'border border-gray-200 ';
                             weeks.push(
-                                <th key={`${weekday}-${time}`} className={`w-12 h-24 ${bgClass}`}>
-                                    <div className={`w-full h-full flex flex-col `}>
+                                <th key={`${weekday}-${time}`} className={`w-12 h-24 ${bgClass} ${borderOption}`}>
+                                    <div className={`w-full h-full flex flex-col`}>
                                         {matchedReservation && <div key={`${weekday}-${time}-r`} className='h-full w-full  px-1 py-1 text-white'>
                                             {time == matchedReservation.startTime && time == matchedReservation.endTime - 1 &&
                                                 <div className='flex flex-col justify-between h-full'>

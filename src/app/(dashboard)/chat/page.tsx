@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 
-export default function User() {
+export default function Chat() {
 
-  redirect('/dashboard/reserve/live')
+  redirect('/chat/index')
 
   return (
     null
