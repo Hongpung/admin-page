@@ -93,7 +93,7 @@ export default function RegularReservePage() {
     return (
         <>
             <div className="text-lg font-medium ml-2 mt-2">정기 연습 관리</div>
-            <div className="flex flex-row justify-center items-end gap-1">
+            <div className="flex flex-row justify-center items-end gap-1 my-1">
                 <div className="text-xl cursor-pointer"
                     onClick={() => setMonth(month - 1)}>◄</div>
                 <div className="text-2xl w-12 text-center">
@@ -102,52 +102,55 @@ export default function RegularReservePage() {
                 <div className="text-xl cursor-pointer"
                     onClick={() => setMonth(month + 1)}>►</div>
             </div>
-            <table className="border-collapse m-4">
-                <thead>
-                    <tr>
-                        {weekdays_ko.map(weekday => (<th key={weekday} className="border border-gray-200 w-12 h-8">{weekday}</th>))}
-                    </tr>
-                    {times.map(time => {
-                        const weeks: JSX.Element[] = [];
-                        weekdays_us.map(weekday => {
+            <div className='relative mx-8 my-4'>
+                <table className="border-collapse w-full">
+                    <thead>
+                        <tr>
+                            {weekdays_ko.map(weekday => (<th key={weekday} className="border border-gray-200 w-12 h-8">{weekday}</th>))}
+                        </tr>
+                        {times.map(time => {
+                            const weeks: JSX.Element[] = [];
+                            weekdays_us.map(weekday => {
 
-                            // 여기서 매치된 리저베이션 확인
-                            const matchedIndex = reservations.findIndex(
-                                (res) => res.weekday === weekday && res.startTime <= time && res.endTime > time
-                            );
-                            const matchedReservation = matchedIndex !== -1 ? reservations[matchedIndex] : null;
-                            const bgClass = matchedReservation ? renderColor[matchedReservation.club] : 'bg-white';
-                            const borderOption = matchedReservation? '':'border border-gray-200 ';
-                            weeks.push(
-                                <th key={`${weekday}-${time}`} className={`w-12 h-24 ${bgClass} ${borderOption}`}>
-                                    <div className={`w-full h-full flex flex-col`}>
-                                        {matchedReservation && <div key={`${weekday}-${time}-r`} className='h-full w-full  px-1 py-1 text-white'>
-                                            {time == matchedReservation.startTime && time == matchedReservation.endTime - 1 &&
-                                                <div className='flex flex-col justify-between h-full'>
+                                // 여기서 매치된 리저베이션 확인
+                                const matchedIndex = reservations.findIndex(
+                                    (res) => res.weekday === weekday && res.startTime <= time && res.endTime > time
+                                );
+                                const matchedReservation = matchedIndex !== -1 ? reservations[matchedIndex] : null;
+                                const bgClass = matchedReservation ? renderColor[matchedReservation.club] : 'bg-white';
+                                const borderOption = matchedReservation ? '' : 'border border-gray-200 ';
+                                weeks.push(
+                                    <th key={`${weekday}-${time}`} className={`w-24 h-24 ${bgClass} ${borderOption}`}>
+                                        <div className={`w-full h-full flex flex-col`}>
+                                            {matchedReservation && <div key={`${weekday}-${time}-r`} className='h-full w-full  px-1 py-1 text-white'>
+                                                {time == matchedReservation.startTime && time == matchedReservation.endTime - 1 &&
+                                                    <div className='flex flex-col justify-between h-full'>
+                                                        <div className=" font-semibold text-left">{matchedReservation.club}</div>
+                                                        <div className="font-semibold text-right text-xs">{matchedReservation.startTime}:00 ~ {matchedReservation.endTime}:00</div>
+                                                    </div>
+                                                }
+                                                {time == matchedReservation.startTime && time != matchedReservation.endTime - 1 && (
                                                     <div className=" font-semibold text-left">{matchedReservation.club}</div>
-                                                    <div className="font-semibold text-right text-xs">{matchedReservation.startTime}:00 ~ {matchedReservation.endTime}:00</div>
-                                                </div>
-                                            }
-                                            {time == matchedReservation.startTime && time != matchedReservation.endTime - 1 && (
-                                                <div className=" font-semibold text-left">{matchedReservation.club}</div>
-                                            )}
-                                            {time == matchedReservation.endTime - 1 && time != matchedReservation.startTime && (
-                                                <div className="flex flex-col justify-end h-full font-semibold text-right text-xs">{matchedReservation.startTime}:00 ~ {matchedReservation.endTime}:00</div>
-                                            )}
-                                        </div>}
+                                                )}
+                                                {time == matchedReservation.endTime - 1 && time != matchedReservation.startTime && (
+                                                    <div className="flex flex-col justify-end h-full font-semibold text-right text-xs">{matchedReservation.startTime}:00 ~ {matchedReservation.endTime}:00</div>
+                                                )}
+                                            </div>}
 
-                                    </div>
-                                </th>)
-                        }
-                        )
-                        return (
-                            <tr key={time + '-row'}>
-                                {weeks}
-                            </tr>
-                        )
-                    })}
-                </thead>
-            </table>
+                                        </div>
+                                    </th>)
+                            }
+                            )
+                            return (
+                                <tr key={time + '-row'}>
+                                    {weeks}
+                                </tr>
+                            )
+                        })}
+                    </thead>
+                </table>
+            </div>
+
         </>
 
     )
