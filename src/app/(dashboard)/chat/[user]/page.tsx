@@ -81,7 +81,7 @@ export default function ChatRoom({ params }: { params: { user: string } }) {
                 <div className="w-12 h-12 mr-4 bg-slate-400 rounded-full" />
                 {params.user}와 채팅화면
             </div>
-            <div className="flex-grow overflow-scroll flex flex-col-reverse px-4 gap-4 py-2">
+            <div className="flex-grow overflow-y-scroll flex flex-col-reverse px-4 gap-4 py-2">
                 {messagesBucket.map((obj, index) => {
                     const isAdmin = obj.user == 'admin';
                     const msgStyle = isAdmin ? 'bg-blue-600 text-white' : 'bg-gray-200';
@@ -117,7 +117,7 @@ export default function ChatRoom({ params }: { params: { user: string } }) {
                         <label htmlFor="pic-input">
                             <div className="w-8 h-8 bg-blue-400 cursor-pointer" />
                         </label>
-                        <input type="file" id="pic-input" className="hidden" />
+                        <input type="file" id="pic-input"  accept=".png, .jpg, .jpeg"  multiple className="hidden" />
                     </>
                 }
             </form>
