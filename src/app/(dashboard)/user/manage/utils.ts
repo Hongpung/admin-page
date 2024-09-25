@@ -2,7 +2,7 @@ import { User } from "../accept/utils";
 
 export async function fetchUserData(page: number) {
     try {
-        const response = await fetch("http://localhost:3000/member", {
+        const response = await fetch("/user/manage/api", {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'

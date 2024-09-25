@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { fetchSignupData, User } from "./utils"
 import { clickAccept } from "./utils";
 import LoadingDots from "@admin/app/components/loadingindicator";
@@ -11,7 +11,7 @@ export default function AcceptUserPage() {
     const [selectedOption, setSelectedOption] = useState("all");
     const [filter, setFilter] = useState<string | null>(null);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const fetchData = async () => {
             try {
                 const signUpDataResponse = await fetchSignupData(page); // 서버에서 데이터 가져오기
@@ -27,6 +27,7 @@ export default function AcceptUserPage() {
     useEffect(() => {
         setFilter(null)
     }, [selectedOption])
+    
     function renderSignUp() {
         const rows: JSX.Element[] = [];
         console.log(page + 'called')

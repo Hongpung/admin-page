@@ -20,6 +20,7 @@ export default function ManageUserPage() {
         console.log({ option, keyword });
 
     };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -55,7 +56,7 @@ export default function ManageUserPage() {
                         <div>{user.username}</div>
                         <div>{user.club}</div>
                         <div>{user.email}</div>
-                        <button onClick={() => { }}>권한 관리</button>
+                        <button onClick={() => { }}>{user.role}권한 관리</button>
                     </div>
                 );
                 rows.push(userRow);

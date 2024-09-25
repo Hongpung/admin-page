@@ -5,13 +5,13 @@ import { useRouter } from "next/navigation";
 
 async function tryLogin(email: string, password: string) {
     try {
-        const response = await fetch("http://localhost:3000/login", {
+        const response = await fetch("/login/api", {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json', },
             body: JSON.stringify({ email, password })
         });
+
 
         if (!response.ok) {
             throw new Error('Network response was not ok' + response.statusText);
@@ -19,18 +19,6 @@ async function tryLogin(email: string, password: string) {
 
         const data = await response.json();
         console.log('Login successful:', data);
-
-        const cookieResponse = await fetch("http://localhost:3000/check-cookie", {
-            method: 'GET',
-            credentials: 'include'
-        });
-
-        if (!cookieResponse.ok) {
-            throw new Error(`Network response was not ok: ${cookieResponse.statusText} (status: ${cookieResponse.status})`);
-        }
-
-        const cookieData = await cookieResponse.json();
-        console.log('Cookie data:', cookieData);
 
         return data;
     } catch (error) {
@@ -43,15 +31,22 @@ export function LoginForm() {
     const router = useRouter();
     const [isValid, setValid] = useState(true);
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         const email = formData.get('email') as string;
         const password = formData.get('password') as string;
-        setValid(false)
-        console.log({ email, password });
 
-        router.replace("/home");
+        try {
+            const data = await tryLogin(email, password)
+
+            if (!data) throw Error('it\' null!');
+            router.replace('/home')
+        }
+        catch (e) {
+            console.error(e)
+            setValid(false)
+        }
     };
 
     return (

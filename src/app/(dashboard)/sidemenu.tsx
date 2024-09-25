@@ -86,6 +86,10 @@ export default function SideMenu() {
                         로그인 정보 확인
                     </li>
                 }
+                <li className="w-40 bg-red-500 text-white mt-12 text-sm/4 cursor-pointer px-2 py-2 my-2 flex flex-row justify-between"
+                    onClick={() => {}}>
+                    <div>로그아웃</div>
+                </li>
             </ul>
         </div>
     )
