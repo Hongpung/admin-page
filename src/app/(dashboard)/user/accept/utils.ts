@@ -10,8 +10,7 @@ export async function clickAccept(email: string) {
 
 export async function acceptUser(userData: { email: string, acceptResult: boolean }) {
     try {
-        const response = await fetch('http://localhost:3000/signup_list/accept', {
-            method: 'POST',
+        const response = await fetch('/user/accept/api', {
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -40,11 +39,13 @@ export interface User {
 }
 
 export async function fetchSignupData(page: number) {
+
     try {
-        const response = await fetch("http://localhost:3000/signup_list", {
+
+        const response = await fetch("/user/accept/api", {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
             credentials: 'include'
         });
