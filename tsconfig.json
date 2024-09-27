@@ -19,7 +19,8 @@
     ],
     "paths": {
       "@admin/*": ["./src/*"],
-      "@fonts":["./src/fonts/fonts.ts"]
+      "@fonts":["./src/fonts/fonts.ts"],
+      "@Firebase/*":["./firebase/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
