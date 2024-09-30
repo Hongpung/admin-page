@@ -4,18 +4,28 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get('token')?.value; // 쿠키에서 토큰을 가져옴
-  const { pathname } = req.nextUrl;
+  const url = req.nextUrl.pathname;
 
-  console.log(token)
-
-  if (token === 'invalid' ||!(token)) {
-    return NextResponse.redirect(new URL("/login", pathname))
+  if ((token === 'invalid' || !(token)) && !url.startsWith('/login')) {
+    return NextResponse.redirect(new URL("/login", req.url))
   }
 
-  if (pathname.startsWith('/login')) {
-    return NextResponse.redirect(new URL("/home", pathname))
+  if (url.startsWith('/login') && token) {
+    return NextResponse.redirect(new URL("/home", req.url))
   }
 
+  if (req.nextUrl.pathname.startsWith('/logout')&&token) {
+
+    const response = NextResponse.redirect(new URL('/login', req.url));
+    response.cookies.set('token', '', {
+      httpOnly: false,
+      secure: false,
+      sameSite: 'strict',
+      path: '/',
+      expires: new Date(0)
+    });
+    return response;
+  }
   // 토큰이 유효하면 요청을 통과시킴
   return NextResponse.next();
 }

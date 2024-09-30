@@ -87,7 +87,7 @@ export default function SideMenu() {
                     </li>
                 }
                 <li className="w-40 bg-red-500 text-white mt-12 text-sm/4 cursor-pointer px-2 py-2 my-2 flex flex-row justify-between"
-                    onClick={() => {}}>
+                    onClick={() => router.replace('/logout')}>
                     <div>로그아웃</div>
                 </li>
             </ul>
