@@ -1,26 +1,26 @@
 
-export async function clickAccept(email: string) {
+export async function clickAccept(signupId: number) {
     const userData = {
-        email,
+        signupId,
         acceptResult: true
     };
     var result = await acceptUser(userData);
+    
     return result;
 }
 
-export async function acceptUser(userData: { email: string, acceptResult: boolean }) {
+export async function acceptUser(userData: { signupId: number, acceptResult: boolean }) {
     try {
         const response = await fetch('/user/accept/api', {
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            method: 'POST',
             body: JSON.stringify(userData),
             credentials: 'include'
         });
-        if (response.status == 200)
-            return true;
-        else
-            throw new Error('실패' + response.statusText);
+
+        if (!response.ok) throw new Error('실패' + response.statusText);
+        
+        return true;
+
     } catch (error) {
         console.error('오류 발생:', error);
         throw error;
@@ -31,11 +31,14 @@ export async function acceptUser(userData: { email: string, acceptResult: boolea
 
 
 export interface User {
-    username: string
+    memberId:number
+    name: string
+    nickname?:string
+    enrollmentNumber:number
     club: string
     email: string
     role?: string
-    [key: string]: string | undefined
+    [key: string]: string | number | undefined
 }
 
 export async function fetchSignupData(page: number) {
@@ -55,7 +58,7 @@ export async function fetchSignupData(page: number) {
         }
 
         const data = await response.json();
-        return data as User[];
+        return data;
 
     } catch (error) {
         console.error('오류 발생:', error);

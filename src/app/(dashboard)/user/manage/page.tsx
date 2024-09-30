@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from "react";
-import { fetchUserData } from "./utils"
+import { fetchUserData, updageUserRole } from "./utils"
 import LoadingDots from "@admin/app/components/loadingindicator";
 import { User } from "../accept/utils";
 
@@ -10,6 +10,7 @@ export default function ManageUserPage() {
     const [userData, setUserData] = useState<User[]>([]);
     const [selectedOption, setSelectedOption] = useState("all");
     const [filter, setFilter] = useState<string | null>(null);
+    const [modifiedUser, setUser] = useState<User | null>(null)
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -48,15 +49,17 @@ export default function ManageUserPage() {
 
     function renderSignUp() {
         const rows: JSX.Element[] = [];
-        console.log(page + 'called')
         userData?.forEach((user, index) => {
             if (user) {
                 const userRow = (
                     <div key={index} className="flex-row flex justify-around bg-slate-100 py-1">
-                        <div>{user.username}</div>
-                        <div>{user.club}</div>
-                        <div>{user.email}</div>
-                        <button onClick={() => { }}>{user.role}권한 관리</button>
+                        <div className="min-w-48 text-center">{user.name}</div>
+                        <div className="min-w-24 text-center">{user.club}</div>
+                        <div className="min-w-96 text-center">{user.email}</div>
+                        <div className="min-w-32 text-center">{user.role}</div>
+                        <div className="flex flex-col items-center cursor-pointer text-center min-w-32" onClick={() => { setUser(user) }}>
+                            <div className="px-2 py-0.5 rounded-md text-sm bg-green-200 ">권한 변경</div>
+                        </div>
                     </div>
                 );
                 rows.push(userRow);
@@ -76,6 +79,24 @@ export default function ManageUserPage() {
         );
     }
 
+    const modifedRoleHandler = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+
+        const changedRole = formData.get('changed-role') as string;
+        console.log(changedRole)
+
+        try {
+            const response = updageUserRole({ memberId: modifiedUser!.memberId, role: changedRole })
+
+            if(!response) throw Error('실패')
+
+            setUser(null);
+        } catch (e) {
+            window.alert('업데이트 실패')
+        }
+    }
+
     return (
         <>
             <div className="text-lg font-medium ml-2 mt-2">유저 권한 관리</div>
@@ -89,7 +110,7 @@ export default function ManageUserPage() {
                 >
                     <option value="all">전체</option>
                     <option value="email">이메일</option>
-                    <option value="club">동아리</option>ㅈ
+                    <option value="club">동아리</option>
                     <option value="name">이름</option>
                     <option value="role">역할</option>
                 </select>
@@ -131,10 +152,12 @@ export default function ManageUserPage() {
 
             <div className="flex flex-col mx-2 mt-4 border rounded-md flex-grow border-gray-200 mb-2">
                 <div id="rows" className="flex-row flex justify-around bg-slate-100 py-1">
-                    <div>이름</div>
-                    <div>동아리</div>
-                    <div>이메일</div>
-                    <div>권한</div>
+
+                    <div className="min-w-48 text-center">이름</div>
+                    <div className="min-w-24 text-center">동아리</div>
+                    <div className="min-w-96 text-center">이메일</div>
+                    <div className="min-w-32 text-center">권한</div>
+                    <div className="text-center min-w-32">확인</div>
                 </div>
                 {renderSignUp()}
             </div>
@@ -148,6 +171,38 @@ export default function ManageUserPage() {
                 <div className="cursor-pointer">5</div>
                 <div className="cursor-pointer">{'>'}</div>
                 <div className="cursor-pointer">{'>>'}</div>
+            </div>
+
+            <div className={`${modifiedUser ? 'fixed' : 'hidden'} flex left-0 w-full h-full top-0 items-center justify-center bg-black bg-opacity-35`}>
+                <div className="relative w-96 bg-white rounded-lg z-10 py-4 px-4 gap-6 flex flex-col">
+                    <div className="absolute top-3 cursor-pointer text-lg right-4 font-bold text-gray-400" onClick={() => setUser(null)}>x</div>
+                    <div className="text-lg font-semibold">권한 변경</div>
+                    <div className="flex flex-row justify-between items-center mx-4">
+                        <div className="text-gray-400">선택된 유저</div>
+                        <div className="min-w-20 text-right">{modifiedUser?.name}{`${modifiedUser?.nickname ? ` (${modifiedUser?.nickname})` : ``}`}</div>
+                    </div>
+                    <div className="flex flex-row justify-between items-center mx-4">
+                        <div className=" text-gray-400">기존 권한</div>
+                        <div className="w-20 text-right ">{modifiedUser?.role}</div>
+                    </div>
+                    <form onSubmit={modifedRoleHandler} className="flex flex-col gap-6">
+                        <div className="flex flex-row justify-between items-start mx-4">
+                            <div className="font-semibold">변경할 권한</div>
+                            <div className="flex flex-col gap-2">
+                                {['패짱', '상쇠', '상장구', '패원', '수법고'].filter(role => role != modifiedUser?.role).map(role =>
+                                (<label>
+                                    <input type="radio" name="changed-role" id={"changed-role-" + role} defaultChecked value={role} className="mr-1" />
+                                    {role}
+                                </label>)
+                                )}
+                            </div>
+                        </div>
+                        <div className="flex flex-row justify-end items-center h-fit">
+                            <button type="submit" className="px-2 p-1 bg-blue-500 text-white cursor-pointer rounded-md font-semibold">변경</button>
+                        </div>
+                    </form>
+
+                </div>
             </div>
         </>
     )

@@ -1,16 +1,16 @@
 'use client'
 import { useRouter } from "next/navigation";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
+import loadMonthlyReserves from "../calendar/utils";
 
 type ReserveType = 'regular' | 'personal' | 'none';
 
 export const Calendar: React.FC<{ calendarDate?: Date }> = ({ calendarDate }) => {
     const router = useRouter();
-    const [calendarMonth, setMonth] = useState(calendarDate ?? new Date())
+    const [calendarYear, setYear] = useState(calendarDate ? calendarDate.getFullYear() : new Date().getFullYear())
+    const [calendarMonth, setMonth] = useState(calendarDate ? calendarDate.getMonth() : new Date().getMonth())
     const [daysInMonth, setDaysInMonth] = useState<number[]>([]);
     const [reservedDates, setReservedDates] = useState<{ [key: number]: ReserveType[] }>({});
-
-    const today = new Date();
 
     const prevDays = (day: number) => {
         if (day == 0) return 6;
@@ -30,16 +30,9 @@ export const Calendar: React.FC<{ calendarDate?: Date }> = ({ calendarDate }) =>
     // }
     //     , [data])
 
-    useEffect(() => {
-        calendarDate && setMonth(calendarDate)
-    }, [calendarDate])
-
     useLayoutEffect(() => {
-        const year = calendarMonth.getFullYear();
-        const month = calendarMonth.getMonth();
-
-        const firstDayOfMonth = new Date(year, month, 1);
-        const lastDayOfMonth = new Date(year, month + 1, 0);
+        const firstDayOfMonth = new Date(calendarYear, calendarMonth, 1);
+        const lastDayOfMonth = new Date(calendarYear, calendarMonth + 1, 0);
 
         const daysArray = [];
         for (let i = 0; i < prevDays(firstDayOfMonth.getDay()); i++) {
@@ -54,21 +47,37 @@ export const Calendar: React.FC<{ calendarDate?: Date }> = ({ calendarDate }) =>
             daysArray.push(0);
         }
 
-
         setDaysInMonth(daysArray);
-    }, [calendarMonth]);
+
+        const loading = async () => {
+            try {
+                const response = await loadMonthlyReserves({ year: calendarYear, month: calendarMonth + 1 }) as { [key: number]: ReserveType[] }
+
+                setReservedDates(response)
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        loading();
+        
+    }, [calendarMonth, calendarYear]);
 
 
     const incrementMonth = () => {
-        const newDate = new Date(calendarMonth);
-        newDate.setMonth(calendarMonth.getMonth() + 1);
-        setMonth(newDate);
+        const newDate = new Date(calendarYear, calendarMonth + 1);
+        newDate.setMonth(calendarMonth + 1);
+        if (newDate.getFullYear() != calendarYear)
+            setYear(newDate.getFullYear())
+        setMonth(newDate.getMonth());
     };
 
     const decrementMonth = () => {
-        const newDate = new Date(calendarMonth);
-        newDate.setMonth(calendarMonth.getMonth() - 1);
-        setMonth(newDate);
+        const newDate = new Date(calendarYear, calendarMonth);
+        newDate.setMonth(calendarMonth - 1);
+        if (newDate.getFullYear() != calendarYear)
+            setYear(newDate.getFullYear())
+        setMonth(newDate.getMonth());
     };
 
     const renderWeeks = () => {
@@ -76,14 +85,14 @@ export const Calendar: React.FC<{ calendarDate?: Date }> = ({ calendarDate }) =>
         let days: any[] = [];
 
         daysInMonth.forEach((day, index) => {
-            if (day == 0) days.push(<div className="w-8 h-8"/>)
+            if (day == 0) days.push(<div className="w-8 h-8" />)
             else {
                 days.push(
                     <div key={`date-${day}`}
-                        className={`w-8 h-8 cursor-pointer ${((day == calendarDate?.getDate()) && (calendarMonth.getMonth() == calendarDate?.getMonth())) ?  'rounded-md bg-blue-100' : ''}`}
-                        onClick={() => router.replace(`/reserve/live/${calendarMonth.getFullYear()}-${calendarMonth.getMonth() + 1}-${day}`)}
+                        className={`w-8 h-8 cursor-pointer ${((day == calendarDate?.getDate()) && (calendarMonth == calendarDate?.getMonth())) ? 'rounded-md bg-blue-100' : ''}`}
+                        onClick={() => router.replace(`/reserve/live/${calendarYear}-${calendarMonth + 1}-${day}`)}
                     >
-                        <div className={`w-7 text-center text-base text-gray-400 mx-0.5 ${((day == calendarDate?.getDate()) && (calendarMonth.getMonth() == calendarDate?.getMonth())) ? 'text-blue-500' : ''}`} >{day}</div>
+                        <div className={`w-7 text-center text-base text-gray-400 mx-0.5 ${((day == calendarDate?.getDate()) && (calendarMonth == calendarDate?.getMonth())) ? 'text-blue-500' : ''}`} >{day}</div>
                         <div className="mx-1 h-4 flex-col-reverse mt-1">
                             {reservedDates[day] && reservedDates[day].slice(0, 3).map((type) => {
                                 const color = type == 'regular' ? 'text-blue-500' : type == 'none' ? 'text-red-500' : 'text-green-500'
@@ -114,13 +123,13 @@ export const Calendar: React.FC<{ calendarDate?: Date }> = ({ calendarDate }) =>
     return (
         <div>
             <div className="text-center text-gray-400">
-                {`${calendarMonth.getFullYear()}년`}
+                {`${calendarYear}년`}
             </div>
             <div className="flex flex-row justify-center gap-2">
                 <div className="text-lg cursor-pointer"
                     onClick={decrementMonth}>◄</div>
                 <div className="text-lg">
-                    {`${calendarMonth.getMonth() + 1}월`}
+                    {`${calendarMonth + 1}월`}
                 </div>
                 <div className="text-lg cursor-pointer"
                     onClick={incrementMonth}>►</div>
