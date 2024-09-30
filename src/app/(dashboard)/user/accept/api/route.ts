@@ -4,7 +4,7 @@ export async function GET(req: Request) {
     try {
         const cookieStore = cookies();
         const token = cookieStore.get('token')?.value;
-
+        
         const response = await fetch(`${process.env.BASE_URL}/auth/signup`,
             {
                 headers: {
