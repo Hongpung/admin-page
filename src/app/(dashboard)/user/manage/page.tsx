@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from "react";
-import { fetchUserData, updageUserRole } from "./utils"
+import { fetchUserData, roles, updateUserRole } from "./utils"
 import LoadingDots from "@admin/app/components/loadingindicator";
 import { User } from "../accept/utils";
 
@@ -11,6 +11,8 @@ export default function ManageUserPage() {
     const [selectedOption, setSelectedOption] = useState("all");
     const [filter, setFilter] = useState<string | null>(null);
     const [modifiedUser, setUser] = useState<User | null>(null)
+
+
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -25,7 +27,7 @@ export default function ManageUserPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const signUpDataResponse = await fetchUserData(page); // 서버에서 데이터 가져오기
+                const signUpDataResponse = await fetchUserData(page);
                 setUserData(signUpDataResponse); // 데이터 저장
             } catch (error) {
                 console.error('Error fetching sign up data:', error);
@@ -52,8 +54,8 @@ export default function ManageUserPage() {
         userData?.forEach((user, index) => {
             if (user) {
                 const userRow = (
-                    <div key={index} className="flex-row flex justify-around bg-slate-100 py-1">
-                        <div className="min-w-48 text-center">{user.name}</div>
+                    <div key={index} className={`flex-row flex justify-around ${index%2==1?'bg-blue-100':''} py-1`}>
+                        <div className="min-w-48 text-center">{user.name + (user.nickname &&` (${user.nickname})`)}</div>
                         <div className="min-w-24 text-center">{user.club}</div>
                         <div className="min-w-96 text-center">{user.email}</div>
                         <div className="min-w-32 text-center">{user.role}</div>
@@ -87,10 +89,15 @@ export default function ManageUserPage() {
         console.log(changedRole)
 
         try {
-            const response = updageUserRole({ memberId: modifiedUser!.memberId, role: changedRole })
+            const response = updateUserRole({ memberId: modifiedUser!.memberId, role: changedRole })
 
-            if(!response) throw Error('실패')
+            if (!response) throw Error('실패')
 
+            setUserData(userData.map(user => {
+                if (user.memberId == modifiedUser!.memberId)
+                    return { ...user, role: changedRole };
+                return user;
+            }))
             setUser(null);
         } catch (e) {
             window.alert('업데이트 실패')
@@ -150,10 +157,10 @@ export default function ManageUserPage() {
                 <button type="submit" className="h-8 w-12 bg-blue-100 rounded-md">적용</button>
             </form>
 
-            <div className="flex flex-col mx-2 mt-4 border rounded-md flex-grow border-gray-200 mb-2">
-                <div id="rows" className="flex-row flex justify-around bg-slate-100 py-1">
+            <div className="flex flex-col mx-2 mt-4 border rounded-md flex-grow border-blue-100 mb-2">
+                <div id="rows" className="flex-row flex justify-around bg-blue-300 py-1">
 
-                    <div className="min-w-48 text-center">이름</div>
+                    <div className="min-w-48 text-center">이름 (패명)</div>
                     <div className="min-w-24 text-center">동아리</div>
                     <div className="min-w-96 text-center">이메일</div>
                     <div className="min-w-32 text-center">권한</div>
@@ -189,7 +196,7 @@ export default function ManageUserPage() {
                         <div className="flex flex-row justify-between items-start mx-4">
                             <div className="font-semibold">변경할 권한</div>
                             <div className="flex flex-col gap-2">
-                                {['패짱', '상쇠', '상장구', '패원', '수법고'].filter(role => role != modifiedUser?.role).map(role =>
+                                {roles.map(role => role.ko).filter(role => role != modifiedUser?.role).map(role =>
                                 (<label>
                                     <input type="radio" name="changed-role" id={"changed-role-" + role} defaultChecked value={role} className="mr-1" />
                                     {role}

@@ -38,7 +38,7 @@ export default function AcceptUserPage() {
             if (user) {
                 const userRow = (
                     <div key={index} className="flex-row flex justify-around bg-slate-100 py-1">
-                        <div className="min-w-48 text-center">{user.name}</div>
+                        <div className="min-w-48 text-center">{user.name + (user.nickname &&` (${user.nickname})`)}</div>
                         <div className="min-w-64 text-center">{user.club}</div>
                         <div className="min-w-96 text-center">{user.email}</div>
                         <button className="min-w-48 text-center" onClick={async () => {
@@ -96,7 +96,7 @@ export default function AcceptUserPage() {
             </div>
             <div className="flex flex-col mx-2 mt-4 border rounded-md flex-grow border-gray-200 mb-2">
                 <div id="rows" className="flex-row flex justify-around bg-slate-100 py-1">
-                    <div className="min-w-48 text-center">이름</div>
+                    <div className="min-w-48 text-center">이름 (패명)</div>
                     <div className="min-w-64 text-center">동아리</div>
                     <div className="min-w-96 text-center">이메일</div>
                     <div className="min-w-48 text-center">확인</div>

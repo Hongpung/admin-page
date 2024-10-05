@@ -2,20 +2,38 @@
 import { useEffect, useState } from 'react';
 import Modal from '@admin/app/(dashboard)/modal';
 import loadDailyReserves from './utils';
+import { useParams } from 'next/navigation';
 
-export default function DateReservesPage({ params }: { params: { date: string } }) {
+interface briefReservation {
+    reservationId: number;              // 예약 ID
+    creatorName: string;                // 생성자 이름
+    date: string;                       // 예약 날짜 (YYYY-MM-DD 형식)
+    type: string;                       // 예약 유형
+    startTime: string;                  // 시작 시간 (HH:MM:SS 형식)
+    endTime: string;                    // 종료 시간 (HH:MM:SS 형식)
+    message: string;                    // 예약 메시지
+    participationAvailable: boolean;    // 참여 가능 여부
+    lastmodified: string;               // 마지막 수정 시간 (ISO 8601 형식)
+}
+
+export default function DateReservesPage() {
+    const params = useParams();
+    const selectedDate = new Date(params.year_month + '-' + params.date)
+
     const [modalVisible, setModalVisible] = useState(false);
     const [participantsModalVisible, setPModalVisible] = useState(false);
     const [participants, setParticipants] = useState<any[]>([]);
     const [instrumentsModalVisible, setIModalVisible] = useState(false);
     const [instruments, setInstruments] = useState<any[]>([]);
-    const date = new Date(params.date);
+    const [defaultDate, setDefaultDate] = useState<Date | null>(null);
+    const [reserves, loadReserves] = useState<briefReservation[]>([])
     const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
     const renderColor = ['bg-slate-200', 'bg-blue-200', 'bg-red-200', 'bg-green-200', 'bg-yellow-200', 'bg-lime-200']
-    
+
     useEffect(() => {
         const fetchDailyReserve = async () => {
-            const dailyReserves = await loadDailyReserves(date)
+            const dailyReserves: briefReservation[] = await loadDailyReserves(selectedDate)
+            loadReserves(dailyReserves);
         }
 
         fetchDailyReserve();
@@ -31,25 +49,33 @@ export default function DateReservesPage({ params }: { params: { date: string } 
         setInstruments([]);
         setParticipants([]);
         setModalVisible(false);
+        setDefaultDate(null);
     }
 
     return (
         <>
             <div className="text-gray-400 font-medium">
-                {date.getFullYear()}년 {date.getMonth() + 1}월 {date.getDate()}일 {daysOfWeek[date.getDay()]}요일
+                {selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월 {selectedDate.getDate()}일 {daysOfWeek[selectedDate.getDay()]}요일
             </div>
 
-            <div className='flex flex-col mx-2 my-4'>
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((value, index) =>
-                (<div className={`w-full py-6 text-center cursor-pointer ${value != 2 ? renderColor[index % 6] : ''}`}>
-                    {value != 2 ? <div className='h-12'>
-                        <div>무슨 무슨 예약</div>
-                        <div className='text-sm'>{'12:220~12:@2'}</div>
-                    </div> :
-                        <div className='h-12 flex flex-col justify-center'>
-                            <div className='text-2xl'>+</div>
-                        </div>}
-                </div>))}
+            <div className='relative flex flex-col mx-2 my-4'>
+                {[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21].map((value) => {
+                    return (<div key={value+'TIME_'} className={`w-full h-24 py-6 text-center`}>
+                        <div className='flex flex-col justify-center' onClick={() => {
+                            setDefaultDate(selectedDate)
+                            setModalVisible(true)
+                        }}>
+                            <div className='text-2xl  cursor-pointer'>+</div>
+                        </div>
+                    </div>)
+                })}
+                {reserves.map((reserve, index) => {
+                    return (
+                        <div className={`absolute w-full py-8 text-center cursor-pointer ${renderColor[index % 6]}`} style={{ top: `${6 * (Number(reserve.startTime.slice(0, 2)) - 10)}rem`, height: `${6 * (Number(reserve.endTime.slice(0, 2)) - Number(reserve.startTime.slice(0, 2)))}rem` }}>
+                            <div>무슨 무슨 예약</div>
+                            <div className='text-sm'>{`${reserve.startTime.slice(0, 2)}:00~${reserve.endTime.slice(0, 2)}:00`}</div>
+                        </div>)
+                })}
             </div>
 
 
@@ -66,7 +92,7 @@ export default function DateReservesPage({ params }: { params: { date: string } 
                     <div className='flex flex-col gap-6 mx-4 mt-6 mb-12'>
                         <div className='flex-row flex justify-between'>
                             날짜
-                            <input name='reserveDate' type="date" required />
+                            <input name='reserveDate' type="date" value={defaultDate ? defaultDate.getFullYear() + '-' + (defaultDate.getMonth() + 1).toString().padStart(2, '0') + '-' + defaultDate?.getDate().toString().padStart(2, '0') : ''} required />
                         </div>
                         <div className='flex-row flex justify-between'>
                             연습 내용
@@ -112,7 +138,7 @@ export default function DateReservesPage({ params }: { params: { date: string } 
                         </div>
                     </div>
                     <div className='flex-row flex justify-between'>
-                        <div onClick={() => { setModalVisible(false) }} className='bg-red-400 px-4 py-2 rounded-md text-white'>닫기</div>
+                        <div onClick={() => { setModalVisible(false); setInstruments([]); setParticipants([]); setDefaultDate(null) }} className='bg-red-400 px-4 py-2 rounded-md text-white'>닫기</div>
                         <button type='submit' className='bg-blue-400 px-4 py-2 rounded-md text-white'>저장</button>
                     </div>
                 </form>
@@ -145,7 +171,7 @@ export default function DateReservesPage({ params }: { params: { date: string } 
                             </div>
                         </div>))}
                     </div>
-                    <div className='cursor-pointer px-4 py-1 text-center self-center bg-red-400 text-white rounded'
+                    <div className='cursor-pointer px-4 py-1 text-center self-center bg-red-400 text-white rounded cursor-pointer'
                         onClick={() => setPModalVisible(false)}>닫기</div>
                 </div>
             </Modal>

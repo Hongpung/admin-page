@@ -25,7 +25,12 @@ export default async function loadMonthlyReserves(calendar:{year:number,month:nu
         }
 
         const data = await response.json();
-        const filteredData = data.map((data:Reservation)=> {data.reservationId, data.date, data.type})
+        const filteredData: { [key: number]: any[] } = [];
+            data.map((reserve:Reservation) => {
+                const reserveDate = new Date(reserve.date).getDate();
+                if (!filteredData[reserveDate]) filteredData[reserveDate] = [{ id:reserve.reservationId, type: reserve.type, participationAvailable: reserve.participationAvailable }];
+                else filteredData[reserveDate] = [...filteredData[reserveDate], { id:reserve.reservationId, type: reserve.type, participationAvailable: reserve.participationAvailable }];
+            })
         return filteredData as any[];
         
     }catch(e){

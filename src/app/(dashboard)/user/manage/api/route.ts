@@ -41,7 +41,7 @@ export async function PATCH(req: Request) {
                     'Content-Type': 'application/json'
                 }
                 ,
-                body: JSON.stringify({role:"패짱"})
+                body: JSON.stringify({role})
             }
         )
 
