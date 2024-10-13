@@ -1,8 +1,9 @@
 'use client'
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Modal from '@admin/app/(dashboard)/modal';
 import { deleteReservation, loadDailyReserves, loadReservationDetail } from './utils';
 import { useParams } from 'next/navigation';
+import { fetchUserData } from '@admin/app/(dashboard)/user/manage/utils';
 
 interface briefReservation {
     reservationId: number;              // 예약 ID
@@ -14,6 +15,10 @@ interface briefReservation {
     message: string;                    // 예약 메시지
     participationAvailable: boolean;    // 참여 가능 여부
     lastmodified: string;               // 마지막 수정 시간 (ISO 8601 형식)
+}
+
+interface ReservationDetail extends briefReservation {
+    participators: any[]
 }
 
 export default function DateReservesPage() {
@@ -29,6 +34,9 @@ export default function DateReservesPage() {
     const [instruments, setInstruments] = useState<any[]>([]);
     const [defaultDate, setDefaultDate] = useState<Date | null>(null);
     const [reserves, loadReserves] = useState<briefReservation[]>([])
+
+
+    const [usersData, setUserDate] = useState<any[]>([])
     const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
     const renderColor = ['bg-slate-200', 'bg-blue-200', 'bg-red-200', 'bg-green-200', 'bg-yellow-200', 'bg-lime-200']
 
@@ -45,6 +53,8 @@ export default function DateReservesPage() {
         const fetchReserveDetails = async () => {
             const ReservationDetail = await loadReservationDetail(reservationId)
             setEditReservation(ReservationDetail);
+            setParticipants(ReservationDetail.participators)
+            setParticipants(ReservationDetail.instruments ?? [])
             setEditModalVisible(true)
         }
 
@@ -77,6 +87,19 @@ export default function DateReservesPage() {
         setDefaultDate(null);
     }
 
+    const loadUsers = useCallback(() => {
+        const fetchReserveDetails = async () => {
+            const loadedUsersData = await fetchUserData(1);
+            setUserDate(loadedUsersData)
+        }
+        fetchReserveDetails();
+    }, [])
+
+    useEffect(() => {
+        if (participantsModalVisible)
+            loadUsers();
+    }, [participantsModalVisible])
+
     return (
         <>
             <div className="text-gray-400 font-medium mx-2">
@@ -85,7 +108,7 @@ export default function DateReservesPage() {
 
             <div className='relative flex flex-col mx-2 my-4'>
                 {[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21].map((value) => {
-                    return (<div key={value + 'TIME_'} className={`w-full h-24 py-6 text-center`}>
+                    return (<div key={'TIME_' + value} className={`w-full h-24 py-6 text-center`}>
                         <div className='flex flex-col justify-center' onClick={() => {
                             setDefaultDate(selectedDate)
                             setCreateModalVisible(true)
@@ -130,11 +153,11 @@ export default function DateReservesPage() {
                         </div>
                         <div className='flex-row flex justify-between'>
                             날짜
-                            <input name='reserveDate' type="date" value={editedReservation ? new Date(editedReservation?.date).getFullYear() + '-' + (new Date(editedReservation?.date).getMonth() + 1).toString().padStart(2, '0') + '-' + new Date(editedReservation?.date).getDate().toString().padStart(2, '0') : ''} required />
+                            <input name='reserveDate' type="date" onChange={(e) => (setEditReservation({ ...editedReservation, date: e.currentTarget.value.toString().split('T')[0] }))} value={editedReservation ? new Date(editedReservation?.date).getFullYear() + '-' + (new Date(editedReservation?.date).getMonth() + 1).toString().padStart(2, '0') + '-' + new Date(editedReservation?.date).getDate().toString().padStart(2, '0') : ''} required />
                         </div>
                         <div className='flex-row flex justify-between'>
                             연습 내용
-                            <input required name='practice-name' onChange={(e)=>setEditReservation({...editedReservation,message:e.currentTarget.value})} type="text" value={editedReservation?.message} className='w-64 text-lg text-right px-2 outline-none border-b border-gray-700' />
+                            <input required name='practice-name' onChange={(e) => setEditReservation({ ...editedReservation, message: e.currentTarget.value })} type="text" value={editedReservation?.message} className='w-64 text-lg text-right px-2 outline-none border-b border-gray-700' />
                         </div>
                         <div className='flex-row flex justify-between'>
                             정규 연습
@@ -210,9 +233,12 @@ export default function DateReservesPage() {
                             연습 인원
                             <div className='flex-row flex items-center'>
                                 {
-                                    <div className='mx-2'>
+                                    <div className='mx-2 flex flex-row gap-0.5'>
                                         {
-                                            participants.slice(0, 3).map(member => `${member} `)
+                                            participants.slice(0, 3).map(participant => { console.log(participant.name); return <div className='max-w-20 truncate'>{participant.name}</div> })
+                                        }
+                                        {
+                                            participants.length > 3 && <div>등</div>
                                         }
                                     </div>
                                 }
@@ -264,20 +290,23 @@ export default function DateReservesPage() {
                             <div className='w-28 text-center'>패</div>
                             <div className='w-28 text-center'>선택</div>
                         </div>
-                        {[1, 2, 3, 5, 6, 7, 8].map((member, index) => (<div className='flex flex-row sticky justify-around py-1 border-b border-gray-200'>
-                            <div className='flex-grow text-center'>홍길동(길동색시)</div>
-                            <div className='w-28 text-center'>산틀</div>
-                            <div className='w-28 items-center flex flex-col justify-center'>
-                                <input type="checkbox" checked={participants.includes(member)} name={`${member}-${index}`} id={`${member}-${index}`} onChange={(e) => {
-                                    if (e.currentTarget.checked)
-                                        setParticipants([...participants, member])
-                                    else {
-                                        const newMember = participants.filter(participant => participant != member)
-                                        setParticipants(newMember);
-                                    }
-                                }} />
-                            </div>
-                        </div>))}
+                        {usersData.map((member, index) => {
+                            console.log(member);
+                            return (<div className='flex flex-row sticky justify-around py-1 border-b border-gray-200'>
+                                <div className='flex-grow text-center'>{member.name}</div>
+                                <div className='w-28 text-center'>{member.club}</div>
+                                <div className='w-28 items-center flex flex-col justify-center'>
+                                    <input type="checkbox" checked={participants.some(participant => participant.id == member.memberId)} name={`${member}-${index}`} id={`${member}-${index}`} onChange={(e) => {
+                                        if (e.currentTarget.checked)
+                                            setParticipants([...participants, { id: member.memberId, name: member.name + `${member.nickname ? `(${member.nickname})` : ''}` }])
+                                        else {
+                                            const newMember = participants.filter(participant => participant.id != member.memberId)
+                                            setParticipants(newMember);
+                                        }
+                                    }} />
+                                </div>
+                            </div>)
+                        })}
                     </div>
                     <div className='cursor-pointer px-4 py-1 text-center self-center bg-red-400 text-white rounded'
                         onClick={() => setPModalVisible(false)}>닫기</div>
