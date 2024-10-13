@@ -49,6 +49,7 @@ export const Calendar: React.FC = () => {
         if (newDate.getFullYear() != calendarYear)
             setYear(newDate.getFullYear())
         setMonth(newDate.getMonth())
+        setReservedDates([]);
     }, []
     );
 
@@ -58,6 +59,7 @@ export const Calendar: React.FC = () => {
         if (newDate.getFullYear() != calendarYear)
             setYear(newDate.getFullYear())
         setMonth(newDate.getMonth());
+        setReservedDates([]);
     }, [])
 
     useLayoutEffect(() => {
@@ -98,17 +100,17 @@ export const Calendar: React.FC = () => {
                         onClick={() => router.replace(`/reserve/live/${calendarYear}-${calendarMonth + 1}/${day}`)}
                     >
                         <div className={`w-8 h-5 text-center text-base text-gray-400 ${((day == selectedDate?.getDate()) && (calendarMonth == selectedDate?.getMonth())) ? 'text-blue-500' : ''}`} >{day}</div>
-                        <div className="mx-1 h-6 flex-col-reverse items-center gap-0.5">
+                        <div className="mx-1 h-4 flex justify-center flex-row items-center gap-0.5">
                             {reservedDates[day] && reservedDates[day].slice(0, 3).map((reserve) => {
                                 console.log(reserve)
                                 const color = reserve.type == '정기연습' ? 'bg-blue-500' : reserve.participationAvailable ? 'bg-green-500' : 'bg-red-500'
                                 return (
-                                    <div key={reserve.id} className={"h-1 rounded-md mt-0.5 " + color} />
+                                    <div key={reserve.id} className={"h-1.5 w-1.5 rounded-full " + color} />
                                 )
                             })
                             }
                         </div>
-                        {reservedDates[day]?.length > 3 && <div className="text-xs text-gray-300 mt-0.5" >+{reservedDates[day].length - 3}</div>}
+                        {reservedDates[day]?.length > 3 && <div className="text-xs text-gray-500" >+{reservedDates[day].length - 3}</div>}
                     </div>
                 );
             }

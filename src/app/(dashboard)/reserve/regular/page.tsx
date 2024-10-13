@@ -19,6 +19,9 @@ export default function RegularReservePage() {
         setReservations(data);
     };
 
+    // 서버에 구현 안돼있으니까 따로 API만드는 것도 나쁘지 않은듯?
+    // 해당 정보는 내 firebase에 넣어두고 적용하면 강제로 우다다다다 지우고 적용되고 알림 가게끔
+
     useEffect(() => {
         setReservations(
             [
@@ -89,15 +92,16 @@ export default function RegularReservePage() {
     const weekdays_ko = ['월', '화', '수', '목', '금', '토', '일'];
     const weekdays_us = ['m', 't', 'w', 'th', 'f', 's', 'su'];
     const times = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
-    const renderColor = { '산틀': 'bg-slate-400', '악반': 'bg-blue-400', '들녘': 'bg-red-400', '신명화랑': 'bg-green-400', '기타': 'bg-yellow-400' }
+    const renderColor = { '산틀': 'bg-slate-300', '악반': 'bg-blue-300', '들녘': 'bg-red-300', '신명화랑': 'bg-green-300', '기타': 'bg-yellow-300' }
     return (
         <>
             <div className="text-lg font-medium ml-2 mt-2">정기 연습 관리</div>
             <div className="flex flex-row justify-center items-end gap-1 my-1">
                 <div className="text-xl cursor-pointer"
                     onClick={() => setMonth(month - 1)}>◄</div>
-                <div className="text-2xl w-12 text-center">
-                    {`${month}월`}
+                <div className="w-14 text-center">
+                    <div className='text-md text-center text-gray-300'>{`${2024}년`}</div>
+                    <div className='text-2xl'>{`${month}월`}</div>
                 </div>
                 <div className="text-xl cursor-pointer"
                     onClick={() => setMonth(month + 1)}>►</div>
