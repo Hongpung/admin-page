@@ -126,20 +126,22 @@ export default function RegularReservePage() {
                                 weeks.push(
                                     <th key={`${weekday}-${time}`} className={`w-24 h-24 ${bgClass} ${borderOption}`}>
                                         <div className={`w-full h-full flex flex-col`}>
-                                            {matchedReservation && <div key={`${weekday}-${time}-r`} className='h-full w-full  px-1 py-1 text-white'>
-                                                {time == matchedReservation.startTime && time == matchedReservation.endTime - 1 &&
-                                                    <div className='flex flex-col justify-between h-full'>
+                                            {matchedReservation &&
+                                                <div key={`${weekday}-${time}-r`} className='h-full w-full  px-1 py-1 text-white'
+                                                    onClick={() => console.log(`${weekday}-${time}-r`)}>
+                                                    {time == matchedReservation.startTime && time == matchedReservation.endTime - 1 &&
+                                                        <div className='flex flex-col justify-between h-full'>
+                                                            <div className=" font-semibold text-left">{matchedReservation.club}</div>
+                                                            <div className="font-semibold text-right text-xs">{matchedReservation.startTime}:00 ~ {matchedReservation.endTime}:00</div>
+                                                        </div>
+                                                    }
+                                                    {time == matchedReservation.startTime && time != matchedReservation.endTime - 1 && (
                                                         <div className=" font-semibold text-left">{matchedReservation.club}</div>
-                                                        <div className="font-semibold text-right text-xs">{matchedReservation.startTime}:00 ~ {matchedReservation.endTime}:00</div>
-                                                    </div>
-                                                }
-                                                {time == matchedReservation.startTime && time != matchedReservation.endTime - 1 && (
-                                                    <div className=" font-semibold text-left">{matchedReservation.club}</div>
-                                                )}
-                                                {time == matchedReservation.endTime - 1 && time != matchedReservation.startTime && (
-                                                    <div className="flex flex-col justify-end h-full font-semibold text-right text-xs">{matchedReservation.startTime}:00 ~ {matchedReservation.endTime}:00</div>
-                                                )}
-                                            </div>}
+                                                    )}
+                                                    {time == matchedReservation.endTime - 1 && time != matchedReservation.startTime && (
+                                                        <div className="flex flex-col justify-end h-full font-semibold text-right text-xs">{matchedReservation.startTime}:00 ~ {matchedReservation.endTime}:00</div>
+                                                    )}
+                                                </div>}
 
                                         </div>
                                     </th>)

@@ -16,9 +16,11 @@ export default function HomeLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
         <Header />
-        {children}
+        <main className="flex-grow flex flex-row gap-8 ml-16 mr-32 my-4">
+          {children}
+        </main>
         <Footer />
       </body>
     </html>

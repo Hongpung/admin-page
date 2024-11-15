@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextRequest } from 'next/server';
 
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get('token')?.value; // 쿠키에서 토큰을 가져옴
   const url = req.nextUrl.pathname;
+
+
+  if (url.startsWith('/verificationCode') || url.startsWith('/banners'))
+    return NextResponse.next();
 
   if ((token === 'invalid' || !(token)) && !url.startsWith('/login')) {
     return NextResponse.redirect(new URL("/login", req.url))
@@ -14,7 +18,7 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/home", req.url))
   }
 
-  if (req.nextUrl.pathname.startsWith('/logout')&&token) {
+  if (req.nextUrl.pathname.startsWith('/logout') && token) {
 
     const response = NextResponse.redirect(new URL('/login', req.url));
     response.cookies.set('token', '', {

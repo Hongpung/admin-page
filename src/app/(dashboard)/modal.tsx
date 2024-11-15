@@ -32,7 +32,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, children }) => {
   // Create a portal for the modal to render in the top-level DOM
   return ReactDOM.createPortal(
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white py-4 px-8 rounded-md shadow-lg max-w-lg w-full">
+      <div className="relative bg-white py-4 px-8 rounded-md shadow-lg max-w-lg w-full">
         {children}
       </div>
     </div>,

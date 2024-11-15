@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, StyleHTMLAttributes } from 'react';
 
-export default function LoadingDots() {
+export default function LoadingDots({style}:{style?:string}) {
     const [dots, setDots] = useState(''); // 현재 보여줄 점 상태
 
     useEffect(() => {
@@ -12,7 +12,7 @@ export default function LoadingDots() {
     }, []);
 
     return (
-        <div className="text-center flex-grow flex items-center justify-center font-bold  text-4xl text-gray-500 bg-slate-50">
+        <div className={"text-center flex-grow flex items-center justify-center font-bold  text-4xl text-gray-500 bg-slate-50 "+style}>
             {dots}
         </div>
     );

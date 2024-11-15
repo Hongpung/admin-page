@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "@admin/app/globals.css";
-import { geistMono, geistSans } from "@fonts";
 
 
 export const metadata: Metadata = {
@@ -14,7 +13,7 @@ export default function LoginLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div>
+    <div className="ml-16 w-full flex flex-col items-center">
       {children}
     </div>
   );

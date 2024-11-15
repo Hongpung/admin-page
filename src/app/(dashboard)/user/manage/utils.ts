@@ -15,7 +15,7 @@ export async function fetchUserData(page: number) {
         }
 
         const data = await response.json();
-        return data.filter((user: User) => user.role != '홍풍의장') as User[];
+        return data
 
     } catch (error) {
         console.error('오류 발생:', error);

@@ -197,7 +197,7 @@ export default function ManageUserPage() {
                             <div className="font-semibold">변경할 권한</div>
                             <div className="flex flex-col gap-2">
                                 {roles.map(role => role.ko).filter(role => role != modifiedUser?.role).map(role =>
-                                (<label>
+                                (<label key={role}>
                                     <input type="radio" name="changed-role" id={"changed-role-" + role} defaultChecked value={role} className="mr-1" />
                                     {role}
                                 </label>)

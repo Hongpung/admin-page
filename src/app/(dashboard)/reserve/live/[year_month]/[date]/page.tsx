@@ -4,6 +4,7 @@ import Modal from '@admin/app/(dashboard)/modal';
 import { deleteReservation, loadDailyReserves, loadReservationDetail } from './utils';
 import { useParams } from 'next/navigation';
 import { fetchUserData } from '@admin/app/(dashboard)/user/manage/utils';
+import RBButton from '@admin/app/(dashboard)/RBbutton';
 
 interface briefReservation {
     reservationId: number;              // 예약 ID
@@ -50,15 +51,15 @@ export default function DateReservesPage() {
     }, [editModalVisible, createModalVisible])
 
     const loadDetails = (reservationId: number) => {
-        const fetchReserveDetails = async () => {
-            const ReservationDetail = await loadReservationDetail(reservationId)
-            setEditReservation(ReservationDetail);
-            setParticipants(ReservationDetail.participators)
-            setParticipants(ReservationDetail.instruments ?? [])
-            setEditModalVisible(true)
-        }
+        // const fetchReserveDetails = async () => {
+        //     const ReservationDetail = await loadReservationDetail(reservationId)
+        //     setEditReservation(ReservationDetail);
+        //     setParticipants(ReservationDetail.participators ?? [])
+        //     setParticipants(ReservationDetail.instruments ?? [])
+        //     setEditModalVisible(true)
+        // }
 
-        fetchReserveDetails();
+        // fetchReserveDetails();
     }
 
     const editReservation = (e: React.FormEvent<HTMLFormElement>) => {
@@ -102,20 +103,39 @@ export default function DateReservesPage() {
 
     return (
         <>
+
+            <RBButton
+                color="gray"
+                onClick={() => setCreateModalVisible(true)}>
+                +
+            </RBButton>
             <div className="text-gray-400 font-medium mx-2">
                 {selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월 {selectedDate.getDate()}일 {daysOfWeek[selectedDate.getDay()]}요일
             </div>
 
             <div className='relative flex flex-col mx-2 my-4'>
-                {[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21].map((value) => {
-                    return (<div key={'TIME_' + value} className={`w-full h-24 py-6 text-center`}>
-                        <div className='flex flex-col justify-center' onClick={() => {
-                            setDefaultDate(selectedDate)
-                            setCreateModalVisible(true)
-                        }}>
-                            <div className='text-2xl  cursor-pointer'>+</div>
-                        </div>
-                    </div>)
+                {[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22].map((time, index) => {
+                    return (
+                        <>
+                            <div key={time + index} className='flex flex-row items-center mx-4 h-4'>
+                                <div style={{ height: 0.5 }} className='bg-gray-400 flex-grow overflow-visible' />
+                                <div className='self-center text-base w-16 text-center text-gray-500' >{`${time >= 12 ? time == 12 ? `PM 12` : `PM ${(time - 12).toString().padStart(2, '0')}` : `AM ${time}`}`}</div>
+                                <div style={{ height: 0.5 }} className='bg-gray-400 h-0.5 flex-grow overflow-visible' />
+                            </div>
+                            {(time != 22) &&
+                                <div className='h-32 flex items-center justify-center'>
+                                    <div className='h-0 border border-dashed border-gray-100 w-full' />
+                                </div>
+                            }
+                        </>)
+                    // return (<div key={'TIME_' + value} className={`w-full h-24 py-6 text-center`}>
+                    //     <div className='flex flex-col justify-center' onClick={() => {
+                    //         setDefaultDate(selectedDate)
+                    //         setCreateModalVisible(true)
+                    //     }}>
+                    //         <div className='text-2xl  cursor-pointer'>+</div>
+                    //     </div>
+                    // </div>)
                 })}
                 {reserves.map((reserve, index) => {
                     const [startHour, startMinnute] = reserve.startTime.split(':').map(value => Number(value));
@@ -123,10 +143,10 @@ export default function DateReservesPage() {
 
                     return (
                         //1칸에 9rem 반칸에 4.5rem
-                        <div className={`gap-2 absolute w-full rounded-sm flex flex-col flex-wrap justify-center py-6 text-center cursor-pointer ${renderColor[index % 6]}`}
+                        <div className={`gap-2 absolute w-full rounded-sm flex flex-col flex-wrap justify-center text-center cursor-pointer ${renderColor[index % 6]}`}
                             style={{
-                                top: `${6 * (startHour - 10) + 1.5 * (startMinnute % 60 / 30)}rem`,
-                                height: `${6 * (endHour - startHour) + 1.5 * (endMinnute - startMinnute) % 60 / 30}rem`
+                                top: `${9 * (startHour - 10) + 4.5 * (startMinnute % 60 / 30) + 0.5}rem`,
+                                height: `${9 * (endHour - startHour) + 4.5 * ((endMinnute - startMinnute) % 60) / 30}rem`
                             }}
                             onClick={() => loadDetails(reserve.reservationId)}>
                             <div>{reserve.message}</div>
@@ -138,9 +158,7 @@ export default function DateReservesPage() {
 
             {/* 모달부분 */}
 
-            <div className=' bg-slate-400 w-12 h-12 bottom-8 fixed right-12 text-white font-bold text-2xl flex flex-col justify-center items-center cursor-pointer rounded-full'
-                onClick={() => setCreateModalVisible(true)}>+
-            </div>
+
 
             <Modal isOpen={editModalVisible}>
                 <div className='font-bold text-lg'>예약 수정</div>
@@ -208,10 +226,17 @@ export default function DateReservesPage() {
                             }
                         </div>
                     </div>
-                    <div className='flex-row flex justify-between cursor-pointer'>
-                        <div onClick={() => { setEditModalVisible(false); setEditReservation(null); setInstruments([]); setParticipants([]); setDefaultDate(null) }} className='bg-red-400 px-4 py-2 rounded-md text-white'>닫기</div>
-                        <div onClick={() => { deleteReservation(editedReservation?.reservationId); setEditModalVisible(false); setEditReservation(null); setInstruments([]); setParticipants([]); setDefaultDate(null) }} className='bg-red-400 px-4 py-2 rounded-md text-white'>삭제</div>
-                        <button type='submit' className='bg-blue-400 px-4 py-2 rounded-md text-white'>저장</button>
+                    <div className='flex-row flex justify-between'>
+                        <div
+                            onClick={() => { setEditModalVisible(false); setEditReservation(null); setInstruments([]); setParticipants([]); setDefaultDate(null) }}
+                            className='border border-gray-200 px-4 py-2 rounded-md text-gray-500 cursor-pointer'>닫기</div>
+                        <div className='flex flex-row gap-4'>
+                            <div
+                                onClick={() => { deleteReservation(editedReservation?.reservationId); setEditModalVisible(false); setEditReservation(null); setInstruments([]); setParticipants([]); setDefaultDate(null) }}
+                                className='bg-red-400 px-4 py-2 rounded-md text-white cursor-pointer'>삭제</div>
+                            <button type='submit' className='bg-blue-400 px-4 py-2 rounded-md text-white cursor-pointer'>수정</button>
+                        </div>
+
                     </div>
                 </form>
             </Modal>
@@ -223,7 +248,7 @@ export default function DateReservesPage() {
                     <div className='flex flex-col gap-6 mx-4 mt-6 mb-12'>
                         <div className='flex-row flex justify-between'>
                             날짜
-                            <input name='reserveDate' type="date" value={defaultDate ? defaultDate.getFullYear() + '-' + (defaultDate.getMonth() + 1).toString().padStart(2, '0') + '-' + defaultDate?.getDate().toString().padStart(2, '0') : ''} required />
+                            <input name='reserveDate' type="date" defaultValue={defaultDate?new Date(defaultDate).toISOString().split('T')[0]:new Date().toISOString().split('T')[0]} required />
                         </div>
                         <div className='flex-row flex justify-between'>
                             연습 내용
@@ -272,11 +297,13 @@ export default function DateReservesPage() {
                         </div>
                     </div>
                     <div className='flex-row flex justify-between'>
-                        <div onClick={() => { setCreateModalVisible(false); setInstruments([]); setParticipants([]); setDefaultDate(null) }} className='bg-red-400 px-4 py-2 rounded-md text-white'>닫기</div>
-                        <button type='submit' className='bg-blue-400 px-4 py-2 rounded-md text-white'>저장</button>
+                        <div onClick={() => { setCreateModalVisible(false); setInstruments([]); setParticipants([]); setDefaultDate(null) }}
+                            className='border border-gray-200 px-4 py-2 rounded-md text-gray-500 cursor-pointer'>닫기</div>
+                        <button type='submit' className='bg-blue-400 px-4 py-2 rounded-md text-white'>생성</button>
                     </div>
                 </form>
             </Modal>
+
             <Modal isOpen={participantsModalVisible}>
                 <div className='flex flex-col gap-4'>
                     <div className='flex flex-row justify-between items-end'>
@@ -312,6 +339,8 @@ export default function DateReservesPage() {
                         onClick={() => setPModalVisible(false)}>닫기</div>
                 </div>
             </Modal>
+
+            
             <Modal isOpen={instrumentsModalVisible}>
                 <div className='flex flex-col gap-4'>
                     <div className='flex flex-row justify-between items-end'>

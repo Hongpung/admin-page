@@ -63,12 +63,14 @@ export default function SideMenu() {
                     {isOpen[2] ? <div>▲</div> : <div>▼</div>}
                 </li>
                 {isOpen[2] &&
-                    <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2">
+                    <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2"
+                        onClick={() => router.push('/manage/banner')}>
                         배너 관리
                     </li>
                 }
                 {isOpen[2] &&
-                    <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2">
+                    <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2"
+                        onClick={() => router.push('/manage/notice')}>
                         공지사항
                     </li>
                 }

@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { User } from "../../accept/utils";
 
 export async function GET(req: Request) {
     try {
@@ -16,7 +17,10 @@ export async function GET(req: Request) {
         if (!response.ok) throw Error('Response Error' + ` (${response.status}) :` + response.statusText)
         const signUpData = await response.json();
 
-        return Response.json(signUpData);
+
+        const returnData =  signUpData.filter((user: User) => user.role != '홍풍의장') as User[];
+
+        return Response.json(returnData);
     } catch (e) {
         console.error(e)
         return new Response('Error: ' + e, { status: 400 })
@@ -31,7 +35,7 @@ export async function PATCH(req: Request) {
 
         const body = await req.json();
         const { role, memberId } = body;
-        console.log(JSON.stringify({role}))
+        console.log(JSON.stringify({ role }))
 
         const response = await fetch(`${process.env.BASE_URL}/member/manage/${memberId}`,
             {
@@ -41,13 +45,13 @@ export async function PATCH(req: Request) {
                     'Content-Type': 'application/json'
                 }
                 ,
-                body: JSON.stringify({role})
+                body: JSON.stringify({ role })
             }
         )
 
         if (!response.ok) throw Error('Response Error' + ` (${response.status}) :` + response.statusText)
 
-        return new Response('Success to Patch Role',{status:200});
+        return new Response('Success to Patch Role', { status: 200 });
 
     } catch (e) {
         console.error(e)
