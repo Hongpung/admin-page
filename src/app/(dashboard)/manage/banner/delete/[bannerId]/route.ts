@@ -18,10 +18,13 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ banne
         }
 
         const response = await fetch(`${process.env.SUB_API}/banners/${bannerId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
         });
 
-        if(!response.ok) throw Error('Server Error')
+        if (!response.ok) throw Error('Server Error')
 
         return Response.json({ message: 'Banner delete successful' });
 

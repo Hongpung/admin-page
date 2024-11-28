@@ -5,7 +5,7 @@ export async function clickAccept(signupId: number) {
         acceptResult: true
     };
     var result = await acceptUser(userData);
-    
+
     return result;
 }
 
@@ -13,12 +13,12 @@ export async function acceptUser(userData: { signupId: number, acceptResult: boo
     try {
         const response = await fetch('/user/accept/api', {
             method: 'POST',
-            body: JSON.stringify(userData),
+            body: JSON.stringify({ acceptedSignUpIds: [userData.signupId] }),
             credentials: 'include'
         });
 
         if (!response.ok) throw new Error('실패' + response.statusText);
-        
+
         return true;
 
     } catch (error) {
@@ -31,10 +31,10 @@ export async function acceptUser(userData: { signupId: number, acceptResult: boo
 
 
 export interface User {
-    memberId:number
+    memberId: number
     name: string
-    nickname?:string
-    enrollmentNumber:number
+    nickname?: string
+    enrollmentNumber: number
     club: string
     email: string
     role?: string

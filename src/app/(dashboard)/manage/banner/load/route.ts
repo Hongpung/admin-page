@@ -9,8 +9,11 @@ export async function GET(req: Request) {
             return new Response('Cookie has expired or does not exist', { status: 401 });
         }
 
-        const response = await fetch(`${process.env.SUB_API}/banners/`,{
-            method:'GET'
+        const response = await fetch(`${process.env.SUB_API}/banners/`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
         });
 
         const data = await response.json()

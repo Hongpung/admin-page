@@ -29,20 +29,17 @@ export async function POST(req: Request) {
         const token = cookieStore.get('token')?.value;
 
         const body = await req.json();
-        const { signupId, acceptResult } = body;
-
-        console.log(JSON.stringify({ acceptResult }))
-        console.log(`${process.env.BASE_URL}/auth/signup/${signupId}`)
+        const { acceptedSignUpIds } = body;
 
 
-        const response = await fetch(`${process.env.BASE_URL}/auth/signup/${signupId}`,
+        const response = await fetch(`${process.env.BASE_URL}/auth/signup/accept`,
             {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ acceptResult })
+                body: JSON.stringify({ acceptedSignUpIds })
             }
         )
 

@@ -37,7 +37,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ banner
         const response = await fetch(`${process.env.SUB_API}/banners/${bannerId}`, {
             method: 'PATCH',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(data)
         });

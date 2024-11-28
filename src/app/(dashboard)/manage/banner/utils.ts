@@ -27,6 +27,7 @@ export async function uploadImage(formData: FormData) {
     try {
         const res = await fetch('/manage/banner/upload-s3', {
             method: 'POST',
+            credentials: 'include',
             body: formData,
         });
 
@@ -63,6 +64,7 @@ export async function updateBanner({ bannerUpdateData }: { bannerUpdateData: Ban
     try {
         const res = await fetch(`/manage/banner/update/${bannerUpdateData.bannerId}`, {
             method: 'PATCH',
+            credentials: 'include',
             body: JSON.stringify(bannerUpdateData),
         });
 
@@ -81,15 +83,16 @@ export async function updateBanner({ bannerUpdateData }: { bannerUpdateData: Ban
 
 export async function loadBanners() {
     try {
-        
-        const res = await fetch(`/manage/banner/load`);
 
+        const res = await fetch(`/manage/banner/load`, {
+            credentials: 'include'
+        });
 
         if (!res.ok) throw Error();
 
         const data = await res.json();
         console.log(data)
-        return data||{AfterPost:[], OnPost:[], BeforePost:[]} as {AfterPost:BannerDTO[], OnPost:BannerDTO[], BeforePost:BannerDTO[]};
+        return data || { AfterPost: [], OnPost: [], BeforePost: [] } as { AfterPost: BannerDTO[], OnPost: BannerDTO[], BeforePost: BannerDTO[] };
 
     } catch (e) {
         console.error(e);

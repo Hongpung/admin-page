@@ -30,15 +30,16 @@ export async function POST(req: Request) {
         const createResponse = await fetch(`${process.env.SUB_API}/banners`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(sendFormat)
         });
 
 
-        if(!createResponse.ok) throw Error('Server Error');
+        if (!createResponse.ok) throw Error('Server Error');
 
-        const {bannerId} = await createResponse.json();
+        const { bannerId } = await createResponse.json();
 
         return Response.json({ message: 'Banner apply successful', bannerId }, { status: 201 });
 

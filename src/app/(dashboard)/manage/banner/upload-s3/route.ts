@@ -21,6 +21,9 @@ export async function POST(req: Request) {
         const uploadConfirm = await fetch(`${process.env.SUB_API}/upload-s3/image`,
             {
                 method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
                 body: formData,
                 signal
             })
