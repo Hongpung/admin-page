@@ -61,8 +61,8 @@ export async function deleteBanner(bannerId: string) {
 export async function updateBanner({ bannerUpdateData }: { bannerUpdateData: BannerUpdateDTO }) {
 
     try {
-        const res = await fetch(`/manage/banner/update/${bannerUpdateData.id}`, {
-            method: 'PUT',
+        const res = await fetch(`/manage/banner/update/${bannerUpdateData.bannerId}`, {
+            method: 'PATCH',
             body: JSON.stringify(bannerUpdateData),
         });
 
@@ -79,48 +79,17 @@ export async function updateBanner({ bannerUpdateData }: { bannerUpdateData: Ban
 
 
 
-export async function loadOldBanners() {
+export async function loadBanners() {
     try {
-        const res = await fetch(`/manage/banner/load?type=OLD`);
-
-        if (!res.ok) throw Error();
-        const { data } = await res.json();
         
-        const parsedBanner = data.map((banners: any) => ({ ...banners, startDate: new Date(banners.startDate), endDate: new Date(banners.endDate) }))
-        return parsedBanner as BannerDTO[];
+        const res = await fetch(`/manage/banner/load`);
 
-    } catch (e) {
-        console.error(e);
-        return null;
-    }
-}
-
-export async function loadPlannedBanners() {
-    try {
-        const res = await fetch(`/manage/banner/load?type=PLANNED`);
 
         if (!res.ok) throw Error();
 
-        const { data } = await res.json()
-
-        const parsedBanner = data.map((banners: any) => ({ ...banners, startDate: new Date(banners.startDate), endDate: new Date(banners.endDate) }))
-        return parsedBanner as BannerDTO[];
-
-    } catch (e) {
-        console.error(e);
-        return null;
-    }
-}
-
-export async function loadActiveBanners() {
-    try {
-        const res = await fetch(`/manage/banner/load?type=ACTIVE`);
-
-        if (!res.ok) throw Error();
-        const { data } = await res.json();
-
-        const parsedBanner = data.map((banners: any) => ({ ...banners, startDate: new Date(banners.startDate), endDate: new Date(banners.endDate) }))
-        return parsedBanner as BannerDTO[];
+        const data = await res.json();
+        console.log(data)
+        return data||{AfterPost:[], OnPost:[], BeforePost:[]} as {AfterPost:BannerDTO[], OnPost:BannerDTO[], BeforePost:BannerDTO[]};
 
     } catch (e) {
         console.error(e);

@@ -1,11 +1,11 @@
+
+import { loadBanners } from "./backUtils";
 import BannerManageClientPage from "./clientPage";
-import { loadActiveBanners, loadOldBanners, loadPlannedBanners } from "./backUtils";
+import "@admin/app/globals.css";
 
 export default async function bannerManagePage() {
-    const loadedOldBanners = await loadOldBanners() || [];
-    const loadedActiveBanners = await loadActiveBanners()|| [];
-    const loadedPlannedBanners = await loadPlannedBanners()|| [];
-
+    const {AfterPost:loadedOldBanners, OnPost:loadedActiveBanners, BeforePost:loadedPlannedBanners} = await loadBanners()
+    
     return (
         <BannerManageClientPage
             initActiveBanners={loadedActiveBanners}

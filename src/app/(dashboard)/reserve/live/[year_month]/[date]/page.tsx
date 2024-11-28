@@ -1,10 +1,11 @@
 'use client'
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Modal from '@admin/app/(dashboard)/modal';
 import { deleteReservation, loadDailyReserves, loadReservationDetail } from './utils';
 import { useParams } from 'next/navigation';
-import { fetchUserData } from '@admin/app/(dashboard)/user/manage/utils';
 import RBButton from '@admin/app/(dashboard)/RBbutton';
+import { includes } from 'lodash';
+import loadMonthlyReserves from '../../calendar/utils';
 
 interface briefReservation {
     reservationId: number;              // 예약 ID
@@ -28,18 +29,22 @@ export default function DateReservesPage() {
 
     const [editedReservation, setEditReservation] = useState<any | null>(null)
     const [editModalVisible, setEditModalVisible] = useState(false);
-    const [createModalVisible, setCreateModalVisible] = useState(false);
-    const [participantsModalVisible, setPModalVisible] = useState(false);
+
+
     const [participants, setParticipants] = useState<any[]>([]);
-    const [instrumentsModalVisible, setIModalVisible] = useState(false);
     const [instruments, setInstruments] = useState<any[]>([]);
     const [defaultDate, setDefaultDate] = useState<Date | null>(null);
     const [reserves, loadReserves] = useState<briefReservation[]>([])
 
+    const [reservedDates, setReservedDates] = useState<{ [key: number]: { title: string, startTime: string, endTime: string, id: number }[] }>([]);
 
-    const [usersData, setUserDate] = useState<any[]>([])
+
     const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
     const renderColor = ['bg-slate-200', 'bg-blue-200', 'bg-red-200', 'bg-green-200', 'bg-yellow-200', 'bg-lime-200']
+
+    useEffect(() => {
+        loading()
+    }, [])
 
     useEffect(() => {
         const fetchDailyReserve = async () => {
@@ -48,18 +53,29 @@ export default function DateReservesPage() {
         }
 
         fetchDailyReserve();
-    }, [editModalVisible, createModalVisible])
+    }, [editModalVisible])
+
+    const loading = useCallback(async () => {
+        try {
+            const response = await loadMonthlyReserves({ year: selectedDate.getFullYear(), month: selectedDate.getMonth() + 1 }) as { [key: number]: any[] }
+
+            setReservedDates(response);
+        } catch (e) {
+            console.error(e);
+        }
+    }, [selectedDate])
 
     const loadDetails = (reservationId: number) => {
-        // const fetchReserveDetails = async () => {
-        //     const ReservationDetail = await loadReservationDetail(reservationId)
-        //     setEditReservation(ReservationDetail);
-        //     setParticipants(ReservationDetail.participators ?? [])
-        //     setParticipants(ReservationDetail.instruments ?? [])
-        //     setEditModalVisible(true)
-        // }
+        const fetchReserveDetails = async () => {
+            const ReservationDetail = await loadReservationDetail(reservationId)
 
-        // fetchReserveDetails();
+            setEditReservation(ReservationDetail);
+            setParticipants(ReservationDetail.participators ?? [])
+            setParticipants(ReservationDetail.instruments ?? [])
+            setEditModalVisible(true)
+        }
+
+        fetchReserveDetails();
     }
 
     const editReservation = (e: React.FormEvent<HTMLFormElement>) => {
@@ -67,49 +83,32 @@ export default function DateReservesPage() {
         const formData = new FormData(e.currentTarget);
         const reserveDate = formData.get('reserveDate') as string;
         const title = formData.get('practice-name') as string;
-        console.log({ reserveDate, title, participants, instruments })
 
         setInstruments([]);
         setParticipants([]);
-        setCreateModalVisible(false);
+        setEditModalVisible(false);
         setDefaultDate(null);
     }
+    const weekdays_ko = ['월', '화', '수', '목', '금', '토', '일'];
+    const weekdays_us = ['m', 't', 'w', 'th', 'f', 's', 'su'];
+    const times = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
 
-    const addReservation = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        const reserveDate = formData.get('reserveDate') as string;
-        const title = formData.get('practice-name') as string;
-        console.log({ reserveDate, title, participants, instruments })
+    const selectedWeek = useMemo(() => {
+        const day = selectedDate.getDay() == 0 ? 7 : selectedDate.getDay();
+        const week: number[] = [];
+        const startDate = new Date(selectedDate).getDate() - day + 1
 
-        setInstruments([]);
-        setParticipants([]);
-        setCreateModalVisible(false);
-        setDefaultDate(null);
-    }
-
-    const loadUsers = useCallback(() => {
-        const fetchReserveDetails = async () => {
-            const loadedUsersData = await fetchUserData(1);
-            setUserDate(loadedUsersData)
+        for (let i = 0; i < 7; i++) {
+            week.push(startDate + i)
         }
-        fetchReserveDetails();
-    }, [])
 
-    useEffect(() => {
-        if (participantsModalVisible)
-            loadUsers();
-    }, [participantsModalVisible])
+        return week;
+    }, [selectedDate])
 
     return (
         <>
 
-            <RBButton
-                color="gray"
-                onClick={() => setCreateModalVisible(true)}>
-                +
-            </RBButton>
-            <div className="text-gray-400 font-medium mx-2">
+<div className="text-gray-400 font-medium mx-2">
                 {selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월 {selectedDate.getDate()}일 {daysOfWeek[selectedDate.getDay()]}요일
             </div>
 
@@ -156,10 +155,6 @@ export default function DateReservesPage() {
             </div>
 
 
-            {/* 모달부분 */}
-
-
-
             <Modal isOpen={editModalVisible}>
                 <div className='font-bold text-lg'>예약 수정</div>
                 <form className='flex flex-col'
@@ -185,46 +180,6 @@ export default function DateReservesPage() {
                             열린 연습
                             <div>{editedReservation?.participationAvailable ? '예' : '아니오'}</div>
                         </div>
-
-                        <div className='flex-row flex justify-between items-center'>
-                            연습 인원
-                            <div className='flex-row flex items-center'>
-                                {
-                                    <div className='mx-2'>
-                                        {
-                                            participants.slice(0, 3).map(member => `${member} `)
-                                        }
-                                    </div>
-                                }
-                                <div className='cursor-pointer px-2 py-1 bg-gray-500 text-white rounded'
-                                    onClick={() => setPModalVisible(true)}>
-                                    인원 선택 {participants.length > 0 && ` (${participants.length})`}
-                                </div>
-                            </div>
-                        </div>
-                        <div className={instruments.length == 0 ? 'flex-row flex justify-between items-center' : 'flex flex-col items-start'}>
-                            대여 악기
-                            {instruments.length == 0 ?
-                                <div className='cursor-pointer px-2 py-1 bg-gray-500 text-white rounded'
-                                    onClick={() => setIModalVisible(true)}>
-                                    악기 선택
-                                </div> :
-                                <div className='mt-2 cursor-pointer flex flex-row bg-gray-100 rounded-md py-4 w-full justify-evenly'
-                                    onClick={() => setIModalVisible(true)}>
-                                    {['꽹과리', '장구', '북', '소고', '기타'].map(type => {
-                                        const count = instruments.filter(instrument => instrument.type == type).length;
-                                        const isExist = count > 0;
-                                        return (
-                                            <div className='flex flex-col w-12 items-center'>
-                                                <div className='text-sm font-bold'>{type}</div>
-                                                <div className={`text-2xl font-normal ${isExist ? 'text-blue-600' : 'text-gray-400'}`}>{isExist ? count : '-'}</div>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-
-                            }
-                        </div>
                     </div>
                     <div className='flex-row flex justify-between'>
                         <div
@@ -241,140 +196,6 @@ export default function DateReservesPage() {
                 </form>
             </Modal>
 
-            <Modal isOpen={createModalVisible}>
-                <div className='font-bold text-lg'>예약 추가</div>
-                <form className='flex flex-col'
-                    onSubmit={addReservation}>
-                    <div className='flex flex-col gap-6 mx-4 mt-6 mb-12'>
-                        <div className='flex-row flex justify-between'>
-                            날짜
-                            <input name='reserveDate' type="date" defaultValue={defaultDate?new Date(defaultDate).toISOString().split('T')[0]:new Date().toISOString().split('T')[0]} required />
-                        </div>
-                        <div className='flex-row flex justify-between'>
-                            연습 내용
-                            <input required name='practice-name' type="text" className='w-40 text-lg text-right px-2 outline-none border-b border-gray-700' />
-                        </div>
-                        <div className='flex-row flex justify-between items-center'>
-                            연습 인원
-                            <div className='flex-row flex items-center'>
-                                {
-                                    <div className='mx-2 flex flex-row gap-0.5'>
-                                        {
-                                            participants.slice(0, 3).map(participant => { console.log(participant.name); return <div className='max-w-20 truncate'>{participant.name}</div> })
-                                        }
-                                        {
-                                            participants.length > 3 && <div>등</div>
-                                        }
-                                    </div>
-                                }
-                                <div className='cursor-pointer px-2 py-1 bg-gray-500 text-white rounded'
-                                    onClick={() => setPModalVisible(true)}>
-                                    인원 선택 {participants.length > 0 && ` (${participants.length})`}
-                                </div>
-                            </div>
-                        </div>
-                        <div className={instruments.length == 0 ? 'flex-row flex justify-between items-center' : 'flex flex-col items-start'}>
-                            대여 악기
-                            {instruments.length == 0 ?
-                                <div className='cursor-pointer px-2 py-1 bg-gray-500 text-white rounded'
-                                    onClick={() => setIModalVisible(true)}>
-                                    악기 선택
-                                </div> :
-                                <div className='mt-2 cursor-pointer flex flex-row bg-gray-100 rounded-md py-4 w-full justify-evenly'
-                                    onClick={() => setIModalVisible(true)}>
-                                    {['꽹과리', '장구', '북', '소고', '기타'].map(type => {
-                                        const count = instruments.filter(instrument => instrument.type == type).length;
-                                        const isExist = count > 0;
-                                        return (
-                                            <div className='flex flex-col w-12 items-center'>
-                                                <div className='text-sm font-bold'>{type}</div>
-                                                <div className={`text-2xl font-normal ${isExist ? 'text-blue-600' : 'text-gray-400'}`}>{isExist ? count : '-'}</div>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            }
-                        </div>
-                    </div>
-                    <div className='flex-row flex justify-between'>
-                        <div onClick={() => { setCreateModalVisible(false); setInstruments([]); setParticipants([]); setDefaultDate(null) }}
-                            className='border border-gray-200 px-4 py-2 rounded-md text-gray-500 cursor-pointer'>닫기</div>
-                        <button type='submit' className='bg-blue-400 px-4 py-2 rounded-md text-white'>생성</button>
-                    </div>
-                </form>
-            </Modal>
-
-            <Modal isOpen={participantsModalVisible}>
-                <div className='flex flex-col gap-4'>
-                    <div className='flex flex-row justify-between items-end'>
-                        <div className='font-bold text-lg'>인원 선택</div>
-                        <div className='font-bold text-sm text-gray-400 cursor-pointer'
-                            onClick={() => setParticipants([])}>초기화</div>
-                    </div>
-                    <div className='rounded-md flex flex-col my-1 h-48 border-stone-200 border overflow-scroll'>
-                        <div className='flex flex-row sticky top-0 z-50 justify-around py-1 bg-slate-400'>
-                            <div className='flex-grow text-center'>이름(패명)</div>
-                            <div className='w-28 text-center'>패</div>
-                            <div className='w-28 text-center'>선택</div>
-                        </div>
-                        {usersData.map((member, index) => {
-                            console.log(member);
-                            return (<div className='flex flex-row sticky justify-around py-1 border-b border-gray-200'>
-                                <div className='flex-grow text-center'>{member.name}</div>
-                                <div className='w-28 text-center'>{member.club}</div>
-                                <div className='w-28 items-center flex flex-col justify-center'>
-                                    <input type="checkbox" checked={participants.some(participant => participant.id == member.memberId)} name={`${member}-${index}`} id={`${member}-${index}`} onChange={(e) => {
-                                        if (e.currentTarget.checked)
-                                            setParticipants([...participants, { id: member.memberId, name: member.name + `${member.nickname ? `(${member.nickname})` : ''}` }])
-                                        else {
-                                            const newMember = participants.filter(participant => participant.id != member.memberId)
-                                            setParticipants(newMember);
-                                        }
-                                    }} />
-                                </div>
-                            </div>)
-                        })}
-                    </div>
-                    <div className='cursor-pointer px-4 py-1 text-center self-center bg-red-400 text-white rounded'
-                        onClick={() => setPModalVisible(false)}>닫기</div>
-                </div>
-            </Modal>
-
-            
-            <Modal isOpen={instrumentsModalVisible}>
-                <div className='flex flex-col gap-4'>
-                    <div className='flex flex-row justify-between items-end'>
-                        <div className='font-bold text-lg'>악기 선택</div>
-                        <div className='font-bold text-sm text-gray-400 cursor-pointer'
-                            onClick={() => setInstruments([])}>초기화</div>
-                    </div>
-
-                    <div className='rounded-md flex flex-col my-1 h-48 border-stone-200 border overflow-scroll'>
-                        <div className='flex flex-row sticky top-0 z-50 justify-around py-1 bg-slate-400'>
-                            <div className='flex-grow text-center'>악기</div>
-                            <div className='w-28 text-center'>패</div>
-                            <div className='w-28 text-center'>선택</div>
-                        </div>
-                        {[1, 2, 3, 5, 6, 7, 8].map((instrument, index) => (<div className='flex flex-row sticky justify-around py-1 border-b border-gray-200'>
-                            <div className='flex-grow text-center'>금쇠(팔문금쇠진)</div>
-                            <div className='w-28 text-center'>산틀</div>
-                            <div className='w-28 items-center flex flex-col justify-center'>
-                                <input type="checkbox" checked={instruments.includes(instrument)} name={`${instrument}-${index}`} id={`${instrument}-${index}`}
-                                    onChange={(e) => {
-                                        if (e.currentTarget.checked)
-                                            setInstruments([...instruments, instrument])
-                                        else {
-                                            const newInstruments = instruments.filter(hasBeen => hasBeen != instrument)
-                                            setInstruments(newInstruments);
-                                        }
-                                    }} />
-                            </div>
-                        </div>))}
-                    </div>
-                    <div className='cursor-pointer px-4 py-1 text-center self-center bg-red-400 text-white rounded'
-                        onClick={() => setIModalVisible(false)}>닫기</div>
-                </div>
-            </Modal>
         </>
     )
 }

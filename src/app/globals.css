@@ -22,3 +22,18 @@ body {
 .h-85vh{
   height: 85vh;
 }
+
+.spin-animation {
+  animation-duration: 0.5s;
+  animation-name: spin;
+}
+
+@keyframes spin {
+  from {
+   transform: rotate(0deg)
+  }
+
+  to {
+   transform: rotate(360deg)
+  }
+}

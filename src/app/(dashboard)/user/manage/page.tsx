@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from "react";
-import { fetchUserData, roles, updateUserRole } from "./utils"
+import { deleteUser, fetchUserData, roles, updateUserRole } from "./utils"
 import LoadingDots from "@admin/app/components/loadingindicator";
 import { User } from "../accept/utils";
 
@@ -21,7 +21,6 @@ export default function ManageUserPage() {
         const keyword = formData.get('search-keyword') as string;
 
         console.log({ option, keyword });
-
     };
 
     useEffect(() => {
@@ -54,8 +53,8 @@ export default function ManageUserPage() {
         userData?.forEach((user, index) => {
             if (user) {
                 const userRow = (
-                    <div key={index} className={`flex-row flex justify-around ${index%2==1?'bg-blue-100':''} py-1`}>
-                        <div className="min-w-48 text-center">{user.name + (user.nickname &&` (${user.nickname})`)}</div>
+                    <div key={index} className={`flex-row flex justify-around ${index % 2 == 1 ? 'bg-blue-100' : ''} py-1`}>
+                        <div className="min-w-48 text-center">{user.name + (user.nickname && ` (${user.nickname})`)}</div>
                         <div className="min-w-24 text-center">{user.club}</div>
                         <div className="min-w-96 text-center">{user.email}</div>
                         <div className="min-w-32 text-center">{user.role}</div>
@@ -79,6 +78,27 @@ export default function ManageUserPage() {
                     : <LoadingDots />}
             </>
         );
+    }
+
+    const userDeleteHandler = () => {
+        const deleteFetch = async (user:User) => {
+            try {
+                const response = await deleteUser(user.memberId)
+
+                if(!response) throw Error('Failed to Delete User')
+                    
+                alert(`${user.name}님을 회원에서 삭제했습니다.`)
+                setPage(0)
+            }
+            catch (e) {
+                alert('회원 삭제에 실패했습니다.')
+            }
+
+        }
+
+        if (modifiedUser)
+            if (confirm(`${modifiedUser.name}님을 회원에서 삭제하시겠습니까?`))
+                deleteFetch(modifiedUser);
     }
 
     const modifedRoleHandler = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -157,7 +177,7 @@ export default function ManageUserPage() {
                 <button type="submit" className="h-8 w-12 bg-blue-100 rounded-md">적용</button>
             </form>
 
-            <div className="flex flex-col mx-2 mt-4 border rounded-md flex-grow border-blue-100 mb-2">
+            <div className="flex flex-col mx-2 mt-4 border rounded-md flex-grow border-blue-100 mb-2 overflow-y-auto">
                 <div id="rows" className="flex-row flex justify-around bg-blue-300 py-1">
 
                     <div className="min-w-48 text-center">이름 (패명)</div>
@@ -167,17 +187,6 @@ export default function ManageUserPage() {
                     <div className="text-center min-w-32">확인</div>
                 </div>
                 {renderSignUp()}
-            </div>
-            <div className="flex flex-row items-center justify-center gap-2">
-                <div className="cursor-pointer">{'<<'}</div>
-                <div className="cursor-pointer">{'<'}</div>
-                <div className="cursor-pointer" onClick={e => setPage(Number(e.currentTarget.innerText) - 1)}>1</div>
-                <div className="cursor-pointer">2</div>
-                <div className="cursor-pointer">3</div>
-                <div className="cursor-pointer">4</div>
-                <div className="cursor-pointer">5</div>
-                <div className="cursor-pointer">{'>'}</div>
-                <div className="cursor-pointer">{'>>'}</div>
             </div>
 
             <div className={`${modifiedUser ? 'fixed' : 'hidden'} flex left-0 w-full h-full top-0 items-center justify-center bg-black bg-opacity-35`}>
@@ -204,7 +213,8 @@ export default function ManageUserPage() {
                                 )}
                             </div>
                         </div>
-                        <div className="flex flex-row justify-end items-center h-fit">
+                        <div className="flex flex-row justify-end items-center h-fit gap-2">
+                            <div className="px-2 p-1 bg-red-500 text-white cursor-pointer rounded-md font-semibold" onClick={userDeleteHandler}>회원 삭제</div>
                             <button type="submit" className="px-2 p-1 bg-blue-500 text-white cursor-pointer rounded-md font-semibold">변경</button>
                         </div>
                     </form>

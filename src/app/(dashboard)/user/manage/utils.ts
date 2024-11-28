@@ -25,7 +25,7 @@ export async function fetchUserData(page: number) {
 
 export async function updateUserRole(userData: { memberId: number, role: string }) {
 
-    const user = { memberId:userData.memberId, role:getEnglishRole(userData.role) }
+    const user = { memberId: userData.memberId, role: getEnglishRole(userData.role) }
 
     try {
         const response = await fetch("/user/manage/api", {
@@ -39,6 +39,27 @@ export async function updateUserRole(userData: { memberId: number, role: string 
 
         if (!response.ok) throw Error('서버 status:' + response.statusText);
         return true
+
+    } catch (error) {
+        console.error('오류 발생:', error);
+    }
+
+    return false;
+}
+
+export async function deleteUser(memberId: number) {
+    try {
+        const response = await fetch("/user/manage/api", {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({memberId})
+        });
+
+        if (!response.ok) throw Error('서버 status:' + response.statusText);
+        return true;
 
     } catch (error) {
         console.error('오류 발생:', error);

@@ -1,6 +1,8 @@
+'use server'
 import { GET as loadInfos } from './load/route'
 import NoticeClientComponent from './noticeClient';
 import { Info } from './types';
+import "@admin/app/globals.css";
 
 export default async function bannerManagePage() {
     const loadedInfos = await loadInfos();
@@ -10,8 +12,7 @@ export default async function bannerManagePage() {
         <div className="px-4 w-full h-full py-2">
             <NoticeClientComponent
                 initInfos={initData}
-            >
-            </NoticeClientComponent>
+            />
         </div>
     )
 }

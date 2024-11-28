@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 async function tryLogin(email: string, password: string) {
+
     try {
         const response = await fetch("/login/api", {
             method: 'POST',
@@ -13,6 +14,9 @@ async function tryLogin(email: string, password: string) {
 
 
         if (!response.ok) {
+            console.log(response.status)
+            if (response.status == 403)
+                throw new Error('Is not admin')
             throw new Error('Network response was not ok' + response.statusText);
         }
 
@@ -30,6 +34,7 @@ export function LoginForm() {
     const router = useRouter();
     const [isValid, setValid] = useState(true);
 
+    const [invalidText, setInvalideText] = useState('')
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
@@ -43,8 +48,23 @@ export function LoginForm() {
             router.replace('/home')
         }
         catch (e) {
-            console.error(e)
             setValid(false)
+
+            if (e instanceof Error) {
+                if (e.message == 'Is not admin')
+                    setInvalideText('관리자로 등록되지 않은 계정입니다.')
+                else {
+                
+                    setInvalideText('아이디 비밀번호 및 서버 상태를 확인해주세요.')
+                }
+            }
+            else {
+                
+                setInvalideText('아이디 비밀번호 및 서버 상태를 확인해주세요.')
+            }
+            
+
+            console.error(e)
         }
     };
 
@@ -63,7 +83,7 @@ export function LoginForm() {
                     />
                 </div>
                 <div className="h-6 my-2 w-60 justify-center">
-                    {!isValid && <div className="text-red-500">관리자로 등록되지 않은 계정입니다</div>}
+                    {!isValid && <div className="text-red-500">{invalidText}</div>}
                 </div>
                 <button
                     type="submit"

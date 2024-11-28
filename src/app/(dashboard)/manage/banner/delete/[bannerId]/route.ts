@@ -1,11 +1,9 @@
 import { cookies } from "next/headers";
-import firestore from '@Firebase/firestore';
-import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ bannerId: string }> }) {
     try {
         const cookieStore = cookies();
-        const token = cookieStore.get('token')?.value;
+        const token = cookieStore.get('utilToken')?.value;
 
         if (!token) {
             // 쿠키가 존재하지 않으면 만료되었거나 삭제된 것으로 간주
@@ -19,11 +17,12 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ banne
             return new Response('BannerId does not exist', { status: 400 });
         }
 
-        await deleteDoc(doc(firestore, "banners", bannerId));
-        
-        await updateDoc(doc(firestore, "banners", 'VERSION_KEY'), {
-            version: new Date()
-         });
+        const response = await fetch(`${process.env.SUB_API}/banners/${bannerId}`, {
+            method: 'DELETE'
+        });
+
+        if(!response.ok) throw Error('Server Error')
+
         return Response.json({ message: 'Banner delete successful' });
 
     } catch (e) {

@@ -1,9 +1,12 @@
 'use client'
+
+import "@admin/app/globals.css";
+
 import React, { useCallback, useEffect, useState } from "react"
 import Modal from "../../modal"
 import { BannerCreateDTO as BannerCreateDTO, BannerDTO as BannerDTO, BannerUpdateDTO } from "./types";
 import RBButton from "../../RBbutton";
-import { createBanner, deleteBanner, loadActiveBanners, loadOldBanners, loadPlannedBanners, updateBanner, uploadImage } from "./utils";
+import { createBanner, deleteBanner, loadBanners, updateBanner, uploadImage } from "./utils";
 import { throttle } from "lodash";
 import LoadingDots from "@admin/app/components/loadingindicator";
 
@@ -43,14 +46,15 @@ export default function BannerManageClientPage({ initActiveBanners, initOldBanne
 
         try {
             const imageFormData = new FormData();
-            imageFormData.append('banner-image', bannerImg, `${owner}-${(new Date).toISOString()}`);
+            imageFormData.append('image', bannerImg, `${owner}-${(new Date).toISOString()}`);
+            imageFormData.append('path', 'banners');
 
             const imageURL = await uploadImage(imageFormData);
 
             const bannerData: BannerCreateDTO = {
                 owner,
-                startDate,
-                endDate,
+                startDate: startDate.toISOString(),
+                endDate: endDate.toISOString(),
                 bannerImgUrl: imageURL
             }
 
@@ -76,7 +80,7 @@ export default function BannerManageClientPage({ initActiveBanners, initOldBanne
         setLoading(true);
         const formData = new FormData(event.currentTarget);
         const bannerUpdateData: BannerUpdateDTO = {
-            id: originBanner.id
+            bannerId: originBanner.bannerId
         }
 
         const owner = formData.get('owner') as string;
@@ -122,7 +126,8 @@ export default function BannerManageClientPage({ initActiveBanners, initOldBanne
         try {
             if (updatedPart["banner-image"]) {
                 const imageFormData = new FormData();
-                imageFormData.append('banner-image', bannerImg, `${owner}-${(new Date).toISOString()}`);
+                imageFormData.append('image', bannerImg, `${bannerImg.name}-${(new Date).toISOString()}`);
+                imageFormData.append('path', 'banners');
 
                 const imageURL = await uploadImage(imageFormData);
 
@@ -134,6 +139,7 @@ export default function BannerManageClientPage({ initActiveBanners, initOldBanne
             if (!updateBannerData) throw Error('it\' null!');
 
             await refreshBanners();
+
             setModalState(null);
 
         } catch (e) {
@@ -151,17 +157,17 @@ export default function BannerManageClientPage({ initActiveBanners, initOldBanne
 
                 switch (bannerStatus) {
                     case "OLD": {
-                        const changedBanners = oldBanners.filter(ban => ban.id != bannerId)
+                        const changedBanners = oldBanners.filter(ban => ban.bannerId != bannerId)
                         setOldBanners(changedBanners)
                         break;
                     }
                     case "PLANNED": {
-                        const changedBanners = plannedBanners.filter(ban => ban.id != bannerId)
+                        const changedBanners = plannedBanners.filter(ban => ban.bannerId != bannerId)
                         setPlannedBanners(changedBanners)
                         break;
                     }
                     case "ACTIVE": {
-                        const changedBanners = activeBanners.filter(ban => ban.id != bannerId)
+                        const changedBanners = activeBanners.filter(ban => ban.bannerId != bannerId)
                         setActiveBanners(changedBanners)
                         break;
                     }
@@ -178,9 +184,7 @@ export default function BannerManageClientPage({ initActiveBanners, initOldBanne
 
     const refreshBanners = async () => {
         try {
-            const loadedPlannedBanners = await loadPlannedBanners();
-            const loadedOldBanners = await loadOldBanners();
-            const loadedActiveBanners = await loadActiveBanners();
+            const { AfterPost: loadedOldBanners, OnPost: loadedActiveBanners, BeforePost: loadedPlannedBanners } = await loadBanners();
 
             if (!loadedActiveBanners || !loadedOldBanners || !loadedPlannedBanners) throw Error()
 
@@ -214,7 +218,7 @@ export default function BannerManageClientPage({ initActiveBanners, initOldBanne
                             :
                             <div className="w-full felx flex-col gap-4">
                                 {activeBanners.map(banner => (
-                                    <div key={banner.id} className="flex flex-row gap-8 px-12 py-2 justify-center">
+                                    <div key={banner.bannerId} className="flex flex-row gap-8 px-12 py-2 justify-center">
                                         <div className="relative rounded-md overflow-hidden" style={{ height: 120, width: 360 }} >
                                             <img src={banner.bannerImgUrl} style={{ height: 120, width: '100%', objectFit: 'cover', objectPosition: 'center', }} />
                                         </div>
@@ -228,7 +232,7 @@ export default function BannerManageClientPage({ initActiveBanners, initOldBanne
                                                 >변경</div>
                                                 <div className="flex items-center justify-center px-2 py-0.5 cursor-pointer rounded-md text-sm bg-red-200"
                                                     onClick={(e) => {
-                                                        if (confirm('배너를 삭제하시겠습니까?')) bannerDeleteHadler(banner.id, 'ACTIVE');
+                                                        if (confirm('배너를 삭제하시겠습니까?')) bannerDeleteHadler(banner.bannerId, 'ACTIVE');
                                                     }}>삭제</div>
                                             </div>
                                         </div>
@@ -242,7 +246,7 @@ export default function BannerManageClientPage({ initActiveBanners, initOldBanne
                             :
                             <div className="w-full felx flex-col gap-4">
                                 {plannedBanners.map(banner => (
-                                    <div key={banner.id} className="flex flex-row gap-8 px-12 py-2 justify-center">
+                                    <div key={banner.bannerId} className="flex flex-row gap-8 px-12 py-2 justify-center">
                                         <div className="relative rounded-md overflow-hidden" style={{ height: 120, width: 360 }} >
                                             <img src={banner.bannerImgUrl} style={{ height: 120, width: '100%', objectFit: 'cover', objectPosition: 'center', }} />
                                         </div>
@@ -256,7 +260,7 @@ export default function BannerManageClientPage({ initActiveBanners, initOldBanne
                                                 >변경</div>
                                                 <div className="flex items-center justify-center px-2 py-0.5 cursor-pointer rounded-md text-sm bg-red-200"
                                                     onClick={() => {
-                                                        if (confirm('배너를 삭제하시겠습니까?')) bannerDeleteHadler(banner.id, 'PLANNED');
+                                                        if (confirm('배너를 삭제하시겠습니까?')) bannerDeleteHadler(banner.bannerId, 'PLANNED');
                                                     }}>삭제</div>
                                             </div>
                                         </div>
@@ -271,7 +275,7 @@ export default function BannerManageClientPage({ initActiveBanners, initOldBanne
                             :
                             <div className="w-full felx flex-col gap-4">
                                 {oldBanners.map(banner => (
-                                    <div key={banner.id} className="flex flex-row gap-8 px-12 justify-center">
+                                    <div key={banner.bannerId} className="flex flex-row gap-8 px-12 justify-center">
                                         <div className="relative rounded-md overflow-hidden" style={{ height: 120, width: 360 }} >
                                             <img src={banner.bannerImgUrl} style={{ height: 120, width: '100%', objectFit: 'cover', objectPosition: 'center', }} />
                                         </div>
@@ -287,7 +291,7 @@ export default function BannerManageClientPage({ initActiveBanners, initOldBanne
                                                 </div>
                                                 <div className="flex items-center justify-center px-2 py-0.5 cursor-pointer rounded-md text-sm bg-red-200"
                                                     onClick={() => {
-                                                        if (confirm('배너를 삭제하시겠습니까?')) bannerDeleteHadler(banner.id, 'OLD');
+                                                        if (confirm('배너를 삭제하시겠습니까?')) bannerDeleteHadler(banner.bannerId, 'OLD');
                                                     }}>삭제</div>
                                             </div>
                                         </div>
@@ -476,7 +480,7 @@ const UpdateBannerModal
                                 <input
                                     name='startDate'
                                     type="date"
-                                    defaultValue={banner.startDate.toISOString().split('T')[0] || ''}
+                                    defaultValue={banner.startDate.split('T')[0] || ''}
                                     onChange={
                                         throttle((e) => {
                                             if (banner.startDate != e.currentTarget.value)
@@ -492,7 +496,7 @@ const UpdateBannerModal
                                 <input
                                     name='endDate'
                                     type="date"
-                                    defaultValue={banner.endDate.toISOString().split('T')[0] || ''}
+                                    defaultValue={banner.endDate.split('T')[0] || ''}
                                     onChange={
                                         throttle((e) => {
                                             if (banner.endDate != e.currentTarget.value)

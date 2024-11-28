@@ -1,18 +1,18 @@
 
 export interface BannerCreateDTO {
     owner: string
-    startDate: Date
-    endDate: Date
+    startDate: string
+    endDate: string
     bannerImgUrl: string
     href?: string
 }
 
 export interface BannerDTO extends BannerCreateDTO {
-    id: string
+    bannerId: string
 }
 
 export interface BannerUpdateDTO {
-    id: string
+    bannerId: string
     owner?: string
     startDate?: Date
     endDate?: Date

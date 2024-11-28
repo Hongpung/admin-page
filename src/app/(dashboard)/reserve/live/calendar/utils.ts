@@ -10,30 +10,30 @@ interface Reservation {
     lastmodified: string; // 날짜와 시간 형식은 ISO 8601 형식
 }
 
-export default async function loadMonthlyReserves(calendar:{year:number,month:number}){
-    try{
-        const response = await fetch(`/reserve/live/calendar?year=${calendar.year}&month=${calendar.month}`,{
+export default async function loadMonthlyReserves(calendar: { year: number, month: number }) {
+    try {
+        const response = await fetch(`/reserve/live/calendar?year=${calendar.year}&month=${calendar.month}`, {
             headers: {
                 'Content-Type': 'application/json'
             },
             credentials: 'include'
         })
-        
-        if(!response.ok){
+
+        if (!response.ok) {
             console.error("데이터 정보 로딩 실패")
             throw new Error('서버 status:' + response.statusText);
         }
 
         const data = await response.json();
         const filteredData: { [key: number]: any[] } = [];
-            data.map((reserve:Reservation) => {
-                const reserveDate = new Date(reserve.date).getDate();
-                if (!filteredData[reserveDate]) filteredData[reserveDate] = [{ id:reserve.reservationId, type: reserve.type, participationAvailable: reserve.participationAvailable }];
-                else filteredData[reserveDate] = [...filteredData[reserveDate], { id:reserve.reservationId, type: reserve.type, participationAvailable: reserve.participationAvailable }];
-            })
-        return filteredData as any[];
-        
-    }catch(e){
-        console.error(e+"데이터 정보 로딩 실패")
+        data.map((reserve: Reservation) => {
+            const reserveDate = new Date(reserve.date).getDate();
+            if (!filteredData[reserveDate]) filteredData[reserveDate] = [{ id: reserve.reservationId, type: reserve.type, participationAvailable: reserve.participationAvailable, title: reserve.message, creator: reserve.creatorName, startTime: reserve.startTime.slice(0, -3), endTime: reserve.endTime.slice(0, -3) }];
+            else filteredData[reserveDate] = [...filteredData[reserveDate], { id: reserve.reservationId, type: reserve.type, participationAvailable: reserve.participationAvailable, title: reserve.message, creator: reserve.creatorName, startTime: reserve.startTime.slice(0, -3), endTime: reserve.endTime.slice(0, -3) }];
+        })
+        return filteredData;
+
+    } catch (e) {
+        console.error(e + "데이터 정보 로딩 실패")
     }
 }

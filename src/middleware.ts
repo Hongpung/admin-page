@@ -6,8 +6,8 @@ export function middleware(req: NextRequest) {
   const token = req.cookies.get('token')?.value; // 쿠키에서 토큰을 가져옴
   const url = req.nextUrl.pathname;
 
-
-  if (url.startsWith('/verificationCode') || url.startsWith('/banners'))
+  console.log(url)
+  if (url.startsWith('/verificationCode') || url.startsWith('/banners') || url.startsWith('/upload-image') || url.startsWith('/user-info'))
     return NextResponse.next();
 
   if ((token === 'invalid' || !(token)) && !url.startsWith('/login')) {

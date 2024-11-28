@@ -1,9 +1,14 @@
 'use client'
-import React, { useCallback, useEffect, useState } from 'react'
+
+import "@admin/app/globals.css";
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Info, infoDetail } from './types';
 import { deleteNotice, loadNotices, loadSpecificNotice, registerNotice, updateNotice } from './utils';
 import Modal from '../../modal';
 import RBButton from '../../RBbutton';
+import Image from "next/image";
+import RefreshIcon from "@public/Refresh.svg"
+import { debounce } from 'lodash';
 
 export default function NoticeClientComponent({ initInfos }: { initInfos: Info[] }) {
 
@@ -13,6 +18,8 @@ export default function NoticeClientComponent({ initInfos }: { initInfos: Info[]
     const [infoManageState, setInfoManageState] = useState<"idle" | "create" | "modify">('idle')
 
     const [specificInfo, setSpecificInfo] = useState<infoDetail | null>(null)
+
+    const iconRef = useRef<HTMLImageElement>(null)
 
     const refreshInfos = async () => {
         try {
@@ -70,8 +77,17 @@ export default function NoticeClientComponent({ initInfos }: { initInfos: Info[]
             <div className="min-w-96 max-h-full h-96 flex flex-col border rounded-md py-3 overflow-hidden">
                 <div className="font-semibold px-4 ">공지사항 관리</div>
 
-                <div className='flex flex-row justify-end w-full px-4 ' onClick={refreshInfos}>
-                    <div className='w-4 h-4 rounded-full border cursor-pointer border-gray-700'></div>
+                <div className='flex flex-row justify-end w-full px-4 cursor-pointer'
+                    onClick={
+                        debounce(() => {
+                            refreshInfos();
+                            iconRef.current?.classList.add('spin-animation');
+                            setTimeout(() => {
+                                iconRef.current?.classList.remove('spin-animation');
+                            }, 500)
+                        }, 2000, {leading:true, trailing:false})
+                    }>
+                    <Image ref={iconRef} src={RefreshIcon} width={16} alt="refresh" className='transition-transform duration-1000' />
                 </div>
                 {infos.length == 0 ?
                     <div>공지사항이 없습니다.</div>

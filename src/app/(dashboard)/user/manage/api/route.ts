@@ -58,3 +58,29 @@ export async function PATCH(req: Request) {
         return new Response('Error: ' + e, { status: 400 })
     }
 }
+
+export async function DELETE(req: Request) {
+    try {
+        const cookieStore = cookies();
+        const token = cookieStore.get('token')?.value;
+
+        const { memberId }  = await req.json();
+
+        const response = await fetch(`${process.env.BASE_URL}/member/manage/${memberId}`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        )
+
+        if (!response.ok) throw Error('Response Error' + ` (${response.status}) :` + response.statusText)
+
+        return new Response('Success to Patch Role', { status: 200 });
+
+    } catch (e) {
+        console.error(e)
+        return new Response('Error: ' + e, { status: 400 })
+    }
+}

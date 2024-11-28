@@ -1,12 +1,10 @@
 import { cookies } from "next/headers";
-import firestore from '@Firebase/firestore';
-import { addDoc, collection, doc, Timestamp, updateDoc } from "firebase/firestore";
 import { BannerCreateDTO } from "../types";
 
 export async function POST(req: Request) {
     try {
         const cookieStore = cookies();
-        const token = cookieStore.get('token')?.value;
+        const token = cookieStore.get('utilToken')?.value;
 
         if (!token) {
             // 쿠키가 존재하지 않으면 만료되었거나 삭제된 것으로 간주
@@ -14,6 +12,7 @@ export async function POST(req: Request) {
         }
 
         const data = await req.json() as BannerCreateDTO;
+
         const startDate = new Date(data.startDate)
         startDate.setHours(0);
         startDate.setMinutes(0);
@@ -22,16 +21,26 @@ export async function POST(req: Request) {
         endDate.setHours(0);
         endDate.setMinutes(0);
 
-        const docRef = await addDoc(collection(firestore, "banners"), {
+        const sendFormat = {
             ...data,
-            startDate: Timestamp.fromDate(new Date(startDate)),
-            endDate: Timestamp.fromDate(new Date(endDate))
+            startDate: startDate.toISOString(),
+            endDate: endDate.toISOString()
+        };
+
+        const createResponse = await fetch(`${process.env.SUB_API}/banners`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(sendFormat)
         });
-        
-        await updateDoc(doc(firestore, "banners", 'VERSION_KEY'), {
-            version: new Date()
-         });
-        return Response.json({ message: 'Banner apply successful', bannerId: docRef.id }, { status: 201 });
+
+
+        if(!createResponse.ok) throw Error('Server Error');
+
+        const {bannerId} = await createResponse.json();
+
+        return Response.json({ message: 'Banner apply successful', bannerId }, { status: 201 });
 
     } catch (e) {
         console.error(e)

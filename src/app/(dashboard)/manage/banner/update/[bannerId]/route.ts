@@ -1,12 +1,10 @@
 
 import { cookies } from "next/headers";
-import firestore from '@Firebase/firestore';
-import { doc, getDoc, updateDoc } from "firebase/firestore";
 
-export async function PUT(req: Request, { params }: { params: Promise<{ bannerId: string }> }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ bannerId: string }> }) {
     try {
         const cookieStore = cookies();
-        const token = cookieStore.get('token')?.value;
+        const token = cookieStore.get('utilToken')?.value;
 
         if (!token) {
             // 쿠키가 존재하지 않으면 만료되었거나 삭제된 것으로 간주
@@ -22,29 +20,31 @@ export async function PUT(req: Request, { params }: { params: Promise<{ bannerId
 
         const data = await req.json() // BannerUpdateDTO
 
-        if (data.startDate) {
+        if (!!data.startDate) {
             const newStartDate = new Date(data.startDate)
             newStartDate.setHours(0);
             newStartDate.setMinutes(0);
             data.startDate = newStartDate
         }
 
-        if (data.endDate) {
+        if (!!data.endDate) {
             const newEndDate = new Date(data.endDate)
             newEndDate.setHours(0);
             newEndDate.setMinutes(0);
             data.endDate = newEndDate
         }
 
-        await updateDoc(doc(firestore, "banners", bannerId), {
-            ...data
+        const response = await fetch(`${process.env.SUB_API}/banners/${bannerId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
         });
 
-        await updateDoc(doc(firestore, "banners", 'VERSION_KEY'), {
-            version: new Date()
-        });
-
-        const updatedData = await getDoc(doc(firestore, "banners", bannerId));
+        if(!response.ok) throw Error('ServerError')
+            
+        const updatedData = await response.json() ;
 
         return Response.json({ message: 'Banner delete successful', bannerData: updatedData });
 
