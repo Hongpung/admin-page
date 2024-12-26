@@ -38,6 +38,7 @@ export const Calendar: React.FC = () => {
         try {
             const response = await loadMonthlyReserves({ year: calendarYear, month: calendarMonth + 1 }) as { [key: number]: any[] }
 
+            console.log(response)
             setReservedDates(response);
         } catch (e) {
             console.error(e);

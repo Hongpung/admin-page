@@ -14,7 +14,7 @@ interface briefReservation {
     type: string;                       // 예약 유형
     startTime: string;                  // 시작 시간 (HH:MM:SS 형식)
     endTime: string;                    // 종료 시간 (HH:MM:SS 형식)
-    message: string;                    // 예약 메시지
+    title: string;                    // 예약 메시지
     participationAvailable: boolean;    // 참여 가능 여부
     lastmodified: string;               // 마지막 수정 시간 (ISO 8601 형식)
 }
@@ -36,15 +36,9 @@ export default function DateReservesPage() {
     const [defaultDate, setDefaultDate] = useState<Date | null>(null);
     const [reserves, loadReserves] = useState<briefReservation[]>([])
 
-    const [reservedDates, setReservedDates] = useState<{ [key: number]: { title: string, startTime: string, endTime: string, id: number }[] }>([]);
-
-
     const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
     const renderColor = ['bg-slate-200', 'bg-blue-200', 'bg-red-200', 'bg-green-200', 'bg-yellow-200', 'bg-lime-200']
 
-    useEffect(() => {
-        loading()
-    }, [])
 
     useEffect(() => {
         const fetchDailyReserve = async () => {
@@ -55,15 +49,6 @@ export default function DateReservesPage() {
         fetchDailyReserve();
     }, [editModalVisible])
 
-    const loading = useCallback(async () => {
-        try {
-            const response = await loadMonthlyReserves({ year: selectedDate.getFullYear(), month: selectedDate.getMonth() + 1 }) as { [key: number]: any[] }
-
-            setReservedDates(response);
-        } catch (e) {
-            console.error(e);
-        }
-    }, [selectedDate])
 
     const loadDetails = (reservationId: number) => {
         const fetchReserveDetails = async () => {
@@ -148,7 +133,7 @@ export default function DateReservesPage() {
                                 height: `${9 * (endHour - startHour) + 4.5 * ((endMinnute - startMinnute) % 60) / 30}rem`
                             }}
                             onClick={() => loadDetails(reserve.reservationId)}>
-                            <div>{reserve.message}</div>
+                            <div>{reserve.title}</div>
                             <div className='text-sm'>{`${reserve.startTime.slice(0, 5)}~${reserve.endTime.slice(0, 5)}`}</div>
                         </div>)
                 })}
@@ -170,7 +155,7 @@ export default function DateReservesPage() {
                         </div>
                         <div className='flex-row flex justify-between'>
                             연습 내용
-                            <input required name='practice-name' onChange={(e) => setEditReservation({ ...editedReservation, message: e.currentTarget.value })} type="text" value={editedReservation?.message} className='w-64 text-lg text-right px-2 outline-none border-b border-gray-700' />
+                            <input required name='practice-name' onChange={(e) => setEditReservation({ ...editedReservation, title: e.currentTarget.value })} type="text" value={editedReservation?.title} className='w-64 text-lg text-right px-2 outline-none border-b border-gray-700' />
                         </div>
                         <div className='flex-row flex justify-between'>
                             정규 연습

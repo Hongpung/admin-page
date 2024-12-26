@@ -8,8 +8,8 @@ export async function GET(req: Request) {
         const url = new URL(req.url);
         const date = url.searchParams.get('date'); 
 
-        console.log(`${process.env.BASE_URL}/reservation/day?date=${date}`)
-        const response = await fetch(`${process.env.BASE_URL}/reservation/day?date=${date}`,
+        console.log(`${process.env.SUB_API}/reservation/daily?date=${date}`)
+        const response = await fetch(`${process.env.SUB_API}/reservation/daily?date=${date}`,
             {
                 headers: {
                     'Authorization': `Bearer ${token}`

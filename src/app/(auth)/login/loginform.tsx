@@ -23,7 +23,7 @@ async function tryLogin(email: string, password: string) {
         const data = await response.json();
         console.log('Login successful:', data);
 
-        return data;
+        return {data};
     } catch (error) {
         console.error('There was a problem with the Login request:', error);
         throw error;

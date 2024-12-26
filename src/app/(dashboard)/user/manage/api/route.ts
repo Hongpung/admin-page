@@ -6,21 +6,17 @@ export async function GET(req: Request) {
         const cookieStore = cookies();
         const token = cookieStore.get('token')?.value;
 
-        const response = await fetch(`${process.env.BASE_URL}/member`,
+        const response = await fetch(`${process.env.SUB_API}/auth/admin/auth-list`,
             {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             }
         )
-
         if (!response.ok) throw Error('Response Error' + ` (${response.status}) :` + response.statusText)
-        const signUpData = await response.json();
+        const authData = await response.json();
 
-
-        const returnData =  signUpData.filter((user: User) => user.role != '홍풍의장') as User[];
-
-        return Response.json(returnData);
+        return Response.json(authData);
     } catch (e) {
         console.error(e)
         return new Response('Error: ' + e, { status: 400 })

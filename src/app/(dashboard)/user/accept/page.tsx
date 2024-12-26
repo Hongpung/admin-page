@@ -48,10 +48,10 @@ export default function AcceptUserPage() {
 
                                     if (!acceptResult) throw Error('회원가입 수락 실패')
 
-                                    const newList = signUpData;
+                                    const newList = [...signUpData];
 
                                     newList.splice(index, 1)
-
+                                    
                                     setSignUpData(newList);
                                 }
                                 catch (e) {

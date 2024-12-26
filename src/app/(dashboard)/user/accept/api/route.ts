@@ -4,8 +4,8 @@ export async function GET(req: Request) {
     try {
         const cookieStore = cookies();
         const token = cookieStore.get('token')?.value;
-        
-        const response = await fetch(`${process.env.BASE_URL}/auth/signup`,
+
+        const response = await fetch(`${process.env.SUB_API}/auth/admin/signup`,
             {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -14,8 +14,9 @@ export async function GET(req: Request) {
         )
 
         if (!response.ok) throw Error('Response Error' + ` (${response.status}) :` + response.statusText)
-        const signUpData = await response.json();
 
+        const signUpData = await response.json();
+        console.log(signUpData)
         return Response.json(signUpData);
     } catch (e) {
         console.error(e)
@@ -29,10 +30,11 @@ export async function POST(req: Request) {
         const token = cookieStore.get('token')?.value;
 
         const body = await req.json();
-        const { acceptedSignUpIds } = body;
+        const { acceptedSignUpIds } = await body;
 
+        console.log(acceptedSignUpIds)
 
-        const response = await fetch(`${process.env.BASE_URL}/auth/signup/accept`,
+        const response = await fetch(`${process.env.SUB_API}/auth/admin/signup/accept`,
             {
                 method: 'POST',
                 headers: {
@@ -45,8 +47,8 @@ export async function POST(req: Request) {
 
         if (!response.ok) throw Error('Response Error' + ` (${response.status}) :` + response.statusText)
 
-        return new Response('Accept Success', { status: 200 });
-        
+        return Response.json({ message: 'Accept Success' }, { status: 200 });
+
     } catch (e) {
         console.error(e)
         return new Response('Error: ' + e, { status: 400 })

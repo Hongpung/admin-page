@@ -8,8 +8,8 @@ export async function GET(req: Request) {
         const url = new URL(req.url);
         const reservationId = url.searchParams.get('reservationId'); 
 
-        console.log(`${process.env.BASE_URL}/reservation/${reservationId}`)
-        const response = await fetch(`${process.env.BASE_URL}/reservation/${reservationId}`,
+        console.log(`${process.env.SUB_API}/reservation/${reservationId}`)
+        const response = await fetch(`${process.env.SUB_API}/reservation/${reservationId}`,
             {
                 headers: {
                     'Authorization': `Bearer ${token}`

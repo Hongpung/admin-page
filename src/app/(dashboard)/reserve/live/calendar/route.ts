@@ -9,8 +9,8 @@ export async function GET(req: Request) {
         const year = url.searchParams.get('year'); 
         const month = url.searchParams.get('month'); 
 
-        console.log(`${process.env.BASE_URL}/reservation/year-month?year=${year}&month=${month}`)
-        const response = await fetch(`${process.env.BASE_URL}/reservation/year-month?year=${year}&month=${month}`,
+        console.log(`${process.env.SUB_API}/reservation/month-calendar?year=${year}&month=${month}`)
+        const response = await fetch(`${process.env.SUB_API}/reservation/month-calendar?year=${year}&month=${month}`,
             {
                 headers: {
                     'Authorization': `Bearer ${token}`

@@ -28,8 +28,8 @@ export default async function loadMonthlyReserves(calendar: { year: number, mont
         const filteredData: { [key: number]: any[] } = [];
         data.map((reserve: Reservation) => {
             const reserveDate = new Date(reserve.date).getDate();
-            if (!filteredData[reserveDate]) filteredData[reserveDate] = [{ id: reserve.reservationId, type: reserve.type, participationAvailable: reserve.participationAvailable, title: reserve.message, creator: reserve.creatorName, startTime: reserve.startTime.slice(0, -3), endTime: reserve.endTime.slice(0, -3) }];
-            else filteredData[reserveDate] = [...filteredData[reserveDate], { id: reserve.reservationId, type: reserve.type, participationAvailable: reserve.participationAvailable, title: reserve.message, creator: reserve.creatorName, startTime: reserve.startTime.slice(0, -3), endTime: reserve.endTime.slice(0, -3) }];
+            if (!filteredData[reserveDate]) filteredData[reserveDate] = [{  type: reserve.type, participationAvailable: reserve.participationAvailable, }];
+            else filteredData[reserveDate] = [...filteredData[reserveDate], { type: reserve.type, participationAvailable: reserve.participationAvailable,  }];
         })
         return filteredData;
 

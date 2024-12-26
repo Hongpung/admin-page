@@ -57,7 +57,7 @@ export default function ManageUserPage() {
                         <div className="min-w-48 text-center">{user.name + (user.nickname && ` (${user.nickname})`)}</div>
                         <div className="min-w-24 text-center">{user.club}</div>
                         <div className="min-w-96 text-center">{user.email}</div>
-                        <div className="min-w-32 text-center">{user.role}</div>
+                        <div className="min-w-32 text-center">{user.role.length == 0 ? '없음' : user.role.map(role => role).join(', ')}</div>
                         <div className="flex flex-col items-center cursor-pointer text-center min-w-32" onClick={() => { setUser(user) }}>
                             <div className="px-2 py-0.5 rounded-md text-sm bg-green-200 ">권한 변경</div>
                         </div>
@@ -81,12 +81,12 @@ export default function ManageUserPage() {
     }
 
     const userDeleteHandler = () => {
-        const deleteFetch = async (user:User) => {
+        const deleteFetch = async (user: User) => {
             try {
                 const response = await deleteUser(user.memberId)
 
-                if(!response) throw Error('Failed to Delete User')
-                    
+                if (!response) throw Error('Failed to Delete User')
+
                 alert(`${user.name}님을 회원에서 삭제했습니다.`)
                 setPage(0)
             }
@@ -199,16 +199,25 @@ export default function ManageUserPage() {
                     </div>
                     <div className="flex flex-row justify-between items-center mx-4">
                         <div className=" text-gray-400">기존 권한</div>
-                        <div className="w-20 text-right ">{modifiedUser?.role}</div>
+                        <div className=" text-right ">{modifiedUser?.role.length==0?'동아리원':modifiedUser?.role.join(', ')}</div>
                     </div>
                     <form onSubmit={modifedRoleHandler} className="flex flex-col gap-6">
                         <div className="flex flex-row justify-between items-start mx-4">
                             <div className="font-semibold">변경할 권한</div>
                             <div className="flex flex-col gap-2">
-                                {roles.map(role => role.ko).filter(role => role != modifiedUser?.role).map(role =>
-                                (<label key={role}>
-                                    <input type="radio" name="changed-role" id={"changed-role-" + role} defaultChecked value={role} className="mr-1" />
-                                    {role}
+                                {roles.filter(role => role.ko != '패원').map(role =>
+                                (<label key={role.ko}>
+                                    <input type="checkbox" name="changed-role" id={"changed-role-" + role} defaultChecked={modifiedUser?.role.some(userRole => userRole == role.ko)} className="mr-1"
+                                        onChange={(e) => {
+                                            if (!!modifiedUser) {
+                                                if (e.currentTarget.checked)
+                                                    setUser({ ...modifiedUser, role: [...modifiedUser.role, role.ko] })
+                                                else
+                                                    setUser({ ...modifiedUser, role: modifiedUser.role.filter(userRole => userRole != role.ko) })
+                                                console.log(e.currentTarget.checked, role.ko)
+                                            }
+                                        }} />
+                                    {role.ko}
                                 </label>)
                                 )}
                             </div>
