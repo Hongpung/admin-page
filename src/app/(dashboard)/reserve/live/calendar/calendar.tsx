@@ -6,9 +6,7 @@ import loadMonthlyReserves from "./utils";
 
 export const Calendar: React.FC = () => {
     const { year_month, date } = useParams()
-
     const selectedDate = new Date(year_month + '-' + date)
-
     const router = useRouter();
 
     const [calendarYear, setYear] = useState(selectedDate ? selectedDate.getFullYear() : new Date().getFullYear())
@@ -43,10 +41,10 @@ export const Calendar: React.FC = () => {
         } catch (e) {
             console.error(e);
         }
-    }, [])
+    }, [year_month])
 
     const incrementMonth = useCallback((calendarYear: number, calendarMonth: number) => {
-        const newDate = new Date(calendarYear, calendarMonth + 1);
+        const newDate = new Date(calendarYear, calendarMonth);
         newDate.setMonth(calendarMonth + 1);
         if (newDate.getFullYear() != calendarYear)
             setYear(newDate.getFullYear())

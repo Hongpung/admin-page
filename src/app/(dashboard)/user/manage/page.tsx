@@ -54,12 +54,12 @@ export default function ManageUserPage() {
             if (user) {
                 const userRow = (
                     <div key={index} className={`flex-row flex justify-around ${index % 2 == 1 ? 'bg-blue-100' : ''} py-1`}>
-                        <div className="min-w-48 text-center">{user.name + (user.nickname && ` (${user.nickname})`)}</div>
+                        <div className="min-w-48 text-center">{user.name + (user.nickname ? ` (${user.nickname})` : '')}</div>
                         <div className="min-w-24 text-center">{user.club}</div>
                         <div className="min-w-96 text-center">{user.email}</div>
                         <div className="min-w-32 text-center">{user.role.length == 0 ? '없음' : user.role.map(role => role).join(', ')}</div>
                         <div className="flex flex-col items-center cursor-pointer text-center min-w-32" onClick={() => { setUser(user) }}>
-                            <div className="px-2 py-0.5 rounded-md text-sm bg-green-200 ">권한 변경</div>
+                            <div className="px-2 py-0.5 rounded-md text-sm bg-green-200 ">역할 변경</div>
                         </div>
                     </div>
                 );
@@ -105,7 +105,7 @@ export default function ManageUserPage() {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
 
-        const changedRole = formData.get('changed-role') as string;
+        const changedRole = modifiedUser?.role || []
         console.log(changedRole)
 
         try {
@@ -115,7 +115,7 @@ export default function ManageUserPage() {
 
             setUserData(userData.map(user => {
                 if (user.memberId == modifiedUser!.memberId)
-                    return { ...user, role: changedRole };
+                    return { ...user, role: [] };
                 return user;
             }))
             setUser(null);
@@ -183,8 +183,8 @@ export default function ManageUserPage() {
                     <div className="min-w-48 text-center">이름 (패명)</div>
                     <div className="min-w-24 text-center">동아리</div>
                     <div className="min-w-96 text-center">이메일</div>
-                    <div className="min-w-32 text-center">권한</div>
-                    <div className="text-center min-w-32">확인</div>
+                    <div className="min-w-32 text-center">역할</div>
+                    <div className="text-center min-w-32"></div>
                 </div>
                 {renderSignUp()}
             </div>
@@ -199,7 +199,7 @@ export default function ManageUserPage() {
                     </div>
                     <div className="flex flex-row justify-between items-center mx-4">
                         <div className=" text-gray-400">기존 권한</div>
-                        <div className=" text-right ">{modifiedUser?.role.length==0?'동아리원':modifiedUser?.role.join(', ')}</div>
+                        <div className=" text-right ">{modifiedUser?.role.length == 0 ? '동아리원' : modifiedUser?.role.join(', ')}</div>
                     </div>
                     <form onSubmit={modifedRoleHandler} className="flex flex-col gap-6">
                         <div className="flex flex-row justify-between items-start mx-4">
@@ -207,7 +207,7 @@ export default function ManageUserPage() {
                             <div className="flex flex-col gap-2">
                                 {roles.filter(role => role.ko != '패원').map(role =>
                                 (<label key={role.ko}>
-                                    <input type="checkbox" name="changed-role" id={"changed-role-" + role} defaultChecked={modifiedUser?.role.some(userRole => userRole == role.ko)} className="mr-1"
+                                    <input type="checkbox" name={"changed-role-" + role} id={"changed-role-" + role} defaultChecked={modifiedUser?.role.some(userRole => userRole == role.ko)} className="mr-1"
                                         onChange={(e) => {
                                             if (!!modifiedUser) {
                                                 if (e.currentTarget.checked)

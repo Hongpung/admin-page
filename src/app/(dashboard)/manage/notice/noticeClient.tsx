@@ -2,7 +2,7 @@
 
 import "@admin/app/globals.css";
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Info, infoDetail } from './types';
+import { Info } from './types';
 import { deleteNotice, loadNotices, loadSpecificNotice, registerNotice, updateNotice } from './utils';
 import Modal from '../../modal';
 import RBButton from '../../RBbutton';
@@ -13,11 +13,10 @@ import { debounce } from 'lodash';
 export default function NoticeClientComponent({ initInfos }: { initInfos: Info[] }) {
 
     const [infos, setInfos] = useState<Info[]>(initInfos);
-    const [infoId, setInfoId] = useState<number | null>(null)
 
     const [infoManageState, setInfoManageState] = useState<"idle" | "create" | "modify">('idle')
 
-    const [specificInfo, setSpecificInfo] = useState<infoDetail | null>(null)
+    const [specificInfo, setSpecificInfo] = useState<Info | null>(null)
 
     const iconRef = useRef<HTMLImageElement>(null)
 
@@ -32,22 +31,6 @@ export default function NoticeClientComponent({ initInfos }: { initInfos: Info[]
             console.error(e)
         }
     }
-
-    useEffect(() => {
-        if (!!specificInfo) {
-            loadDetail(specificInfo.infoId!);
-        }
-    }, [infos])
-
-
-    const loadDetail = useCallback(async (infoId: number) => {
-        try {
-            const infoData = await loadSpecificNotice(infoId);
-            setSpecificInfo(infoData)
-        } catch (e) {
-            console.error(e)
-        }
-    }, [infos])
 
     const deleteInfo = useCallback(async (infoId: number) => {
         try {
@@ -96,17 +79,14 @@ export default function NoticeClientComponent({ initInfos }: { initInfos: Info[]
                         {infos.map(info => (
                             <div key={info.infoId} className='px-4 py-2 border rounded-md flex flex-row items-center cursor-pointer'
                                 onClick={() => {
-                                    if (info.infoId) {
-                                        setInfoId(info.infoId!);
-                                        loadDetail(info.infoId);
-                                    }
+                                    setSpecificInfo(info);
                                 }}>
                                 <div className='flex-grow text-lg font-semibold'>
                                     {info.title}
                                 </div>
                                 <div className='flex flex-col justify-end items-end h-12'>
-                                    <span className='text-sm text-gray-400'>{info.date.split('T')[0]}</span>
-                                    <span className='text-xs text-gray-400'>{info.date.split('T')[1].split('.')[0]}</span>
+                                    <span className='text-sm text-gray-400'>{info.updatedAt.split('T')[0]}</span>
+                                    <span className='text-xs text-gray-400'>{info.updatedAt.split('T')[1].split('.')[0]}</span>
                                 </div>
                             </div>
                         ))}
@@ -123,8 +103,8 @@ export default function NoticeClientComponent({ initInfos }: { initInfos: Info[]
                                 {specificInfo.title}
                             </div>
                             <div className='flex flex-col justify-end items-end h-12'>
-                                <span className='text-sm text-gray-400'>{specificInfo.date.split('T')[0]}</span>
-                                <span className='text-xs text-gray-400'>{specificInfo.date.split('T')[1].split('.')[0]}</span>
+                                <span className='text-sm text-gray-400'>{specificInfo.updatedAt.split('T')[0]}</span>
+                                <span className='text-xs text-gray-400'>{specificInfo.updatedAt.split('T')[1].split('.')[0]}</span>
                             </div>
 
                         </div>
@@ -137,7 +117,7 @@ export default function NoticeClientComponent({ initInfos }: { initInfos: Info[]
                                 수정
                             </div>
                             <div className='cursor-pointer px-2 py-0.5 flex items-center rounded text-white bg-red-300 font-semibold justify-center'
-                                onClick={() => deleteInfo(specificInfo.infoId)}>
+                                onClick={() => {if(confirm(`${specificInfo.title}을 삭제하시겠습니까?`))(deleteInfo(specificInfo.infoId))}}>
                                 삭제
                             </div>
                         </div>
@@ -157,7 +137,7 @@ export default function NoticeClientComponent({ initInfos }: { initInfos: Info[]
 }
 
 
-const ModifyModal = ({ isOpen, Info, close }: { isOpen: boolean, Info: infoDetail, close: (boolean: boolean) => void }) => {
+const ModifyModal = ({ isOpen, Info, close }: { isOpen: boolean, Info: Info, close: (boolean: boolean) => void }) => {
 
     const modifyNotice = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -165,6 +145,8 @@ const ModifyModal = ({ isOpen, Info, close }: { isOpen: boolean, Info: infoDetai
         const title = formData.get('title') as string;
         const content = formData.get('content') as string;
         const infoId = Info.infoId;
+
+        console.log(infoId)
 
         try {
             if (!infoId) {

@@ -10,7 +10,7 @@ export async function POST(req: Request) {
         const body = await req.json();
         console.log(body)
 
-        const response = await fetch(`${process.env.BASE_URL}/info`,
+        const response = await fetch(`${process.env.SUB_API}/info`,
             {
                 method: 'POST',
                 headers: {

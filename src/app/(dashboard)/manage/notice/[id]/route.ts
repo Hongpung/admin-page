@@ -1,38 +1,5 @@
 import { cookies } from "next/headers";
 
-export async function GET(
-    req: Request,
-    { params }: { params: Promise<{ id: number }> }
-) {
-    try {
-        const cookieStore = cookies();
-        const token = cookieStore.get('token')?.value;
-
-        if (!token) return new Response('Error: Invalid Token', { status: 401 })
-
-        const { id } = await params;
-        console.log(params)
-
-        const response = await fetch(`${process.env.BASE_URL}/info/${id}`,
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            }
-        )
-
-        if (!response.ok) throw Error('Response Error' + ` (${response.status}) :` + response.statusText)
-
-        const infos = await response.json();
-
-        return Response.json(infos);
-    } catch (e) {
-        console.error(e)
-        return new Response('Error: ' + e, { status: 400 })
-    }
-}
-
-
 export async function PATCH(
     req: Request,
     { params }: { params: Promise<{ id: number }> }
@@ -49,7 +16,7 @@ export async function PATCH(
         const { id } = await params;
         console.log(params)
 
-        const response = await fetch(`${process.env.BASE_URL}/info/manage/${id}`,
+        const response = await fetch(`${process.env.SUB_API}/info/${id}`,
             {
                 method: 'PATCH',
                 headers: {
@@ -84,7 +51,7 @@ export async function DELETE(
         const { id } = await params;
         console.log(params)
 
-        const response = await fetch(`${process.env.BASE_URL}/info/manage/${id}`,
+        const response = await fetch(`${process.env.SUB_API}/info/${id}`,
             {
                 method: 'DELETE',
                 headers: {

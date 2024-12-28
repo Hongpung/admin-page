@@ -19,9 +19,11 @@ export async function GET(req: Request) {
         )
 
         if (!response.ok) throw Error('Response Error' + ` (${response.status}) :` + response.statusText)
-
+        
+            
         const reserveData = await response.json();
-
+        console.log(reserveData)
+        
         return Response.json(reserveData);
     } catch (e) {
         console.error(e)

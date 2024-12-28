@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 interface Reservation {
     club: '들녘' | '산틀' | '신명화랑' | '악반' | '기타';
-    weekday: 'm' | 't' | 'w' | 'th' | 'f' | 's' | 'su';
+    weekday: '월' | '화' | '수' | '목' | '금' | '토' | '일';
     startTime: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21;
     endTime: 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22;
 }
@@ -13,75 +13,71 @@ export default function RegularReservePage() {
     const [reservations, setReservations] = useState<Reservation[]>([]);
 
     const fetchReservations = async () => {
-
         const response = await fetch('/api/reservations');
         const data = await response.json();
         setReservations(data);
     };
-
-    // 서버에 구현 안돼있으니까 따로 API만드는 것도 나쁘지 않은듯?
-    // 해당 정보는 내 firebase에 넣어두고 적용하면 강제로 우다다다다 지우고 적용되고 알림 가게끔
 
     useEffect(() => {
         setReservations(
             [
                 {
                     club: '들녘',
-                    weekday: 'm',
+                    weekday: '월',
                     startTime: 10,
                     endTime: 12,
                 },
                 {
                     club: '산틀',
-                    weekday: 't',
+                    weekday: '화',
                     startTime: 14,
                     endTime: 16,
                 },
                 {
                     club: '신명화랑',
-                    weekday: 'w',
+                    weekday: '수',
                     startTime: 11,
                     endTime: 13,
                 },
                 {
                     club: '악반',
-                    weekday: 'th',
+                    weekday: '목',
                     startTime: 15,
                     endTime: 17,
                 },
                 {
                     club: '들녘',
-                    weekday: 'f',
+                    weekday: '금',
                     startTime: 16,
                     endTime: 18,
                 },
                 {
                     club: '산틀',
-                    weekday: 's',
+                    weekday: '토',
                     startTime: 10,
                     endTime: 12,
                 },
                 {
                     club: '신명화랑',
-                    weekday: 'su',
+                    weekday: '일',
                     startTime: 13,
                     endTime: 15,
                 },
                 {
                     club: '악반',
-                    weekday: 'm',
+                    weekday: '월',
                     startTime: 17,
                     endTime: 19,
                 },
                 {
                     club: '들녘',
-                    weekday: 't',
+                    weekday: '화',
                     startTime: 18,
                     endTime: 20,
                 },
                 {
                     club: '신명화랑',
-                    weekday: 'w',
+                    weekday: '수',
                     startTime: 13,
                     endTime: 14,
                 }

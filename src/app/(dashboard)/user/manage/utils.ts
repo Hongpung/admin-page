@@ -23,9 +23,9 @@ export async function fetchUserData(page: number) {
     return [];
 }
 
-export async function updateUserRole(userData: { memberId: number, role: string }) {
+export async function updateUserRole(userData: { memberId: number, role: string[] }) {
 
-    const user = { memberId: userData.memberId, role: getEnglishRole(userData.role) }
+    const user = { memberId: userData.memberId, role: userData.role }
 
     try {
         const response = await fetch("/user/manage/api", {

@@ -1,11 +1,9 @@
 'use client'
-import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import {  useEffect, useMemo, useState } from 'react';
 import Modal from '@admin/app/(dashboard)/modal';
 import { deleteReservation, loadDailyReserves, loadReservationDetail } from './utils';
 import { useParams } from 'next/navigation';
-import RBButton from '@admin/app/(dashboard)/RBbutton';
-import { includes } from 'lodash';
-import loadMonthlyReserves from '../../calendar/utils';
 
 interface briefReservation {
     reservationId: number;              // 예약 ID
@@ -19,8 +17,21 @@ interface briefReservation {
     lastmodified: string;               // 마지막 수정 시간 (ISO 8601 형식)
 }
 
-interface ReservationDetail extends briefReservation {
-    participators: any[]
+interface briefUser {
+    userId: number;
+    name: string;
+    nickname: string;
+}
+
+interface NewReservation {
+    creator?: briefUser;                // 생성자 이름
+    date?: string;                       // 예약 날짜 (YYYY-MM-DD 형식)
+    type?: string;                       // 예약 유형
+    startTime?: string;                  // 시작 시간 (HH:MM:SS 형식)
+    endTime?: string;                    // 종료 시간 (HH:MM:SS 형식)
+    title?: string;                    // 예약 메시지
+    participationAvailable?: boolean;    // 참여 가능 여부
+    participators: briefUser[]
 }
 
 export default function DateReservesPage() {
@@ -29,6 +40,8 @@ export default function DateReservesPage() {
 
     const [editedReservation, setEditReservation] = useState<any | null>(null)
     const [editModalVisible, setEditModalVisible] = useState(false);
+
+    const [newReservation, setNewReservation] = useState<NewReservation>({ participators: [] });
 
 
     const [participants, setParticipants] = useState<any[]>([]);
@@ -93,7 +106,7 @@ export default function DateReservesPage() {
     return (
         <>
 
-<div className="text-gray-400 font-medium mx-2">
+            <div className="text-gray-400 font-medium mx-2">
                 {selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월 {selectedDate.getDate()}일 {daysOfWeek[selectedDate.getDay()]}요일
             </div>
 
@@ -139,6 +152,51 @@ export default function DateReservesPage() {
                 })}
             </div>
 
+            <Modal isOpen={true}>
+                <div className='font-bold text-lg'>예약 수정</div>
+                <form className='flex flex-col'
+                    onSubmit={editReservation}>
+                    <div className='flex flex-col gap-6 mx-4 mt-6 mb-12'>
+                        <div className='flex-row flex justify-between'>
+                            예약자
+                            <div className='px-2 py-1 rounded-md bg-[#dddddd] cursor-pointer'>
+                                멤버 선택
+                            </div>
+                        </div>
+                        <div className='flex-row flex justify-between'>
+                            날짜
+                            <input name='reserveDate' type="date" onChange={(e) => (setEditReservation({ ...editedReservation, date: e.currentTarget.value.toString().split('T')[0] }))} value={editedReservation ? new Date(editedReservation?.date).getFullYear() + '-' + (new Date(editedReservation?.date).getMonth() + 1).toString().padStart(2, '0') + '-' + new Date(editedReservation?.date).getDate().toString().padStart(2, '0') : ''} required />
+                        </div>
+                        <div className='flex-row flex justify-between'>
+                            연습 내용
+                            <input required name='practice-name' onChange={(e) => setEditReservation({ ...editedReservation, title: e.currentTarget.value })} type="text" value={editedReservation?.title} className='w-64 text-lg text-right px-2 outline-none border-b border-gray-700' />
+                        </div>
+                        <div className='flex-row flex justify-between items-center'>
+                            정규 연습
+                            <input type="checkbox" id="switch" name="switch" className="hidden peer" />
+                            <label htmlFor="switch" className="w-16 h-9 border-2 border-[#242020] rounded-full bg-white peer-checked:bg-black block relative cursor-pointer transition-colors duration-200">
+                                <div className="z-10 top-0.5 left-0.5 w-6 h-6 bg-black rounded-full transition-transform duration-200 peer-checked:translate-x-7 peer-checked:bg-white"></div>
+                            </label>
+                        </div>
+                        <div className='flex-row flex justify-between'>
+                            열린 연습
+                            <div>{editedReservation?.participationAvailable ? '예' : '아니오'}</div>
+                        </div>
+                    </div>
+                    <div className='flex-row flex justify-between'>
+                        <div
+                            onClick={() => { setEditModalVisible(false); setEditReservation(null); setInstruments([]); setParticipants([]); setDefaultDate(null) }}
+                            className='border border-gray-200 px-4 py-2 rounded-md text-gray-500 cursor-pointer'>닫기</div>
+                        <div className='flex flex-row gap-4'>
+                            <div
+                                onClick={() => { deleteReservation(editedReservation?.reservationId); setEditModalVisible(false); setEditReservation(null); setInstruments([]); setParticipants([]); setDefaultDate(null) }}
+                                className='bg-red-400 px-4 py-2 rounded-md text-white cursor-pointer'>삭제</div>
+                            <button type='submit' className='bg-blue-400 px-4 py-2 rounded-md text-white cursor-pointer'>수정</button>
+                        </div>
+
+                    </div>
+                </form>
+            </Modal>
 
             <Modal isOpen={editModalVisible}>
                 <div className='font-bold text-lg'>예약 수정</div>
