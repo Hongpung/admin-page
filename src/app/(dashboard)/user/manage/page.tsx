@@ -10,7 +10,7 @@ export default function ManageUserPage() {
     const [userData, setUserData] = useState<User[]>([]);
     const [selectedOption, setSelectedOption] = useState("all");
     const [filter, setFilter] = useState<string | null>(null);
-    const [modifiedUser, setUser] = useState<User | null>(null)
+    const [modifiedUser, setModifiedUser] = useState<User | null>(null)
 
 
 
@@ -26,7 +26,7 @@ export default function ManageUserPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const signUpDataResponse = await fetchUserData(page);
+                const signUpDataResponse = await fetchUserData(0);
                 setUserData(signUpDataResponse); // 데이터 저장
             } catch (error) {
                 console.error('Error fetching sign up data:', error);
@@ -34,7 +34,7 @@ export default function ManageUserPage() {
         };
 
         fetchData();
-    }, [page]);
+    }, []);
 
     useEffect(() => {
         setFilter(null)
@@ -58,7 +58,7 @@ export default function ManageUserPage() {
                         <div className="min-w-24 text-center">{user.club}</div>
                         <div className="min-w-96 text-center">{user.email}</div>
                         <div className="min-w-32 text-center">{user.role.length == 0 ? '없음' : user.role.map(role => role).join(', ')}</div>
-                        <div className="flex flex-col items-center cursor-pointer text-center min-w-32" onClick={() => { setUser(user) }}>
+                        <div className="flex flex-col items-center cursor-pointer text-center min-w-32" onClick={() => { setModifiedUser(user) }}>
                             <div className="px-2 py-0.5 rounded-md text-sm bg-green-200 ">역할 변경</div>
                         </div>
                     </div>
@@ -88,7 +88,7 @@ export default function ManageUserPage() {
                 if (!response) throw Error('Failed to Delete User')
 
                 alert(`${user.name}님을 회원에서 삭제했습니다.`)
-                setPage(0)
+                // setPage(0)
             }
             catch (e) {
                 alert('회원 삭제에 실패했습니다.')
@@ -101,10 +101,7 @@ export default function ManageUserPage() {
                 deleteFetch(modifiedUser);
     }
 
-    const modifedRoleHandler = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-
+    const modifedRoleHandler = async () => {
         const changedRole = modifiedUser?.role || []
         console.log(changedRole)
 
@@ -115,10 +112,10 @@ export default function ManageUserPage() {
 
             setUserData(userData.map(user => {
                 if (user.memberId == modifiedUser!.memberId)
-                    return { ...user, role: [] };
+                    return { ...user, role: [...changedRole] };
                 return user;
             }))
-            setUser(null);
+            setModifiedUser(null);
         } catch (e) {
             window.alert('업데이트 실패')
         }
@@ -191,7 +188,7 @@ export default function ManageUserPage() {
 
             <div className={`${modifiedUser ? 'fixed' : 'hidden'} flex left-0 w-full h-full top-0 items-center justify-center bg-black bg-opacity-35`}>
                 <div className="relative w-96 bg-white rounded-lg z-10 py-4 px-4 gap-6 flex flex-col">
-                    <div className="absolute top-3 cursor-pointer text-lg right-4 font-bold text-gray-400" onClick={() => setUser(null)}>x</div>
+                    <div className="absolute top-3 cursor-pointer text-lg right-4 font-bold text-gray-400" onClick={() => setModifiedUser(null)}>x</div>
                     <div className="text-lg font-semibold">권한 변경</div>
                     <div className="flex flex-row justify-between items-center mx-4">
                         <div className="text-gray-400">선택된 유저</div>
@@ -201,32 +198,39 @@ export default function ManageUserPage() {
                         <div className=" text-gray-400">기존 권한</div>
                         <div className=" text-right ">{modifiedUser?.role.length == 0 ? '동아리원' : modifiedUser?.role.join(', ')}</div>
                     </div>
-                    <form onSubmit={modifedRoleHandler} className="flex flex-col gap-6">
+                    <div  className="flex flex-col gap-6">
                         <div className="flex flex-row justify-between items-start mx-4">
                             <div className="font-semibold">변경할 권한</div>
                             <div className="flex flex-col gap-2">
-                                {roles.filter(role => role.ko != '패원').map(role =>
-                                (<label key={role.ko}>
-                                    <input type="checkbox" name={"changed-role-" + role} id={"changed-role-" + role} defaultChecked={modifiedUser?.role.some(userRole => userRole == role.ko)} className="mr-1"
+                                {roles.map(role =>
+                                (<label key={role}>
+                                    <input
+                                        type="checkbox"
+                                        name={"changed-role-" + role}
+                                        id={"changed-role-" + role}
+                                        checked={modifiedUser?.role.some(userRole =>
+                                            userRole == role
+                                        )}
+                                        className="mr-1"
                                         onChange={(e) => {
                                             if (!!modifiedUser) {
                                                 if (e.currentTarget.checked)
-                                                    setUser({ ...modifiedUser, role: [...modifiedUser.role, role.ko] })
+                                                    setModifiedUser({ ...modifiedUser, role: [...modifiedUser.role, role] })
                                                 else
-                                                    setUser({ ...modifiedUser, role: modifiedUser.role.filter(userRole => userRole != role.ko) })
-                                                console.log(e.currentTarget.checked, role.ko)
+                                                    setModifiedUser({ ...modifiedUser, role: modifiedUser.role.filter(userRole => userRole != role) })
+                                                console.log(e.currentTarget.checked, role)
                                             }
                                         }} />
-                                    {role.ko}
+                                    {role}
                                 </label>)
                                 )}
                             </div>
                         </div>
                         <div className="flex flex-row justify-end items-center h-fit gap-2">
                             <div className="px-2 p-1 bg-red-500 text-white cursor-pointer rounded-md font-semibold" onClick={userDeleteHandler}>회원 삭제</div>
-                            <button type="submit" className="px-2 p-1 bg-blue-500 text-white cursor-pointer rounded-md font-semibold">변경</button>
+                            <div className="px-2 p-1 bg-blue-500 text-white cursor-pointer rounded-md font-semibold" onClick={modifedRoleHandler}>변경</div>
                         </div>
-                    </form>
+                    </div>
 
                 </div>
             </div>

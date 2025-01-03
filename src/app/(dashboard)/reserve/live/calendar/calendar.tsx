@@ -43,6 +43,7 @@ export const Calendar: React.FC = () => {
         }
     }, [year_month])
 
+
     const incrementMonth = useCallback((calendarYear: number, calendarMonth: number) => {
         const newDate = new Date(calendarYear, calendarMonth);
         newDate.setMonth(calendarMonth + 1);
@@ -52,6 +53,7 @@ export const Calendar: React.FC = () => {
         setReservedDates([]);
     }, []
     );
+
 
     const decrementMonth = useCallback((calendarYear: number, calendarMonth: number) => {
         const newDate = new Date(calendarYear, calendarMonth);
@@ -97,15 +99,15 @@ export const Calendar: React.FC = () => {
                 days.push(
                     <div key={`date-${day}`}
                         className={`w-8 my-0.5 cursor-pointer ${((day == selectedDate?.getDate()) && (calendarMonth == selectedDate?.getMonth())) ? 'rounded-md bg-blue-100' : ''}`}
-                        onClick={()=>{router.replace(`/reserve/live/${calendarYear}-${calendarMonth + 1}/${day}`)}}
+                        onClick={() => { router.replace(`/reserve/live/${calendarYear}-${calendarMonth + 1}/${day}`) }}
                     >
                         <div className={`w-8 h-5 text-center text-base text-gray-400 ${((day == selectedDate?.getDate()) && (calendarMonth == selectedDate?.getMonth() + 1)) ? 'text-blue-500' : ''}`} >{day}</div>
                         <div className="mx-1 h-4 flex justify-center flex-row items-center gap-0.5">
                             {reservedDates[day] && reservedDates[day].slice(0, 3).map((reserve) => {
-                    
+
                                 const color = reserve.type == '정기연습' ? 'bg-blue-500' : reserve.participationAvailable ? 'bg-green-500' : 'bg-red-500'
                                 return (
-                                    <div key={reserve.id} className={"h-1.5 w-1.5 rounded-full " + color} />
+                                    <div key={'reservationId'+reserve.id} className={"h-1.5 w-1.5 rounded-full " + color} />
                                 )
                             })
                             }
@@ -117,15 +119,15 @@ export const Calendar: React.FC = () => {
 
             if ((index + 1) % 7 === 0) {
                 weeks.push(
-                    <div key={'week-' + day} className="mx-4 justify-between flex flex-row text-center"
+                    <div key={'week' + (weeks.length + 1)} className="mx-4 justify-between flex flex-row text-center"
                         onClick={(e) => {
-                            // e.currentTarget.classList.add('rounded-md', 'bg-blue-100');
-                            
+                            e.currentTarget.classList.add('rounded-md', 'bg-blue-100');
+
                         }}>
                         {days}
                     </div>
                 );
-                weeks.push(<div key={`space-${index}`} className="h-2" />);
+                weeks.push(<div key={`space-${Math.ceil((index + 1) / 7)}`} className="h-2" />);
                 days = [];
             }
         });

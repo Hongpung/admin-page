@@ -33,7 +33,7 @@ export async function PATCH(req: Request) {
         const { role, memberId } = body;
         console.log(JSON.stringify({ role }))
 
-        const response = await fetch(`${process.env.BASE_URL}/member/manage/${memberId}`,
+        const response = await fetch(`${process.env.SUB_API}/member/roleAssignment/${memberId}`,
             {
                 method: 'PATCH',
                 headers: {
