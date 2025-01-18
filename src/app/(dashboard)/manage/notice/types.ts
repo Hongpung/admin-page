@@ -1,5 +1,5 @@
-export interface Info {
-    infoId: number
+export interface Notice {
+    noticeId: number
     title: string
     content: string
     createdAt: string

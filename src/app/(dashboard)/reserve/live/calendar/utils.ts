@@ -2,7 +2,7 @@ interface briefReservation {
     reservationId: number;              // 예약 ID
     creatorName: string;                // 생성자 이름
     date: string;                       // 예약 날짜 (YYYY-MM-DD 형식)
-    type: string;                       // 예약 유형
+    reservationType: 'REGULAR' | 'COMMON' | 'EXTERNAL';                       // 예약 유형
     startTime: string;                  // 시작 시간 (HH:MM:SS 형식)
     endTime: string;                    // 종료 시간 (HH:MM:SS 형식)
     title: string;                    // 예약 메시지
@@ -26,10 +26,10 @@ export default async function loadMonthlyReserves(calendar: { year: number, mont
 
         const data = await response.json();
         const filteredData: { [key: number]: any[] } = [];
-        data.map((reserve: briefReservation) => {
-            const reserveDate = new Date(reserve.date).getDate();
-            if (!filteredData[reserveDate]) filteredData[reserveDate] = [{  type: reserve.type, participationAvailable: reserve.participationAvailable, }];
-            else filteredData[reserveDate] = [...filteredData[reserveDate], { type: reserve.type, participationAvailable: reserve.participationAvailable,  }];
+        data.map((reservation: briefReservation) => {
+            const reserveDate = new Date(reservation.date).getDate();
+            if (!filteredData[reserveDate]) filteredData[reserveDate] = [{ reservationId: reservation.reservationId, type: reservation.reservationType, participationAvailable: reservation.participationAvailable, }];
+            else filteredData[reserveDate] = [...filteredData[reserveDate], { reservationId: reservation.reservationId, type: reservation.reservationType, participationAvailable: reservation.participationAvailable, }];
         })
         return filteredData;
 

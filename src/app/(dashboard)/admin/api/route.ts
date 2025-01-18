@@ -1,13 +1,11 @@
 import { cookies } from "next/headers";
 
-export async function GET() {
+export async function GET(req: Request) {
     try {
         const cookieStore = cookies();
         const token = cookieStore.get('token')?.value;
 
-        if (!token) return new Response('Error: Invalid Token', { status: 401 })
-
-        const response = await fetch(`${process.env.SUB_API}/notice`,
+        const response = await fetch(`${process.env.SUB_API}/admin`,
             {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -16,12 +14,12 @@ export async function GET() {
         )
 
         if (!response.ok) throw Error('Response Error' + ` (${response.status}) :` + response.statusText)
-
-        const infos = await response.json();
-
-        console.log(infos)
-
-        return Response.json(infos);
+        
+            
+        const adminList = await response.json();
+        console.log(adminList)
+        
+        return Response.json(adminList);
     } catch (e) {
         console.error(e)
         return new Response('Error: ' + e, { status: 400 })

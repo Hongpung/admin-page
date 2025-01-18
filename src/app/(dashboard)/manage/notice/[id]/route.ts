@@ -16,7 +16,7 @@ export async function PATCH(
         const { id } = await params;
         console.log(params)
 
-        const response = await fetch(`${process.env.SUB_API}/info/${id}`,
+        const response = await fetch(`${process.env.SUB_API}/notice/${id}`,
             {
                 method: 'PATCH',
                 headers: {
@@ -51,7 +51,7 @@ export async function DELETE(
         const { id } = await params;
         console.log(params)
 
-        const response = await fetch(`${process.env.SUB_API}/info/${id}`,
+        const response = await fetch(`${process.env.SUB_API}/notice/${id}`,
             {
                 method: 'DELETE',
                 headers: {

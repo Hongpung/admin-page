@@ -170,3 +170,65 @@ export async function searchMembers({ username, clubId, role }: { username?: str
         console.error(e + "데이터 정보 로딩 실패")
     }
 }
+
+export async function loadWeeklyReservatiosn(startDate: string, endDate: string) {
+    try {
+
+        console.log(startDate, endDate)
+
+        const response = await fetch(`/reserve/live/reserve/week?start-date=${startDate}&end-date=${endDate}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        })
+
+        if (!response.ok) {
+            console.error("데이터 정보 로딩 실패")
+            throw new Error('서버 status:' + response.statusText);
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (e) {
+        console.error(e + "데이터 정보 로딩 실패")
+    }
+}
+
+export type ReservationType = 'COMMON' | 'EXTERNAL' | 'REGULAR';
+
+export type batchReservationOptions<T extends ReservationType> = {
+    title: string;
+    reservationType: T;
+} & (T extends 'EXTERNAL' ? { creatorName: string, creatorId?: undefined } : { creatorName?: undefined, creatorId: number });
+
+
+interface BatchReservtionDTO<T extends ReservationType> {
+    dayTimes: { day: string; startTime: string; endTime: string }[];
+    duration: { startDate: string; endDate: string };
+    batchReservationOption: batchReservationOptions<T>;
+}
+
+export default async function addBatchReservation<T extends 'COMMON' | 'EXTERNAL' | 'REGULAR'>(batchReservtionDTO: BatchReservtionDTO<T>) {
+    try {
+        const response = await fetch(`/reserve/regular/batch`, {
+            method:'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body:JSON.stringify(batchReservtionDTO)
+        })
+
+        if (!response.ok) {
+            console.error("데이터 정보 로딩 실패")
+            throw new Error('서버 status:' + response.statusText);
+        }
+
+        return true;
+
+    } catch (e) {
+        console.error(e + "데이터 정보 로딩 실패")
+    }
+}

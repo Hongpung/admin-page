@@ -1,7 +1,3 @@
-'use server'
-
-import { headers } from "next/headers";
-
 export async function POST(req: Request) {
     try {
 
@@ -24,7 +20,7 @@ export async function POST(req: Request) {
 
         const { token } = await response.json()
 
-        return Response.json({ message: 'success' }, { headers: { 'Set-Cookie': `token=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=72000` } });
+        return Response.json({ message: 'success' }, { headers: { 'Set-Cookie': `token=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=3600` } });
     } catch (e) {
         console.error(e)
         if (e instanceof Error)

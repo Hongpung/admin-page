@@ -1,24 +1,30 @@
 'use client'
 
-import { useParams, useRouter } from "next/navigation";
-import { useCallback, useLayoutEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import loadMonthlyReserves from "./utils";
+import { useDateStore } from "../zustand/date-store";
 
 export const Calendar: React.FC = () => {
-    const { year_month, date } = useParams()
-    const selectedDate = new Date(year_month + '-' + date)
-    const router = useRouter();
 
+    const { selectedDate, selectDate } = useDateStore();
+
+    const [selectedWeek, setSelectedWeek] = useState<number[]>([])
     const [calendarYear, setYear] = useState(selectedDate ? selectedDate.getFullYear() : new Date().getFullYear())
     const [calendarMonth, setMonth] = useState(selectedDate ? selectedDate.getMonth() : new Date().getMonth())
     const [daysInMonth, setDaysInMonth] = useState<number[]>([]);
-    const [reservedDates, setReservedDates] = useState<{ [key: number]: { participationAvailable: boolean, type: string, id: number }[] }>({});
+    const [reservedDates, setReservedDates] = useState<{ [key: number]: { participationAvailable: boolean, reservationType: string, reservationId: number }[] }>({});
 
     const prevDays = (day: number) => {
         if (day == 0) return 6;
         return day - 1;
     }
 
+    useEffect(() => {
+        const utcTime = new Date();
+        const koreanTime = new Date(utcTime.getTime() + 9 * 60 * 60 * 1000);
+        const koreanDate = new Date(koreanTime.toISOString().split('T')[0] + 'T00:00Z')
+        selectDate(koreanDate)
+    }, [])
     // useEffect(() => {
     //     if (data) {
     //         const reservedDates: { [key: number]: ReserveType[] } = [];
@@ -41,7 +47,7 @@ export const Calendar: React.FC = () => {
         } catch (e) {
             console.error(e);
         }
-    }, [year_month])
+    }, [])
 
 
     const incrementMonth = useCallback((calendarYear: number, calendarMonth: number) => {
@@ -81,56 +87,90 @@ export const Calendar: React.FC = () => {
             daysArray.push(0);
         }
 
+        const startOfWeek = selectedDate.getDate() - (selectedDate.getDate() % 7);
+        const weekDays = daysArray.slice(startOfWeek, startOfWeek + 7).filter(d => d !== 0);
         setDaysInMonth(daysArray);
+        setSelectedWeek(weekDays);
 
         loading(calendarYear, calendarMonth);
 
     }, [calendarYear, calendarMonth]);
 
 
-
     const renderWeeks = () => {
-        const weeks: any[] = [];
-        let days: any[] = [];
+        const weeks: React.ReactNode[] = [];
+        let days: React.ReactNode[] = [];
+        let currentWeek: number[] = [];
 
         daysInMonth.forEach((day, index) => {
-            if (day == 0) days.push(<div className="w-8 h-8" />)
-            else {
+            if (day === 0) {
+                days.push(<div className="w-8 h-8" key={`empty-${index}`} />);
+            } else {
                 days.push(
-                    <div key={`date-${day}`}
-                        className={`w-8 my-0.5 cursor-pointer ${((day == selectedDate?.getDate()) && (calendarMonth == selectedDate?.getMonth())) ? 'rounded-md bg-blue-100' : ''}`}
-                        onClick={() => { router.replace(`/reserve/live/${calendarYear}-${calendarMonth + 1}/${day}`) }}
+                    <div
+                        key={`date-${day}`}
+                        className={`w-8 cursor-pointer ${selectedDate.getDate() == day && selectedDate.getMonth() == calendarMonth && selectedDate.getFullYear() == calendarYear
+                            && 'bg-blue-200 rounded'}`}
+                        onClick={() => {
+                            const d = new Date(calendarYear, calendarMonth, day, 0, 0, 0);
+                            const startOfWeek = index - (index % 7);
+                            const weekDays = daysInMonth.slice(startOfWeek, startOfWeek + 7).filter(d => d !== 0);
+                            setSelectedWeek(weekDays);
+                            selectDate(new Date(d.getTime() + 9 * 60 * 60 * 1000))
+                        }}
                     >
-                        <div className={`w-8 h-5 text-center text-base text-gray-400 ${((day == selectedDate?.getDate()) && (calendarMonth == selectedDate?.getMonth() + 1)) ? 'text-blue-500' : ''}`} >{day}</div>
-                        <div className="mx-1 h-4 flex justify-center flex-row items-center gap-0.5">
-                            {reservedDates[day] && reservedDates[day].slice(0, 3).map((reserve) => {
-
-                                const color = reserve.type == '정기연습' ? 'bg-blue-500' : reserve.participationAvailable ? 'bg-green-500' : 'bg-red-500'
-                                return (
-                                    <div key={'reservationId'+reserve.id} className={"h-1.5 w-1.5 rounded-full " + color} />
-                                )
-                            })
-                            }
+                        <div
+                            className={`w-8 h-5 text-center text-base ${selectedDate.getDate() == day && selectedDate.getMonth() == calendarMonth && selectedDate.getFullYear() == calendarYear
+                                ? 'text-blue-400' : 'text-gray-400'}`}
+                        >
+                            {day}
                         </div>
-                        {reservedDates[day]?.length > 3 && <div className="text-xs text-gray-500" >+{reservedDates[day].length - 3}</div>}
+
+                        <div className="mx-1 h-4 flex justify-center flex-row items-center gap-0.5">
+                            {reservedDates[day] &&
+                                reservedDates[day].slice(0, 3).map((reservation) => {
+                                    const color =
+                                        reservation.reservationType === 'REGULAR'
+                                            ? 'bg-blue-500'
+                                            : reservation.reservationType == 'EXTERNAL' ?
+                                                'bg-gray-500'
+                                                : reservation.participationAvailable
+                                                    ? 'bg-green-500'
+                                                    : 'bg-red-500';
+                                    return (
+                                        <div
+                                            key={`reservationId-${reservation.reservationId}`}
+                                            className={`h-1.5 w-1.5 rounded-full ${color}`}
+                                        />
+                                    );
+                                })}
+                        </div>
+                        {reservedDates[day]?.length > 3 && (
+                            <div className="text-xs text-gray-500">+{reservedDates[day].length - 3}</div>
+                        )}
                     </div>
                 );
+                currentWeek.push(day);
             }
 
             if ((index + 1) % 7 === 0) {
+                const isSelectedWeek = selectedWeek.some((date) => currentWeek.includes(date));
                 weeks.push(
-                    <div key={'week' + (weeks.length + 1)} className="mx-4 justify-between flex flex-row text-center"
-                        onClick={(e) => {
-                            e.currentTarget.classList.add('rounded-md', 'bg-blue-100');
-
-                        }}>
+                    <div
+                        key={`week-${weeks.length + 1}`}
+                        className={`mx-4 my-1 justify-between flex flex-row text-center 
+                            ${isSelectedWeek && selectedDate.getMonth() == calendarMonth && selectedDate.getFullYear() == calendarYear ? 'rounded-md bg-blue-100' : ''
+                            }`}
+                    >
                         {days}
                     </div>
                 );
-                weeks.push(<div key={`space-${Math.ceil((index + 1) / 7)}`} className="h-2" />);
+                weeks.push(<div key={`space-${weeks.length + 1}`} className="h-2" />);
                 days = [];
+                currentWeek = [];
             }
         });
+
         return weeks;
     };
 

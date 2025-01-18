@@ -36,8 +36,8 @@ export async function DELETE(req: Request) {
         const url = new URL(req.url);
         const reservationId = url.searchParams.get('reservationId');
 
-        console.log(`${process.env.SUB_API}/reservation/admin/${reservationId}`)
-        const response = await fetch(`${process.env.SUB_API}/reservation/admin/${reservationId}`,
+        console.log(`${process.env.SUB_API}/admin/reservation/${reservationId}`)
+        const response = await fetch(`${process.env.SUB_API}/admin/reservation/${reservationId}`,
             {
                 method: 'DELETE',
                 headers: {
@@ -65,8 +65,8 @@ export async function POST(req: Request) {
         
         const body = await req.json();
 
-        console.log(`${process.env.SUB_API}/reservation/admin`, JSON.stringify(body))
-        const response = await fetch(`${process.env.SUB_API}/reservation/admin`,
+        console.log(`${process.env.SUB_API}/admin/reservation`, JSON.stringify(body))
+        const response = await fetch(`${process.env.SUB_API}/admin/reservation`,
             {
                 method: 'POST',
                 headers: {
@@ -100,8 +100,8 @@ export async function PATCH(req: Request) {
         const url = new URL(req.url);
         const reservationId = url.searchParams.get('reservationId');
 
-        console.log(`${process.env.SUB_API}/reservation/admin/${reservationId}`, JSON.stringify(body))
-        const response = await fetch(`${process.env.SUB_API}/reservation/admin/${reservationId}`,
+        console.log(`${process.env.SUB_API}/admin/reservation/${reservationId}`, JSON.stringify(body))
+        const response = await fetch(`${process.env.SUB_API}/admin/reservation/${reservationId}`,
             {
                 method: 'PATCH',
                 headers: {

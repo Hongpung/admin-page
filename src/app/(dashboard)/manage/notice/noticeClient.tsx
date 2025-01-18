@@ -2,7 +2,7 @@
 
 import "@admin/app/globals.css";
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Info } from './types';
+import { Notice } from './types';
 import { deleteNotice, loadNotices, loadSpecificNotice, registerNotice, updateNotice } from './utils';
 import Modal from '../../modal';
 import RBButton from '../../RBbutton';
@@ -10,49 +10,49 @@ import Image from "next/image";
 import RefreshIcon from "@public/Refresh.svg"
 import { debounce } from 'lodash';
 
-export default function NoticeClientComponent({ initInfos }: { initInfos: Info[] }) {
+export default function NoticeClientComponent({ initNotices }: { initNotices: Notice[] }) {
 
-    const [infos, setInfos] = useState<Info[]>(initInfos);
+    const [notices, setNotices] = useState<Notice[]>(initNotices);
 
-    const [infoManageState, setInfoManageState] = useState<"idle" | "create" | "modify">('idle')
+    const [noticeManageState, setNoticeManageState] = useState<"idle" | "create" | "modify">('idle')
 
-    const [specificInfo, setSpecificInfo] = useState<Info | null>(null)
+    const [specificNotice, setSpecificNotice] = useState<Notice | null>(null)
 
     const iconRef = useRef<HTMLImageElement>(null)
 
-    const refreshInfos = async () => {
+    const refreshNoticesLogic = async () => {
         try {
             const refreshData = await loadNotices();
 
-            setSpecificInfo(null);
-            setInfos(refreshData)
+            setSpecificNotice(null);
+            setNotices(refreshData)
 
         } catch (e) {
             console.error(e)
         }
     }
 
-    const deleteInfo = useCallback(async (infoId: number) => {
+    const deleteNoticeLogic = useCallback(async (infoId: number) => {
         try {
             const result = await deleteNotice({ infoId })
 
             if (!result) throw Error('Failed Modify')
 
             alert('삭제했습니다.')
-            refreshInfos();
+            refreshNoticesLogic();
 
         } catch (e: unknown) {
             console.error(e);
             if (e instanceof Error)
                 alert('삭제에 실패했습니다. 다시 확인해주세요: ' + e?.message)
         }
-    }, [infos])
+    }, [notices])
 
 
     return (<>
         <RBButton
             color="gray"
-            onClick={() => setInfoManageState('create')}
+            onClick={() => setNoticeManageState('create')}
         >
             +
         </RBButton>
@@ -63,7 +63,7 @@ export default function NoticeClientComponent({ initInfos }: { initInfos: Info[]
                 <div className='flex flex-row justify-end w-full px-4 cursor-pointer'
                     onClick={
                         debounce(() => {
-                            refreshInfos();
+                            refreshNoticesLogic();
                             iconRef.current?.classList.add('spin-animation');
                             setTimeout(() => {
                                 iconRef.current?.classList.remove('spin-animation');
@@ -72,14 +72,14 @@ export default function NoticeClientComponent({ initInfos }: { initInfos: Info[]
                     }>
                     <Image ref={iconRef} src={RefreshIcon} width={16} alt="refresh" className='transition-transform duration-1000' />
                 </div>
-                {infos.length == 0 ?
+                {notices.length == 0 ?
                     <div>공지사항이 없습니다.</div>
                     :
                     <div className='flex flex-col flex-grow overflow-y-auto gap-2 mt-4 px-2'>
-                        {infos.map(info => (
-                            <div key={info.infoId} className='px-4 py-2 border rounded-md flex flex-row items-center cursor-pointer'
+                        {notices.map(info => (
+                            <div key={info.noticeId} className='px-4 py-2 border rounded-md flex flex-row items-center cursor-pointer'
                                 onClick={() => {
-                                    setSpecificInfo(info);
+                                    setSpecificNotice(info);
                                 }}>
                                 <div className='flex-grow text-lg font-semibold'>
                                     {info.title}
@@ -95,29 +95,29 @@ export default function NoticeClientComponent({ initInfos }: { initInfos: Info[]
             </div>
 
             <div className="flex flex-col w-full h-full border rounded-md px-4 py-3">
-                {specificInfo ?
+                {specificNotice ?
                     <>
                         <div className="font-light text-gray-400 text-sm">상세</div>
                         <div className='py-2 h-24 flex flex-row items-center'>
                             <div className='self-start flex-grow text-lg font-semibold'>
-                                {specificInfo.title}
+                                {specificNotice.title}
                             </div>
                             <div className='flex flex-col justify-end items-end h-12'>
-                                <span className='text-sm text-gray-400'>{specificInfo.updatedAt.split('T')[0]}</span>
-                                <span className='text-xs text-gray-400'>{specificInfo.updatedAt.split('T')[1].split('.')[0]}</span>
+                                <span className='text-sm text-gray-400'>{specificNotice.updatedAt.split('T')[0]}</span>
+                                <span className='text-xs text-gray-400'>{specificNotice.updatedAt.split('T')[1].split('.')[0]}</span>
                             </div>
 
                         </div>
                         <div className='flex-grow px-2'>
-                            {specificInfo.content}
+                            {specificNotice.content}
                         </div>
                         <div className='flex flex-row items-center justify-end gap-4'>
                             <div className='cursor-pointer px-2 py-0.5 flex items-center rounded text-white bg-green-300 font-semibold justify-center'
-                                onClick={() => setInfoManageState('modify')}>
+                                onClick={() => setNoticeManageState('modify')}>
                                 수정
                             </div>
                             <div className='cursor-pointer px-2 py-0.5 flex items-center rounded text-white bg-red-300 font-semibold justify-center'
-                                onClick={() => {if(confirm(`${specificInfo.title}을 삭제하시겠습니까?`))(deleteInfo(specificInfo.infoId))}}>
+                                onClick={() => {if(confirm(`${specificNotice.title}을 삭제하시겠습니까?`))(deleteNoticeLogic(specificNotice.noticeId))}}>
                                 삭제
                             </div>
                         </div>
@@ -129,31 +129,31 @@ export default function NoticeClientComponent({ initInfos }: { initInfos: Info[]
 
             </div>
         </div>
-        <ModifyModal isOpen={infoManageState == 'modify'} Info={specificInfo!} close={(boolean) => { setInfoManageState('idle'); if (boolean) refreshInfos(); }} />
-        <CreateModal isOpen={infoManageState == 'create'} close={(boolean) => { setInfoManageState('idle'); if (boolean) refreshInfos(); }} />
+        <ModifyModal isOpen={noticeManageState == 'modify'} notice={specificNotice!} close={(boolean) => { setNoticeManageState('idle'); if (boolean) refreshNoticesLogic(); }} />
+        <CreateModal isOpen={noticeManageState == 'create'} close={(boolean) => { setNoticeManageState('idle'); if (boolean) refreshNoticesLogic(); }} />
     </>
 
     )
 }
 
 
-const ModifyModal = ({ isOpen, Info, close }: { isOpen: boolean, Info: Info, close: (boolean: boolean) => void }) => {
+const ModifyModal = ({ isOpen, notice, close }: { isOpen: boolean, notice: Notice, close: (boolean: boolean) => void }) => {
 
     const modifyNotice = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         const title = formData.get('title') as string;
         const content = formData.get('content') as string;
-        const infoId = Info.infoId;
+        const noticeId = notice.noticeId;
 
-        console.log(infoId)
+        console.log(noticeId)
 
         try {
-            if (!infoId) {
+            if (!noticeId) {
                 console.error('invalid infoId');
                 throw Error('invalid InfoId');
             }
-            const result = await updateNotice({ title, content, infoId })
+            const result = await updateNotice({ title, content, infoId: noticeId })
 
             if (!result) throw Error('Failed Modify')
 
@@ -176,12 +176,12 @@ const ModifyModal = ({ isOpen, Info, close }: { isOpen: boolean, Info: Info, clo
 
                     <div className='flex flex-row justify-between'>
                         <span className='text-gray-400'>제목</span>
-                        <input required placeholder='제목을 입력하세요' type="text" name="title" defaultValue={Info?.title} className='border-b w-96 text-right px-2' />
+                        <input required placeholder='제목을 입력하세요' type="text" name="title" defaultValue={notice?.title} className='border-b w-96 text-right px-2' />
                     </div>
 
                     <div className='flex flex-col gap-2'>
                         <span className='text-gray-400'>내용</span>
-                        <textarea required placeholder='내용을 입력하세요' name="content" className='min-h-96 border rounded-md px-2 py-2' defaultValue={Info?.content} />
+                        <textarea required placeholder='내용을 입력하세요' name="content" className='min-h-96 border rounded-md px-2 py-2' defaultValue={notice?.content} />
                     </div>
 
                     <div className='flex flex-row justify-end mt-4'>
