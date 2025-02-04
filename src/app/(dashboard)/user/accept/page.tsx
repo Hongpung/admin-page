@@ -38,7 +38,7 @@ export default function AcceptUserPage() {
             if (user) {
                 const userRow = (
                     <div key={index} className="flex-row flex justify-around bg-slate-100 py-1">
-                        <div className="min-w-48 text-center">{user.name + (user.nickname &&` (${user.nickname})`)}</div>
+                        <div className="min-w-48 text-center">{user.name + (user.nickname != null && ` (${user.nickname})`)}</div>
                         <div className="min-w-64 text-center">{user.club}</div>
                         <div className="min-w-96 text-center">{user.email}</div>
                         <button className="min-w-48 text-center" onClick={async () => {
@@ -51,7 +51,7 @@ export default function AcceptUserPage() {
                                     const newList = [...signUpData];
 
                                     newList.splice(index, 1)
-                                    
+
                                     setSignUpData(newList);
                                 }
                                 catch (e) {

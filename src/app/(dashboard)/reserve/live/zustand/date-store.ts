@@ -5,7 +5,6 @@ interface DateStroe {
     selectDate: (newDate: Date) => void
 }
 
-
 export const useDateStore = create<DateStroe>()((set) => ({
 
     selectedDate: new Date(),

@@ -127,6 +127,9 @@ export default function WeekReservesPage() {
     const [modalState, setModalState] = useState<'Create' | 'CreateBatch' | 'Edit' | 'None'>('None')
     const [monday, setMonday] = useState<string>(getMonday(selectedDate).toISOString().split('T')[0]);
     const [sunday, setSunday] = useState<string>(getSunday(selectedDate).toISOString().split('T')[0]);
+
+    console.log('this time is' + selectedDate, sunday, monday)
+
     const [weekDates, setWeekDates] = useState<string[]>([])
     const [weeklyReservations, setWeeklyReservations] = useState<{ [day: string]: { [time: string]: { reservation: dateReservation, isStart: boolean, isEnd: boolean, color: ColorFormat } } }>({})
 
@@ -149,7 +152,7 @@ export default function WeekReservesPage() {
      * @returns {Date} - 해당 주의 월요일
      */
     function getMonday(date: Date): Date {
-        const d = new Date(date);
+        const d = new Date(date.getTime() + 9 * 60 * 60 * 1000);
         const day = d.getDay(); // 0 (일요일)부터 6 (토요일)
         const diff = (day === 0 ? -6 : 1 - day); // 월요일로의 차이 계산
         d.setDate(d.getDate() + diff);
@@ -162,7 +165,7 @@ export default function WeekReservesPage() {
      * @returns {Date} - 해당 주의 일요일
      */
     function getSunday(date: Date): Date {
-        const d = new Date(date);
+        const d = new Date(date.getTime() + 9 * 60 * 60 * 1000);
         const day = d.getDay(); // 0 (일요일)부터 6 (토요일)
         const diff = (day === 0 ? 0 : 7 - day)  // 일요일로의 차이 계산
         d.setDate(d.getDate() + diff);
@@ -170,7 +173,7 @@ export default function WeekReservesPage() {
     }
 
     function getWeekDates(date: Date): string[] {
-        const selectedDate = new Date(date);
+        const selectedDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
         const day = selectedDate.getDay(); // 0 (일요일)부터 6 (토요일)
         const diff = (day === 0 ? -6 : 1 - day); // 월요일로의 차이 계산
         selectedDate.setDate(selectedDate.getDate() + diff);
@@ -189,10 +192,10 @@ export default function WeekReservesPage() {
 
     useEffect(() => {
         const fetchDailyReserve = async () => {
-            const parsedDate = new Date(selectedDate.toISOString().split('T')[0] + 'T00:00Z');
             const weeklyReserves: dateReservation[] = await loadWeeklyReservations(monday, sunday)
-            console.log(weeklyReservations, weeklyReserves)
+            console.log(sunday, monday, weeklyReservations, weeklyReserves)
 
+            const parsedDate = new Date(new Date(selectedDate.getTime() + 9 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T00:00Z');
             setWeekDates(getWeekDates(parsedDate))
             const formmatingReservations = formattingReservationsForTable(weeklyReserves);
             setWeeklyReservations(formmatingReservations)
@@ -203,10 +206,8 @@ export default function WeekReservesPage() {
 
     useEffect(() => {
 
-        const parsedDate = new Date(selectedDate.toISOString().split('T')[0] + 'T00:00Z');
-
-        const newMonday = getMonday(parsedDate).toISOString().split('T')[0];
-        const newSunday = getSunday(parsedDate).toISOString().split('T')[0];
+        const newMonday = getMonday(selectedDate).toISOString().split('T')[0];
+        const newSunday = getSunday(selectedDate).toISOString().split('T')[0];
 
         setMonday(newMonday);
         setSunday(newSunday);
