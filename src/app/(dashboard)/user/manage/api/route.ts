@@ -31,9 +31,9 @@ export async function PATCH(req: Request) {
 
         const body = await req.json();
         const { role, memberId } = body;
-        console.log(JSON.stringify({ role }))
+        console.log(JSON.stringify({ role , memberId}))
 
-        const response = await fetch(`${process.env.SUB_API}/member/roleAssignment/${memberId}`,
+        const response = await fetch(`${process.env.BASE_URL}/member/roleAssignment/${memberId}`,
             {
                 method: 'PATCH',
                 headers: {
@@ -45,7 +45,9 @@ export async function PATCH(req: Request) {
             }
         )
 
-        if (!response.ok) throw Error('Response Error' + ` (${response.status}) :` + response.statusText)
+        if (!response.ok) {
+            const {message}= await response.json();
+            throw Error('Response Error' + ` (${response.status}) :` + message)}
 
         return new Response('Success to Patch Role', { status: 200 });
 

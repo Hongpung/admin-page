@@ -288,11 +288,11 @@ export default function WeekReservesPage() {
                                                 {reservationFirst ?
                                                     <div
                                                         key={reservationFirst.reservation.reservationId + firstHalf}
-                                                        className={`h-12 w-full px-3 py-0.5 flex flex-col bg-${reservationFirst.color} cursor-pointer ${reservationFirst.isEnd ? 'border-b' : ''}`}
+                                                        className={`h-12 w-full px-2 py-2 flex flex-col bg-${reservationFirst.color} cursor-pointer ${reservationFirst.isEnd ? 'border-b' : ''}`}
                                                         onClick={() => { setModalState('Edit'); setEditReservationId(reservationFirst.reservation.reservationId) }}
                                                     >
-                                                        {reservationFirst.isStart && <div className='flex flex-col justify-start font-semibold text-lg'>{reservationFirst.reservation.title}</div>}
-                                                        {reservationFirst.isEnd && <div className='flex flex-row h-full items-end justify-between text-sm font-semibold'>
+                                                        {reservationFirst.isStart && <div className='flex flex-col justify-start font-semibold text-xs'>{reservationFirst.reservation.title}</div>}
+                                                        {reservationFirst.isEnd && <div className='flex flex-col h-full items-end justify-end gap-1 text-xs font-semibold'>
                                                             <div>{reservationFirst.reservation.creatorName}</div>
                                                             <div>{reservationFirst.reservation.startTime}~{reservationFirst.reservation.endTime}</div>
                                                         </div>}
@@ -304,13 +304,13 @@ export default function WeekReservesPage() {
                                                 {reservationSecond ?
                                                     <div
                                                         key={reservationSecond.reservation.reservationId + secondHalf}
-                                                        className={`h-12 w-full px-3 py-0.5 flex flex-col  bg-${reservationSecond.color} cursor-pointer  ${reservationSecond.isStart ? 'border-t' : ''}`}
+                                                        className={`h-12 w-full px-2 py-2 flex flex-col  bg-${reservationSecond.color} cursor-pointer  ${reservationSecond.isStart ? 'border-t' : ''}`}
                                                         onClick={() => { setModalState('Edit'); setEditReservationId(reservationSecond.reservation.reservationId) }}
                                                     >
-                                                        {reservationSecond.isStart && <div className='flex flex-col justify-start font-semibold text-lg'>
+                                                        {reservationSecond.isStart && <div className='flex flex-col justify-start font-semibold text-xs'>
                                                             {reservationSecond.reservation.title}
                                                         </div>}
-                                                        {reservationSecond.isEnd && <div className='flex flex-row h-full items-end justify-between  text-sm font-semibold'>
+                                                        {reservationSecond.isEnd && <div className='flex flex-col h-full items-end justify-end gap-1 text-xs font-semibold'>
                                                             <div className=''>{reservationSecond.reservation.creatorName}</div>
                                                             <div className=''>{reservationSecond.reservation.startTime}~{reservationSecond.reservation.endTime}</div>
                                                         </div>}
