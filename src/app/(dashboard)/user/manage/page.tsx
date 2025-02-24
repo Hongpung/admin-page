@@ -57,7 +57,7 @@ export default function ManageUserPage() {
                         <div className="min-w-48 text-center">{user.name + (user.nickname ? ` (${user.nickname})` : '')}</div>
                         <div className="min-w-24 text-center">{user.club}</div>
                         <div className="min-w-96 text-center">{user.email}</div>
-                        <div className="min-w-32 text-center">{user.role.length == 0 ? '없음' : user.role.map(role => role).join(', ')}</div>
+                        <div className={"min-w-32 text-center"+` ${user.role.length == 0 ?'text-gray-300':''}`}>{user.role.length == 0 ? '-' : user.role.map(role => role).join(', ')}</div>
                         <div className="flex flex-col items-center cursor-pointer text-center min-w-32" onClick={() => { setModifiedUser(user) }}>
                             <div className="px-2 py-0.5 rounded-md text-sm bg-green-200 ">역할 변경</div>
                         </div>
