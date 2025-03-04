@@ -1,4 +1,39 @@
 import { cookies } from "next/headers";
+import { Notice } from "../types";
+
+export async function GET(
+    { params }: { params: Promise<{ id: number }> }
+) {
+    try {
+        const cookieStore = cookies();
+        const token = cookieStore.get('token')?.value;
+
+        if (!token) return new Response('Error: Invalid Token', { status: 401 })
+
+
+        const { id } = await params;
+        console.log(params)
+
+        const response = await fetch(`${process.env.SUB_API}/notice/${id}`,
+            {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            }
+        )
+
+        if (!response.ok) throw Error('Response Error' + ` (${response.status}) :` + response.statusText)
+
+        const data = await response.json() as Notice;
+        return new Response('Success', { status: 200 })
+
+    } catch (e) {
+        console.error(e)
+        return new Response('Error: ' + e, { status: 400 })
+    }
+}
+
 
 export async function PATCH(
     req: Request,
