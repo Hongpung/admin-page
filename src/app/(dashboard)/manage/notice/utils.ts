@@ -18,6 +18,7 @@ export async function loadNotices() {
 
 export async function loadSpecificNotice(infoId: number) {
     try {
+        console.log(infoId)
         const response = await fetch(`/manage/notice/${infoId}`, {
             credentials: "include"
         })

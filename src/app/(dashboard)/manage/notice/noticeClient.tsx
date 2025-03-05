@@ -16,6 +16,7 @@ export default function NoticeClientComponent({ initNotices }: { initNotices: No
 
     const [noticeManageState, setNoticeManageState] = useState<"idle" | "create" | "modify">('idle')
 
+    const [specificNoticeId, setSpecificNoticeId] = useState<number | null>(null)
     const [specificNotice, setSpecificNotice] = useState<Notice | null>(null)
 
     const iconRef = useRef<HTMLImageElement>(null)
@@ -24,7 +25,7 @@ export default function NoticeClientComponent({ initNotices }: { initNotices: No
         try {
             const refreshData = await loadNotices();
 
-            setSpecificNotice(null);
+            setSpecificNoticeId(null);
             setNotices(refreshData)
 
         } catch (e) {
@@ -48,6 +49,26 @@ export default function NoticeClientComponent({ initNotices }: { initNotices: No
         }
     }, [notices])
 
+    const loadSpecificNoticeLogic = useCallback(async (infoId: number) => {
+        try {
+            const result: Notice = await loadSpecificNotice(infoId)
+
+            if (!result) throw Error('Failed Modify')
+
+            setSpecificNotice(result)
+
+        } catch (e: unknown) {
+            console.error(e);
+            if (e instanceof Error)
+                alert('불러오기에 실패했습니다. 다시 확인해주세요: ' + e?.message)
+        }
+    }, [])
+
+    useEffect(() => {
+        if (specificNoticeId)
+            loadSpecificNoticeLogic(specificNoticeId)
+
+    }, [specificNoticeId])
 
     return (<>
         <RBButton
@@ -68,7 +89,7 @@ export default function NoticeClientComponent({ initNotices }: { initNotices: No
                             setTimeout(() => {
                                 iconRef.current?.classList.remove('spin-animation');
                             }, 500)
-                        }, 2000, {leading:true, trailing:false})
+                        }, 2000, { leading: true, trailing: false })
                     }>
                     <Image ref={iconRef} src={RefreshIcon} width={16} alt="refresh" className='transition-transform duration-1000' />
                 </div>
@@ -79,7 +100,7 @@ export default function NoticeClientComponent({ initNotices }: { initNotices: No
                         {notices.map(info => (
                             <div key={info.noticeId} className='px-4 py-2 border rounded-md flex flex-row items-center cursor-pointer'
                                 onClick={() => {
-                                    setSpecificNotice(info);
+                                    setSpecificNoticeId(info.noticeId);
                                 }}>
                                 <div className='flex-grow text-lg font-semibold'>
                                     {info.title}
@@ -117,7 +138,7 @@ export default function NoticeClientComponent({ initNotices }: { initNotices: No
                                 수정
                             </div>
                             <div className='cursor-pointer px-2 py-0.5 flex items-center rounded text-white bg-red-300 font-semibold justify-center'
-                                onClick={() => {if(confirm(`${specificNotice.title}을 삭제하시겠습니까?`))(deleteNoticeLogic(specificNotice.noticeId))}}>
+                                onClick={() => { if (confirm(`${specificNotice.title}을 삭제하시겠습니까?`)) (deleteNoticeLogic(specificNotice.noticeId)) }}>
                                 삭제
                             </div>
                         </div>
