@@ -33,14 +33,14 @@ export async function loadSpecificNotice(infoId: number) {
     }
 }
 
-export async function registerNotice({ title, content }: { title: string, content: string }) {
+export async function registerNotice({ title, content, noticeAll }: { title: string, content: string, noticeAll?: boolean }) {
     try {
         const response = await fetch(`/manage/notice/create`, {
             method: 'POST',
             headers: {
                 'Content-type': 'application/json'
             },
-            body: JSON.stringify({ title, content }),
+            body: JSON.stringify({ title, content, noticeAll }),
             credentials: "include"
         })
 
@@ -52,14 +52,14 @@ export async function registerNotice({ title, content }: { title: string, conten
     }
 }
 
-export async function updateNotice({ title, content, infoId }: { title: string, content: string, infoId: number }) {
+export async function updateNotice({ title, content, infoId, noticeAll }: { title: string, content: string, infoId: number , noticeAll?: boolean}) {
     try {
         const response = await fetch(`/manage/notice/${infoId}`, {
             method: 'PATCH',
             headers: {
                 'Content-type': 'application/json'
             },
-            body: JSON.stringify({ title, content }),
+            body: JSON.stringify({ title, content, noticeAll }),
             credentials: "include"
         })
 

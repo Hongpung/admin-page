@@ -94,7 +94,7 @@ export default function NoticeClientComponent({ initNotices }: { initNotices: No
                     <Image ref={iconRef} src={RefreshIcon} width={16} alt="refresh" className='transition-transform duration-1000' />
                 </div>
                 {notices.length == 0 ?
-                    <div>공지사항이 없습니다.</div>
+                    <div className="flex flex-col items-center py-24 text-gray-400">공지사항이 없습니다.</div>
                     :
                     <div className='flex flex-col flex-grow overflow-y-auto gap-2 mt-4 px-2'>
                         {notices.map(info => (
@@ -165,6 +165,7 @@ const ModifyModal = ({ isOpen, notice, close }: { isOpen: boolean, notice: Notic
         const formData = new FormData(e.currentTarget);
         const title = formData.get('title') as string;
         const content = formData.get('content') as string;
+        const noticeAll = formData.get('noticeAll') ? true : false;
         const noticeId = notice.noticeId;
 
         console.log(noticeId)
@@ -174,7 +175,7 @@ const ModifyModal = ({ isOpen, notice, close }: { isOpen: boolean, notice: Notic
                 console.error('invalid infoId');
                 throw Error('invalid InfoId');
             }
-            const result = await updateNotice({ title, content, infoId: noticeId })
+            const result = await updateNotice({ title, content, infoId: noticeId, noticeAll })
 
             if (!result) throw Error('Failed Modify')
 
@@ -205,7 +206,11 @@ const ModifyModal = ({ isOpen, notice, close }: { isOpen: boolean, notice: Notic
                         <textarea required placeholder='내용을 입력하세요' name="content" className='min-h-96 border rounded-md px-2 py-2' defaultValue={notice?.content} />
                     </div>
 
-                    <div className='flex flex-row justify-end mt-4'>
+                    <div className='flex flex-row justify-end mt-4 items-center gap-4'>
+                        <label htmlFor="noticeAll" className="flex flex-row gap-1">
+                            <input type="checkbox" name="noticeAll" id="noticeAll" className="peer " />
+                            <span className="text-gray-400 peer-checked:text-black">전체 알림</span>
+                        </label>
                         <button type='submit' className='flex items-center justify-center px-2 py-0.5 bg-green-400 font-semibold text-white rounded'>변경사항 저장</button>
                     </div>
 
@@ -222,9 +227,10 @@ const CreateModal = ({ isOpen, close }: { isOpen: boolean, close: (boolean: bool
         const formData = new FormData(e.currentTarget);
         const title = formData.get('title') as string;
         const content = formData.get('content') as string;
+        const noticeAll = formData.get('noticeAll') ? true : false;
 
         try {
-            const result = await registerNotice({ title, content })
+            const result = await registerNotice({ title, content, noticeAll })
 
             if (!result) throw Error('Failed Modify')
 
@@ -243,7 +249,7 @@ const CreateModal = ({ isOpen, close }: { isOpen: boolean, close: (boolean: bool
             <Modal isOpen={isOpen}>
                 <div className='absolute top-4 right-4 cursor-pointer w-4 h-4' onClick={() => close(false)}>X</div>
                 <form className='mt-4 flex-col flex gap-2' onSubmit={createNotice}>
-                    <div className='text-lg font-semibold'>수정</div>
+                    <div className='text-lg font-semibold'>게시</div>
                     <div className='flex flex-row justify-between'>
                         <span className='text-gray-400'>제목</span>
                         <input required placeholder='제목을 입력하세요' type="text" name="title" className='border-b text-right px-2 w-96' />
@@ -253,8 +259,12 @@ const CreateModal = ({ isOpen, close }: { isOpen: boolean, close: (boolean: bool
                         <span className='text-gray-400'>내용</span>
                         <textarea required placeholder='내용을 입력하세요' name="content" className='min-h-96 border rounded-md px-2 py-2' />
                     </div>
-                    <div className='flex flex-row justify-end mt-4'>
-                        <button type='submit' className='flex items-center justify-center px-2 py-0.5 bg-blue-400 font-semibold text-white rounded'>게시</button>
+                    <div className='flex flex-row justify-end mt-4 items-center gap-4'>
+                        <label htmlFor="noticeAll" className="flex flex-row gap-1">
+                            <input type="checkbox" name="noticeAll" id="noticeAll" className="peer " />
+                            <span className="text-gray-400 peer-checked:text-black">전체 알림</span>
+                        </label>
+                        <button type='submit' className='flex items-center justify-center px-3 py-1 bg-blue-400 font-semibold text-white rounded'>게시</button>
                     </div>
 
                 </form>

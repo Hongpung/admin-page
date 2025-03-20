@@ -64,7 +64,7 @@ export async function DELETE(req: Request) {
 
         const { memberId }  = await req.json();
 
-        const response = await fetch(`${process.env.BASE_URL}/member/manage/${memberId}`,
+        const response = await fetch(`${process.env.BASE_URL}/auth/admin/${memberId}`,
             {
                 method: 'DELETE',
                 headers: {

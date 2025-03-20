@@ -129,14 +129,21 @@ export const Calendar: React.FC = () => {
                         <div className="mx-1 h-4 flex justify-center flex-row items-center gap-0.5">
                             {reservedDates[day] &&
                                 reservedDates[day].slice(0, 3).map((reservation) => {
+                                    // bg-blue-500 bg-gray-500 bg-green-500 bg-red-500
+
                                     const color =
-                                        reservation.reservationType === 'REGULAR'
-                                            ? 'bg-blue-500'
-                                            : reservation.reservationType == 'EXTERNAL' ?
+                                        reservation.reservationType === 'REGULAR' ?
+                                            'bg-blue-500'
+                                            :
+                                            reservation.reservationType == 'EXTERNAL' ?
                                                 'bg-gray-500'
-                                                : reservation.participationAvailable
-                                                    ? 'bg-green-500'
-                                                    : 'bg-red-500';
+                                                :
+                                                reservation.participationAvailable ?
+                                                    'bg-green-500'
+                                                    :
+                                                    'bg-red-500';
+
+                                    console.log(day,color)
                                     return (
                                         <div
                                             key={`reservationId-${reservation.reservationId}`}

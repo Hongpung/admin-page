@@ -1199,8 +1199,8 @@ function BatchAddModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                         <div className='flex flex-row gap-2 items-center'>{batchReservationOption.reservationType == 'REGULAR' ? '예' : '아니오'}
                             <input type="checkbox" id="reservationType" name="reservationType" className="hidden peer"
                                 onChange={(e) => {
-                                    if (e.currentTarget.checked) setBatchReservationOption(prev => ({ ...prev, type: 'REGULAR' }));
-                                    else setBatchReservationOption(prev => ({ ...prev, type: 'COMMON' }));
+                                    if (e.currentTarget.checked) setBatchReservationOption(prev => ({ ...prev, reservationType: 'REGULAR' }));
+                                    else setBatchReservationOption(prev => ({ ...prev, reservationType: 'COMMON' }));
                                 }}
                                 checked={batchReservationOption.reservationType == 'REGULAR'}
                             />

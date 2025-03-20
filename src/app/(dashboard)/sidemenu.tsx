@@ -37,17 +37,26 @@ export default function SideMenu() {
                     <div>악기 관리</div>
                 </li> */}
                 <li className="w-40 bg-gray-100 text-sm/4 cursor-pointer px-2 py-2 my-2 flex flex-row justify-between" onClick={() => toggleOpen(1)}>
-                    <div>예약 관리</div>
+                    <div>이용 관리</div>
                     {isOpen[1] ? <div>▲</div> : <div>▼</div>}
                 </li>
                 {isOpen[1] &&
-                    <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2"
-                        onClick={() => {
-                            const today = new Date();
-                            router.push(`/reserve/live/weeks`)
-                        }}>
-                        실시간 예약 관리
-                    </li>
+                    <>
+                        <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2"
+                            onClick={() => {
+                                const today = new Date();
+                                router.push(`/reserve/live/weeks`)
+                            }}>
+                            실시간 예약 관리
+                        </li>
+                        <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2"
+                            onClick={() => {
+                                const today = new Date();
+                                router.push(`/session`)
+                            }}>
+                            연습실 이용 내역
+                        </li>
+                    </>
                 }
                 {/* <li className="w-40 bg-gray-100 text-sm/4 cursor-pointer px-2 py-2 my-2 "
                     onClick={() => router.push('/chat/index')}>
@@ -57,18 +66,20 @@ export default function SideMenu() {
                     <div>메인 페이지 관리</div>
                     {isOpen[2] ? <div>▲</div> : <div>▼</div>}
                 </li>
+
                 {isOpen[2] &&
-                    <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2"
-                        onClick={() => router.push('/manage/banner')}>
-                        배너 관리
-                    </li>
+                    <>
+                        <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2"
+                            onClick={() => router.push('/manage/notice')}>
+                            공지사항
+                        </li>
+                        <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2"
+                            onClick={() => router.push('/manage/banner')}>
+                            배너 관리
+                        </li>
+                    </>
                 }
-                {isOpen[2] &&
-                    <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2"
-                        onClick={() => router.push('/manage/notice')}>
-                        공지사항
-                    </li>
-                }
+
                 <li className="w-40 bg-gray-100 text-sm/4 cursor-pointer px-2 py-2 my-2 flex flex-row justify-between" onClick={() => toggleOpen(3)}>
                     <div>관리자 관리</div>
                     {isOpen[3] ? <div>▲</div> : <div>▼</div>}

@@ -48,16 +48,16 @@ export default function ManageUserPage() {
     }, [filter])
 
 
-    function renderSignUp() {
+    function renderMembers() {
         const rows: JSX.Element[] = [];
-        userData?.forEach((user, index) => {
+        userData?.sort((a, b) => a.enrollmentNumber - b.enrollmentNumber).forEach((user, index) => {
             if (user) {
                 const userRow = (
                     <div key={index} className={`flex-row flex justify-around ${index % 2 == 1 ? 'bg-blue-100' : ''} py-1`}>
                         <div className="min-w-48 text-center">{user.name + (user.nickname ? ` (${user.nickname})` : '')}</div>
-                        <div className="min-w-24 text-center">{user.club}</div>
+                        <div className="min-w-24 text-center">{user.club} ({user.enrollmentNumber})</div>
                         <div className="min-w-96 text-center">{user.email}</div>
-                        <div className={"min-w-32 text-center"+` ${user.role.length == 0 ?'text-gray-300':''}`}>{user.role.length == 0 ? '-' : user.role.map(role => role).join(', ')}</div>
+                        <div className={"min-w-32 text-center" + ` ${user.role.length == 0 ? 'text-gray-300' : ''}`}>{user.role.length == 0 ? '-' : user.role.map(role => role).join(', ')}</div>
                         <div className="flex flex-col items-center cursor-pointer text-center min-w-32" onClick={() => { setModifiedUser(user) }}>
                             <div className="px-2 py-0.5 rounded-md text-sm bg-green-200 ">역할 변경</div>
                         </div>
@@ -123,7 +123,7 @@ export default function ManageUserPage() {
 
     return (
         <>
-            <div className="text-lg font-medium ml-2 mt-2">유저 권한 관리</div>
+            <div className="text-lg font-medium ml-2 mt-2">유저 권한 관리 ({userData.length})</div>
             <form className="flex flex-row gap-2 h-12 items-center ml-2 mt-2" onSubmit={handleSubmit}>
                 <select
                     name="searchOption"
@@ -178,12 +178,12 @@ export default function ManageUserPage() {
                 <div id="rows" className="flex-row flex justify-around bg-blue-300 py-1">
 
                     <div className="min-w-48 text-center">이름 (패명)</div>
-                    <div className="min-w-24 text-center">동아리</div>
+                    <div className="min-w-24 text-center">동아리 (학번)</div>
                     <div className="min-w-96 text-center">이메일</div>
                     <div className="min-w-32 text-center">역할</div>
                     <div className="text-center min-w-32"></div>
                 </div>
-                {renderSignUp()}
+                {renderMembers()}
             </div>
 
             <div className={`${modifiedUser ? 'fixed' : 'hidden'} flex left-0 w-full h-full top-0 items-center justify-center bg-black bg-opacity-35`}>
@@ -198,7 +198,7 @@ export default function ManageUserPage() {
                         <div className=" text-gray-400">기존 권한</div>
                         <div className=" text-right ">{modifiedUser?.role.length == 0 ? '동아리원' : modifiedUser?.role.join(', ')}</div>
                     </div>
-                    <div  className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-6">
                         <div className="flex flex-row justify-between items-start mx-4">
                             <div className="font-semibold">변경할 권한</div>
                             <div className="flex flex-col gap-2">

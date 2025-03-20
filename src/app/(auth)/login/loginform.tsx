@@ -87,15 +87,8 @@ export function LoginForm() {
                 </div>
                 <button
                     type="submit"
-                    className="rounded-md cursor-pointer border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 py-2 w-full"
+                    className="rounded-md cursor-pointer border border-solid border-transparent transition-colors flex items-center justify-center bg-[#0C65F2] text-background gap-2 hover:bg-[#448CFF] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 py-2 w-full"
                 >
-                    <Image
-                        className="dark:invert"
-                        src="https://nextjs.org/icons/vercel.svg"
-                        alt="Vercel logomark"
-                        width={20}
-                        height={20}
-                    />
                     로그인
                 </button>
             </form>
