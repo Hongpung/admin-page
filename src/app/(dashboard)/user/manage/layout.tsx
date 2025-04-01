@@ -13,7 +13,7 @@ export default function ManageRoleLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <div className="rounded-md border h-screen flex flex-col flex-grow border-gray-200 p-2">
+        <div className="rounded-md border flex flex-col flex-grow border-gray-200 p-2">
             {children}
         </div>
     );

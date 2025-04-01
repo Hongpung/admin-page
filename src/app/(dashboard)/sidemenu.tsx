@@ -80,21 +80,7 @@ export default function SideMenu() {
                     </>
                 }
 
-                <li className="w-40 bg-gray-100 text-sm/4 cursor-pointer px-2 py-2 my-2 flex flex-row justify-between" onClick={() => toggleOpen(3)}>
-                    <div>관리자 관리</div>
-                    {isOpen[3] ? <div>▲</div> : <div>▼</div>}
-                </li>
-                {isOpen[3] &&
-                    <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2"
-                        onClick={() => router.push('/admin')}>
-                        관리자 권한 관리
-                    </li>
-                }
-                {isOpen[3] &&
-                    <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2">
-                        로그인 정보 확인
-                    </li>
-                }
+                
                 <li className="w-40 bg-red-500 text-white mt-12 text-sm/4 cursor-pointer px-2 py-2 my-2 flex flex-row justify-between"
                     onClick={() => router.replace('/logout')}>
                     <div>로그아웃</div>

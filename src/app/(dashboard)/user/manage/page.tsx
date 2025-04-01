@@ -1,52 +1,83 @@
 'use client'
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { deleteUser, fetchUserData, roles, updateUserRole } from "./utils"
 import LoadingDots from "@admin/app/components/loadingindicator";
 import { User } from "../accept/utils";
 
 
 export default function ManageUserPage() {
+
     const [page, setPage] = useState(0);
+    const [maxPage, setMaxPage] = useState(0);
     const [userData, setUserData] = useState<User[]>([]);
-    const [selectedOption, setSelectedOption] = useState("all");
-    const [filter, setFilter] = useState<string | null>(null);
     const [modifiedUser, setModifiedUser] = useState<User | null>(null)
 
+    const [keyword, setKeyword] = useState('')
+    const [clubId, setClubId] = useState<string | undefined>(undefined)
+    const [role, setRole] = useState<string | undefined>(undefined)
+
+    const searchRef = useRef<HTMLFormElement>(null)
+
+
+    const handleReset = () => {
+
+        searchRef.current?.reset();
+
+        setKeyword('')
+        setClubId(undefined)
+        setRole(undefined)
+        setPage(0)
+
+
+    }
 
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
-        const option = formData.get('searchOption') as string;
-        const keyword = formData.get('search-keyword') as string;
 
-        console.log({ option, keyword });
+        const keyword = formData.get('keyword') as string;
+        const clubId = formData.get('clubId') as string;
+        const role = formData.get('role') as string;
+
+        console.log({ keyword, clubId, role });
+
+        setKeyword(keyword);
+        setClubId(clubId === 'none' ? undefined : clubId);
+        setRole(role === 'none' ? undefined : role);
+
+        const fetchReserveDetails = async () => {
+
+            const response = await fetchUserData({ username: keyword.length > 0 ? keyword : undefined, clubId: clubId === 'none' ? undefined : clubId, role: role === 'none' ? undefined : role })
+
+            const { totalPages, members } = response;
+
+            console.log(members, totalPages)
+
+            setMaxPage(totalPages);
+            setUserData(members);
+        }
+
+        fetchReserveDetails();
+
     };
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const signUpDataResponse = await fetchUserData(0);
-                setUserData(signUpDataResponse); // 데이터 저장
-            } catch (error) {
-                console.error('Error fetching sign up data:', error);
-            }
-        };
+        const fetchReserveDetails = async () => {
 
-        fetchData();
-    }, []);
+            const response = await fetchUserData({ username: keyword.length > 0 ? keyword : undefined, clubId, role, page })
 
-    useEffect(() => {
-        setFilter(null)
-    }, [selectedOption])
+            const { totalPages, members } = response;
+            console.log(members, totalPages)
 
-    useEffect(() => {
-        if (selectedOption != "all" && filter) {
-            const filteredUsers = userData.filter((user: User) => user[selectedOption] == filter)
-            setUserData(filteredUsers);
+            setMaxPage(totalPages);
+            setUserData(members);
         }
-    }, [filter])
 
+        fetchReserveDetails();
+
+    }, [page, keyword, clubId, role])
 
     function renderMembers() {
         const rows: JSX.Element[] = [];
@@ -123,60 +154,34 @@ export default function ManageUserPage() {
 
     return (
         <>
-            <div className="text-lg font-medium ml-2 mt-2">유저 권한 관리 ({userData.length})</div>
-            <form className="flex flex-row gap-2 h-12 items-center ml-2 mt-2" onSubmit={handleSubmit}>
-                <select
-                    name="searchOption"
-                    id="searchOption"
-                    value={selectedOption}
-                    onChange={(e) => setSelectedOption(e.currentTarget.value)}
-                    className="w-24 px-1 h-8 border rounded-md"
-                >
-                    <option value="all">전체</option>
-                    <option value="email">이메일</option>
-                    <option value="club">동아리</option>
-                    <option value="name">이름</option>
-                    <option value="role">역할</option>
-                </select>
-                {selectedOption === "role" ? (
-                    <>
-                        <label>
-                            <input type="radio" name="search-keyword" id="role-all" defaultChecked value="전체" /> 전체
-                        </label>
-                        <label>
-                            <input type="radio" name="search-keyword" id="role-paejjang" value="패짱" /> 패짱
-                        </label>
-                        <label>
-                            <input type="radio" name="search-keyword" id="role-sangsoi" value="상쇠" /> 상쇠
-                        </label>
-                        <label>
-                            <input type="radio" name="search-keyword" id="role-sangjanggu" value="상장구" /> 상장구
-                        </label>
-                        <label>
-                            <input type="radio" name="search-keyword" id="role-subuk" value="수북" /> 수북
-                        </label>
-                        <label>
-                            <input type="radio" name="search-keyword" id="role-subupgo" value="수법고" /> 수법고
-                        </label>
-                    </>
-                ) : (
-                    <input
-                        type="text"
-                        value={filter ?? ''}
-                        onChange={(e) => setFilter(e.currentTarget.value)}
-                        name="search-keyword"
-                        id="search-keyword"
-                        placeholder="검색..."
-                        className="w-40 h-8 border px-2 rounded-md"
-                    />
-                )}
+            <div className="text-lg font-medium ml-2 mt-2">유저 권한 관리 ({userData?.length})</div>
+            <form ref={searchRef} className="flex flex-row gap-4 h-12 items-center ml-2 mt-2" onSubmit={handleSubmit} onReset={handleReset}>
 
-                <button type="submit" className="h-8 w-12 bg-blue-100 rounded-md">적용</button>
+                <input type="text" name="keyword" id="keyword" placeholder='여기에 검색어' className='border border-[#446fdb] rounded px-2 py-0.5 outline-[#1e3a80]' />
+
+                <select name="clubId" id="clubId" className='border border-[#446fdb] rounded px-2 py-0.5 outline-[#1e3a80]'>
+                    <option selected value="none">동아리</option>
+                    <option value="0">들녘</option>
+                    <option value="1">산틀</option>
+                    <option value="2">악반</option>
+                    <option value="3">신명화랑</option>
+                </select>
+
+                <select name="role" id="role" className='border border-[#446fdb] rounded px-2 py-0.5 outline-[#1e3a80]'>
+                    <option selected value="none">역할</option>
+                    <option value="패짱">패짱</option>
+                    <option value="상쇠">상쇠</option>
+                    <option value="상장구">상장구</option>
+                    <option value="수북">수북</option>
+                    <option value="수법고">수법고</option>
+                </select>
+
+                <button type="submit" className='bg-blue-500 text-white rounded px-2 py-0.5'>검색</button>
+                <button type="reset" className='bg-red-500 text-white rounded px-2 py-0.5' onClick={handleReset}>초기화</button>
             </form>
 
-            <div className="flex flex-col mx-2 mt-4 border rounded-md flex-grow border-blue-100 mb-2 overflow-y-auto">
+            <div className="flex flex-col mx-2 mt-4 border rounded-md flex-grow border-blue-100 mb-2 overflow-y-auto min-h-[672px]">
                 <div id="rows" className="flex-row flex justify-around bg-blue-300 py-1">
-
                     <div className="min-w-48 text-center">이름 (패명)</div>
                     <div className="min-w-24 text-center">동아리 (학번)</div>
                     <div className="min-w-96 text-center">이메일</div>
@@ -184,8 +189,15 @@ export default function ManageUserPage() {
                     <div className="text-center min-w-32"></div>
                 </div>
                 {renderMembers()}
-            </div>
 
+            </div>
+            {maxPage > 1 &&
+                <div className="flex flex-row justify-center items-center gap-2 mt-4">{
+                    Array.from({ length: maxPage }, (_, index) => (
+                        <button key={index} onClick={() => setPage(index)} className={`px-2 py-1 rounded-md ${page == index ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>{index + 1}</button>
+                    ))
+                }</div>
+            }
             <div className={`${modifiedUser ? 'fixed' : 'hidden'} flex left-0 w-full h-full top-0 items-center justify-center bg-black bg-opacity-35`}>
                 <div className="relative w-96 bg-white rounded-lg z-10 py-4 px-4 gap-6 flex flex-col">
                     <div className="absolute top-3 cursor-pointer text-lg right-4 font-bold text-gray-400" onClick={() => setModifiedUser(null)}>x</div>

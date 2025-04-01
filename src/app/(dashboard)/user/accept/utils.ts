@@ -42,7 +42,7 @@ export interface User {
     [key: string]: string | number | string[] | undefined
 }
 
-export async function fetchSignupData(page: number) {
+export async function fetchSignupData() {
 
     try {
 

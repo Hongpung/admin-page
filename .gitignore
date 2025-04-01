@@ -6,6 +6,8 @@
 .pnp.js
 .yarn/install-state.gz
 
+# production
+src/app/(dashboard)/admin/
 # testing
 /coverage
 /firebase
