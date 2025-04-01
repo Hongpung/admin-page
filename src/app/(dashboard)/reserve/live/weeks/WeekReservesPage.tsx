@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Modal from '@admin/app/(dashboard)/modal';
-import addBatchReservation, { batchReservationOptions, createReservation, deleteReservation, editReservation, loadDailyOccupiedTimes, loadDailyReservations, loadReservationDetail, loadWeeklyReservatiosn as loadWeeklyReservations, ReservationType, searchMembers } from './utils';
+import addBatchReservation, { batchReservationOptions, createReservation, deleteReservation, editReservation, loadDailyOccupiedTimes, loadReservationDetail, loadWeeklyReservatiosn as loadWeeklyReservations, ReservationType, searchMembers } from './utils';
 
 import { debounce } from 'lodash';
 import { useDateStore } from '../zustand/date-store';
@@ -257,7 +257,7 @@ export default function WeekReservesPage() {
             <div className="h-full w-full flex flex-row gap-2">
                 <div className='flex flex-col mt-14 flex-0 h-full gap-16'>
                     {[...hourlySlots].map(hour => (
-                        <div className='text-gray-300 h-8 flex flex-col justify-center'>{hour}</div>
+                        <div key={hour + 'line'} className='text-gray-300 h-8 flex flex-col justify-center'>{hour}</div>
                     ))}
                 </div>
                 <table className="flex-grow border-collapse table-fixed">
@@ -381,7 +381,7 @@ function CreateReservationModal({ visible, onClose }: { visible: boolean, onClos
         const { date, startTime, endTime, reservationType: type, participationAvailable, creatorId } = newReservation;
 
         // 공통 필드를 가진 reservationForm 생성
-        const reservationForm: any = {
+        const reservationForm: Record<string, string | boolean | number | undefined> = {
             title,
             date,
             startTime,
@@ -673,7 +673,7 @@ function EditReservationModal({ visible, reservationId, onClose }: { visible: bo
         const { date, startTime, endTime, reservationType: type, participationAvailable, creatorId } = editedReservation;
 
         // 공통 필드를 가진 reservationForm 생성
-        const reservationForm: any = {
+        const reservationForm: Record<string, string | boolean | number | undefined> = {
             title,
             date,
             startTime,
@@ -1064,7 +1064,7 @@ function CreatorSelectModal({ visible, onClose, creatorId, setCreator: setCreato
                     :
                     searchingMembers && searchingMembers?.length > 0 ?
                         searchingMembers?.map(member => (
-                            <div className={`w-full hover:bg-slate-300 cursor-pointer px-2 py-4 ${selectedMember?.memberId == member.memberId ? 'bg-slate-200' : ''}`}
+                            <div key={member.memberId + '-search-result'} className={`w-full hover:bg-slate-300 cursor-pointer px-2 py-4 ${selectedMember?.memberId == member.memberId ? 'bg-slate-200' : ''}`}
                                 onClick={() => { selectMember(member); }}>
                                 <div>{member.name}{member.nickname ? ` (${member.nickname})` : ''} ({member.enrollmentNumber}) <span className='text-gray-400 text-sm'>{creatorId == member.memberId && '이전 선택'}</span></div>
                                 <div>{member.club}</div>
@@ -1139,7 +1139,7 @@ function BatchAddModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
             }
             try {
 
-                const validOption: Record<string, any> = {
+                const validOption: Record<string, string | number | undefined> = {
                     title: batchReservationOption.title.length > 0 ?
                         batchReservationOption.title.length
                         : `${josa((batchReservationOption.reservationType == 'EXTERNAL' ? batchReservationOption.creatorName! : creatorName!), '이/가') + ' 만든 정기 연습'}`,

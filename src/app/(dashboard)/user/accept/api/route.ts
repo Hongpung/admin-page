@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-export async function GET(req: Request) {
+export async function GET() {
     try {
         const cookieStore = cookies();
         const token = cookieStore.get('token')?.value;

@@ -61,7 +61,7 @@ export async function loadReservationDetail(reservationId: number) {
     }
 }
 
-export async function createReservation(createData: Object) {
+export async function createReservation(createData: unknown) {
     try {
         console.log(JSON.stringify(createData))
         const response = await fetch(`/reserve/live/reserve`, {
@@ -85,7 +85,7 @@ export async function createReservation(createData: Object) {
     }
 }
 
-export async function editReservation(reservationId: number, updateData: Object) {
+export async function editReservation(reservationId: number, updateData: unknown) {
     try {
         console.log(JSON.stringify(updateData))
         const response = await fetch(`/reserve/live/reserve?reservationId=${reservationId}`, {

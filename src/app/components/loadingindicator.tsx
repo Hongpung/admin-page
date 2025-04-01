@@ -1,4 +1,4 @@
-import { useState, useEffect, StyleHTMLAttributes } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function LoadingDots({style}:{style?:string}) {
     const [dots, setDots] = useState(''); // 현재 보여줄 점 상태

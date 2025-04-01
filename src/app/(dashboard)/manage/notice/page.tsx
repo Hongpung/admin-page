@@ -1,8 +1,9 @@
-'use server'
 import { GET as loadInfos } from './load/route'
 import NoticeClientComponent from './noticeClient';
 import { Notice } from './types';
 import "@admin/app/globals.css";
+
+export const dynamic = "force-dynamic"; 
 
 export default async function bannerManagePage() {
     const loadedInfos = await loadInfos();

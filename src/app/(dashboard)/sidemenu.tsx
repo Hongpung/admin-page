@@ -44,14 +44,12 @@ export default function SideMenu() {
                     <>
                         <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2"
                             onClick={() => {
-                                const today = new Date();
                                 router.push(`/reserve/live/weeks`)
                             }}>
                             실시간 예약 관리
                         </li>
                         <li className="w-40 text-sm/4 cursor-pointer text-gray-500 px-2 pl-6 py-1 my-2"
                             onClick={() => {
-                                const today = new Date();
                                 router.push(`/session`)
                             }}>
                             연습실 이용 내역

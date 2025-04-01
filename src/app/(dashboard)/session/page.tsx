@@ -95,7 +95,7 @@ const SessionInformation: React.FC<{ session: Session }> = ({ session }) => {
                 <div>대여 악기</div>
                 {session.borrowInstruments.length > 0 ?
                     session.borrowInstruments.map(instrument => (
-                        <div>
+                        <div key={instrument.instrumentId}>
                             {instrument.name}
                         </div>
                     )) :
@@ -158,16 +158,17 @@ function SessionList({ onSelect }: { onSelect: (session: Session | null) => void
         <div className="flex flex-col h-full w-full overflow-y-auto">
             <div className="flex flex-col gap-4">
                 {sessionList.map(session => (
-                    <div>
+                    <div key={session.sessionId}>
                         <SessionCard session={session} isBefore={false} onSelect={onSelect}></SessionCard>
                     </div>
                 ))}
             </div>
-            {sessionList.length == (page+1) * 10 && <div className="flex items-center justify-center h-12 cursor-pointer" onClick={addPage}>
-                <div className="font-regular text-lg text-gray-400">
-                    addPage
-                </div>
-            </div>}
+            {sessionList.length == (page + 1) * 10 &&
+                <div className="flex items-center justify-center h-12 cursor-pointer" onClick={addPage}>
+                    <div className="font-regular text-lg text-gray-400">
+                        addPage
+                    </div>
+                </div>}
         </div>
     )
 }

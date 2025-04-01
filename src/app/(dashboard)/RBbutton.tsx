@@ -5,10 +5,11 @@ import ReactDOM from 'react-dom';
 interface RBButtonProps {
     color: 'gray' | 'blue';
     children: React.ReactNode;
-    onClick: (value: any) => any;
+    onClick: () => void;
 }
 
 const RBButton: React.FC<RBButtonProps> = ({ color, children, onClick }) => {
+
     const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {

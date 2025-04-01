@@ -1,5 +1,3 @@
-import { MIMEType } from "util";
-
 export async function loadNotices() {
     try {
         const response = await fetch(`/manage/notice/load`, {

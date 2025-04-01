@@ -40,7 +40,13 @@ export const Calendar: React.FC = () => {
 
     const loading = useCallback(async (calendarYear: number, calendarMonth: number) => {
         try {
-            const response = await loadMonthlyReserves({ year: calendarYear, month: calendarMonth + 1 }) as { [key: number]: any[] }
+            const response = await loadMonthlyReserves({ year: calendarYear, month: calendarMonth + 1 }) as {
+                [key: number]: {
+                    participationAvailable: boolean;
+                    reservationType: string;
+                    reservationId: number;
+                }[]
+            }
 
             console.log(response)
             setReservedDates(response);
@@ -143,7 +149,7 @@ export const Calendar: React.FC = () => {
                                                     :
                                                     'bg-red-500';
 
-                                    console.log(day,color)
+                                    console.log(day, color)
                                     return (
                                         <div
                                             key={`reservationId-${reservation.reservationId}`}

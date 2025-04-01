@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { fetchSignupData, User } from "./utils"
 import { clickAccept } from "./utils";
 import LoadingDots from "@admin/app/components/loadingindicator";

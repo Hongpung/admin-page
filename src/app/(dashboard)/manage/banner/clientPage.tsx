@@ -231,7 +231,7 @@ export default function BannerManageClientPage({ initActiveBanners, initOldBanne
                                                 }}
                                                 >변경</div>
                                                 <div className="flex items-center justify-center px-2 py-0.5 cursor-pointer rounded-md text-sm bg-red-200"
-                                                    onClick={(e) => {
+                                                    onClick={() => {
                                                         if (confirm('배너를 삭제하시겠습니까?')) bannerDeleteHadler(banner.bannerId, 'ACTIVE');
                                                     }}>삭제</div>
                                             </div>

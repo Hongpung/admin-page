@@ -16,8 +16,6 @@ export async function POST(req: Request) {
         const formData = await req.formData();
         const imageFile = formData.get('image') as File;
 
-        const fileName = `${imageFile.name}.${imageFile.type.split('/')[1]}`;
-
         const uploadConfirm = await fetch(`${process.env.SUB_API}/upload-s3/image`,
             {
                 method: 'POST',
@@ -53,5 +51,7 @@ export async function POST(req: Request) {
     } catch (e) {
         console.error(e)
         return new Response('Error: ' + e, { status: 400 })
+    }finally{
+        clearTimeout(timeoutId); // 타이머 정리
     }
 }
