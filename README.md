@@ -1,6 +1,7 @@
 <p align="center">
-  <a href="https://green-bath-cc7.notion.site/1b62749b6fda80c69245f995bab2e031" target="blank"><img src="https://file.notion.so/f/f/92794d22-9384-4f79-8c0c-67377d1489bd/cdd65839-0757-413a-9568-22cc8825a8a0/image.png?table=block&id=1b62749b-6fda-8055-b4d8-cacbaf3aa403&spaceId=92794d22-9384-4f79-8c0c-67377d1489bd&expirationTimestamp=1744675200000&signature=NsXBWkJ1H45BO-YuG8WgMQSKvWjY9TAQFsKH_LEXLUM&downloadName=image.png" height="240" alt="Nest Logo" /></a>
+  <a href="https://green-bath-cc7.notion.site/1b62749b6fda80c69245f995bab2e031" target="blank"><img src="https://github.com/Hongpung/.github/raw/main/profile/Hongpung_Banner.png" width="100%" alt="HongPung-Banner" /></a>
 </p>
+
 
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
@@ -14,7 +15,7 @@
 
 
 ## 사용스택
-<img src="https://img.shields.io/badge/react-2D3748?style=for-the-badge&logo=react&logoColor=white">  <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white"> 
+<img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&logo=react&logoColor=black">  <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white">
 
 
 ## 주요 특징
@@ -47,4 +48,20 @@
 이러한 구조는 확장성과 유지보수성을 고려하여 설계되었으며, 프로젝트의 규모에 따라 적절히 조정할 수 있습니다.
 
 ## 개발자
-<a href="https://github.com/Wide-Pants"> 강윤호@wide-pants</a>
+<table>
+  <tr align="center">
+    <td>
+      UI/UX, 프론트엔드
+    </td>
+  </tr>
+  <tr align="center">
+    <td>
+      <a href="https://github.com/Wide-Pants">
+        <img src="https://github.com/Wide-Pants.png?size=100"/>
+      </a>
+      <br>
+      <a href="https://github.com/Wide-Pants">강윤호@Wide-Pants</a>
+    </td>
+  </tr>
+</table>
+
