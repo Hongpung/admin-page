@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "@admin/app/globals.css";
+import { Suspense } from "react";
 
 
 export const metadata: Metadata = {
@@ -13,8 +13,8 @@ export default function SessionListLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <>
+        <Suspense fallback={<div>Loading...</div>}>
             {children}
-        </>
+        </Suspense>
     );
 }
