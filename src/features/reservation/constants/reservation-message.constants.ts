@@ -1,0 +1,21 @@
+export const RESERVATION_MESSAGE = {
+  closeConfirm: "작성 중인 내용을 취소하고 닫으시겠습니까?",
+  deleteConfirm: "이 예약을 삭제하시겠습니까?",
+  loadFailed: "로드 실패",
+  detailLoadFailed: "불러오기 실패",
+  defaultFail: "실패",
+  occupiedTimeConfirm:
+    "예약시간이 중복되는 예약이 있습니다\n그대로 진행하시겠습니까?",
+  endTimeConflictConfirm: "중복되는 예약이 있습니다\n그대로 진행하시겠습니까?",
+  conflictIntro: "이미 예약된 시간이 포함되어 있습니다.",
+  submitCreateConfirm: "예약을 생성하시겠습니까?",
+  submitEditConfirm: "예약을 수정하시겠습니까?",
+  submitConflictConfirmPrefix: "아래 예약들이 중복되어 취소됩니다.",
+  submitConflictConfirmSuffix: "계속 예약을 진행할까요?",
+  batchNeedSchedule: "연습 일정을 추가해주세요",
+  batchNeedScheduleTime: "연습 일정에 시간을 지정해주세요",
+  batchNeedDuration: "추가할 기간을 추가해주세요",
+  batchNeedCreator: "예약자를 확인해주세요",
+  processFailed: "처리에 실패했습니다.",
+  discardedListEmpty: "취소된 예약 내역이 없습니다.",
+} as const;
