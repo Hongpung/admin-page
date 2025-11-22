@@ -1,0 +1,1 @@
+export { AcceptUserBoard } from "./AcceptUserBoard";
