@@ -1,5 +1,7 @@
 import { cookies } from "next/headers";
 
+export const dynamic = "force-dynamic";
+
 const SUB_PRIMARY_MEMBERS_PATH = `${process.env.BASE_URL}/club/sub/primary-members`;
 
 type UpdateClubPrimaryMembersBody = {

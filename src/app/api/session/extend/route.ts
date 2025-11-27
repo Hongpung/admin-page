@@ -1,5 +1,7 @@
 import { cookies } from "next/headers";
 
+export const dynamic = "force-dynamic";
+
 const EXTEND_SECONDS = 60 * 60;
 const COOKIE_SECURE = process.env.NODE_ENV === "production";
 

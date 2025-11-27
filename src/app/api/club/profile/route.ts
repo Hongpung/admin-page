@@ -1,5 +1,7 @@
 import { cookies } from "next/headers";
 
+export const dynamic = "force-dynamic";
+
 type RoleAssignmentItemDto = {
   role: string;
   userId: number | null;

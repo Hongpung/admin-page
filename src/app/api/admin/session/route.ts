@@ -7,6 +7,8 @@ import {
   pickMemberId,
 } from "@admin/shared/lib/auth/admin-auth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(): Promise<Response> {
   const cookieStore = cookies();
   const token = cookieStore.get("token")?.value;

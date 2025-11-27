@@ -1,5 +1,7 @@
 import { cookies } from "next/headers";
 
+export const dynamic = "force-dynamic";
+
 function toStorageImagePath(rawUrl: string): string {
   const value = rawUrl.trim();
   const prefix = "https://s3.ap-northeast-2.amazonaws.com/";

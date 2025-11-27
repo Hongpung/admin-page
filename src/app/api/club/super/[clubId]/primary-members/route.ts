@@ -1,5 +1,7 @@
 import { cookies } from "next/headers";
 
+export const dynamic = "force-dynamic";
+
 type RouteContext = { params: { clubId: string } };
 
 type UpdateClubPrimaryMembersBody = {

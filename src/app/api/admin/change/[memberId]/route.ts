@@ -1,5 +1,7 @@
 import { cookies } from "next/headers";
 
+export const dynamic = "force-dynamic";
+
 type RouteContext = { params: { memberId: string } };
 
 export async function PATCH(req: Request, { params }: RouteContext) {
