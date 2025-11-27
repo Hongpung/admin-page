@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { APP_VERSION } from "@admin/shared/constants/app-version";
 import { ADMIN_SUPPORT_EMAIL } from "@admin/shared/constants/support-contact";
 
 export function SidebarFooter({
@@ -28,6 +29,7 @@ export function SidebarFooter({
         </Link>
       </div>
       <div className="mt-3 space-y-1 border-gray-300 pt-3">
+        <p className="text-gray-500">v{APP_VERSION}</p>
         <p className="font-medium text-gray-700">기타 문의</p>
         <p>대표자: 강윤호 (산틀 18)</p>
         <p>전화번호: 010-5034-2854</p>
