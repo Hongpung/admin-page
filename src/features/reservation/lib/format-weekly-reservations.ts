@@ -25,9 +25,13 @@ function floorToHalfHourSlot(time: string): TimeFormat | null {
 }
 
 /** slice 종료 인덱스 — endTime이 슬롯 경계면 해당 인덱스, 아니면 다음 30분 경계 */
-function resolveEndSlotIndex(endTime: string): number {
+function resolveEndSlotIndex(endTime: string, startIndex: number): number {
   const exactIndex = TimeArray.indexOf(endTime as TimeFormat);
-  if (exactIndex !== -1) return exactIndex;
+  if (exactIndex !== -1) {
+    // 16:00~16:30처럼 인접한 두 경계만 쓰는 30분 예약은 종료 슬롯 행까지 포함
+    if (exactIndex === startIndex + 1) return exactIndex + 1;
+    return exactIndex;
+  }
 
   const ceiled = Math.ceil(parseTimeToMinutes(endTime) / 30) * 30;
   const slot = minutesToTime(ceiled);
@@ -47,7 +51,7 @@ export function formattingReservationsForTable(
     if (!startSlot) return;
 
     const startIndex = TimeArray.indexOf(startSlot);
-    const endIndex = resolveEndSlotIndex(reservation.endTime);
+    const endIndex = resolveEndSlotIndex(reservation.endTime, startIndex);
 
     if (startIndex === -1 || endIndex <= startIndex) return;
 
