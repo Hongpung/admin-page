@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const imageFile = formData.get("image") as File;
 
     const uploadConfirm = await fetch(
-      `${process.env.SUB_API}/upload-s3/image`,
+      `${process.env.BASE_URL}/upload-s3/image`,
       {
         method: "POST",
         headers: {

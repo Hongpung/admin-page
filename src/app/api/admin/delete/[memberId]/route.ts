@@ -13,7 +13,7 @@ export async function PATCH(_req: Request, { params }: RouteContext) {
     const memberId = params.memberId;
 
     const response = await fetch(
-      `${process.env.SUB_API}/admin/delete/${memberId}`,
+      `${process.env.BASE_URL}/admin/delete/${memberId}`,
       {
         method: "PATCH",
         headers: {

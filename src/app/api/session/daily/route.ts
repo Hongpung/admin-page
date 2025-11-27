@@ -15,7 +15,7 @@ export async function GET(req: Request) {
     }
 
     const requestURL = new URL(
-      `${process.env.SUB_API}/admin/session-log/daily`
+      `${process.env.BASE_URL}/admin/session-log/daily`
     );
     requestURL.searchParams.set("date", date);
 

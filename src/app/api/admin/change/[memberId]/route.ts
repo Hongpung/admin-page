@@ -14,7 +14,7 @@ export async function PATCH(req: Request, { params }: RouteContext) {
     const body = await req.json();
 
     const response = await fetch(
-      `${process.env.SUB_API}/admin/change/${memberId}`,
+      `${process.env.BASE_URL}/admin/change/${memberId}`,
       {
         method: "PATCH",
         headers: {

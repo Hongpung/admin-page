@@ -13,17 +13,17 @@ export async function GET(req: Request) {
     const endDate = url.searchParams.get("end-date") || "2025-01-29";
 
     const response = await fetch(
-      `${process.env.SUB_API}/reservation/term?start-date=${startDate}&end-date=${endDate}`,
+      `${process.env.BASE_URL}/reservation/term?start-date=${startDate}&end-date=${endDate}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      },
+      }
     );
 
     if (!response.ok)
       throw Error(
-        "Response Error" + ` (${response.status}) :` + response.statusText,
+        "Response Error" + ` (${response.status}) :` + response.statusText
       );
 
     const reserveDetailData = await response.json();

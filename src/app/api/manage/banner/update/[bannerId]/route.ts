@@ -44,7 +44,7 @@ export async function PATCH(
       data.bannerImgUrl = toStorageImagePath(data.bannerImgUrl);
     }
 
-    const response = await fetch(`${process.env.SUB_API}/banner/${bannerId}`, {
+    const response = await fetch(`${process.env.BASE_URL}/banner/${bannerId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

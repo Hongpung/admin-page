@@ -16,7 +16,7 @@ export async function GET(
     const token = cookieStore.get("token")?.value;
 
     const requestURL = new URL(
-      `${process.env.SUB_API}/session-log/specific/${id}`
+      `${process.env.BASE_URL}/session-log/specific/${id}`
     );
 
     const response = await fetch(requestURL, {

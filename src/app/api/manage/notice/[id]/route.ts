@@ -13,7 +13,7 @@ export async function GET(
 
     const { id } = await params;
 
-    const response = await fetch(`${process.env.SUB_API}/notice/${id}`, {
+    const response = await fetch(`${process.env.BASE_URL}/notice/${id}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -47,7 +47,7 @@ export async function PATCH(
 
     const { id } = await params;
 
-    const response = await fetch(`${process.env.SUB_API}/notice/${id}`, {
+    const response = await fetch(`${process.env.BASE_URL}/notice/${id}`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -80,7 +80,7 @@ export async function DELETE(
 
     const { id } = await params;
 
-    const response = await fetch(`${process.env.SUB_API}/notice/${id}`, {
+    const response = await fetch(`${process.env.BASE_URL}/notice/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,

@@ -12,7 +12,7 @@ export async function GET(req: Request) {
     const month = url.searchParams.get("month");
 
     const response = await fetch(
-      `${process.env.SUB_API}/reservation/month-calendar?year=${year}&month=${month}`,
+      `${process.env.BASE_URL}/reservation/month-calendar?year=${year}&month=${month}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

@@ -16,7 +16,7 @@ export async function GET(req: Request) {
     }
 
     const requestURL = new URL(
-      `${process.env.SUB_API}/admin/session-log/month-calendar`
+      `${process.env.BASE_URL}/admin/session-log/month-calendar`
     );
     requestURL.searchParams.set("year", year);
     requestURL.searchParams.set("month", month);

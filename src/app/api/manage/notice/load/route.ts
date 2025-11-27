@@ -9,7 +9,7 @@ export async function GET() {
 
     if (!token) return new Response("Error: Invalid Token", { status: 401 });
 
-    const response = await fetch(`${process.env.SUB_API}/notice`, {
+    const response = await fetch(`${process.env.BASE_URL}/notice`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

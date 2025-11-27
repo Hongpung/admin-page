@@ -22,7 +22,7 @@ export async function DELETE(
       return new Response("BannerId does not exist", { status: 400 });
     }
 
-    const response = await fetch(`${process.env.SUB_API}/banner/${bannerId}`, {
+    const response = await fetch(`${process.env.BASE_URL}/banner/${bannerId}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,

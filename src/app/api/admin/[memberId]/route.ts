@@ -13,17 +13,14 @@ export async function POST(req: Request, { params }: RouteContext) {
     const memberId = params.memberId;
     const body = await req.json();
 
-    const response = await fetch(
-      `${process.env.SUB_API}/admin/${memberId}`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      }
-    );
+    const response = await fetch(`${process.env.BASE_URL}/admin/${memberId}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
 
     const text = await response.text();
     return new Response(text, {

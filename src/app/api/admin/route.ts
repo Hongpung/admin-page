@@ -10,7 +10,7 @@ export async function GET() {
       return Response.json({ message: "인증이 필요합니다." }, { status: 401 });
     }
 
-    const response = await fetch(`${process.env.SUB_API}/admin`, {
+    const response = await fetch(`${process.env.BASE_URL}/admin`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 

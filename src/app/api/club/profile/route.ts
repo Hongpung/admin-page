@@ -69,7 +69,7 @@ export async function GET() {
       return new Response("Error: Invalid Token", { status: 401 });
     }
 
-    const response = await fetch(`${process.env.SUB_API}/club/club-profiles`, {
+    const response = await fetch(`${process.env.BASE_URL}/club/club-profiles`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -135,7 +135,7 @@ export async function PATCH(req: Request) {
     }
 
     const response = await fetch(
-      `${process.env.SUB_API}/club/${clubId}/profile`,
+      `${process.env.BASE_URL}/club/${clubId}/profile`,
       {
         method: "PATCH",
         headers: {

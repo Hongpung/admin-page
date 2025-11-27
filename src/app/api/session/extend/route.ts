@@ -13,13 +13,13 @@ export async function POST(): Promise<Response> {
   }
 
   const response = await fetch(
-    `${process.env.SUB_API}/auth/admin/extend-token`,
+    `${process.env.BASE_URL}/auth/admin/extend-token`,
     {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    },
+    }
   );
 
   if (!response.ok) {
@@ -28,7 +28,7 @@ export async function POST(): Promise<Response> {
     };
     return Response.json(
       { message: body.message ?? "로그인 연장에 실패했습니다." },
-      { status: response.status },
+      { status: response.status }
     );
   }
 
@@ -38,21 +38,23 @@ export async function POST(): Promise<Response> {
   if (!nextToken) {
     return Response.json(
       { message: "로그인 연장 응답이 올바르지 않습니다." },
-      { status: 502 },
+      { status: 502 }
     );
   }
 
   const headers = new Headers();
   headers.append(
     "Set-Cookie",
-    `token=${nextToken}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${EXTEND_SECONDS}${COOKIE_SECURE ? "; Secure" : ""}`,
+    `token=${nextToken}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${EXTEND_SECONDS}${
+      COOKIE_SECURE ? "; Secure" : ""
+    }`
   );
   if (adminUser) {
     headers.append(
       "Set-Cookie",
       `admin_user=${encodeURIComponent(
-        adminUser,
-      )}; Path=/; Max-Age=${EXTEND_SECONDS}; SameSite=Strict`,
+        adminUser
+      )}; Path=/; Max-Age=${EXTEND_SECONDS}; SameSite=Strict`
     );
   }
 
@@ -61,6 +63,6 @@ export async function POST(): Promise<Response> {
       message: "로그인이 60분 연장되었습니다.",
       expiresInSeconds: EXTEND_SECONDS,
     },
-    { headers },
+    { headers }
   );
 }

@@ -22,17 +22,17 @@ export async function GET(req: Request) {
     query.set("pageSize", pageSize);
 
     const response = await fetch(
-      `${process.env.SUB_API}/member/search-user?${query.toString()}`,
+      `${process.env.BASE_URL}/member/search-user?${query.toString()}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      },
+      }
     );
 
     if (!response.ok)
       throw Error(
-        "Response Error" + ` (${response.status}) :` + response.statusText,
+        "Response Error" + ` (${response.status}) :` + response.statusText
       );
 
     const body = await response.json();

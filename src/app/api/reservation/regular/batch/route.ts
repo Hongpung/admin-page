@@ -7,7 +7,7 @@ export async function GET(req: Request) {
 
     const requestBody = await req.json();
 
-    const response = await fetch(`${process.env.SUB_API}/reservation/batch`, {
+    const response = await fetch(`${process.env.BASE_URL}/reservation/batch`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     const requestBody = await req.json();
 
     const response = await fetch(
-      `${process.env.SUB_API}/admin/reservation/batch`,
+      `${process.env.BASE_URL}/admin/reservation/batch`,
       {
         method: "POST",
         headers: {

@@ -11,7 +11,7 @@ export async function GET(req: Request) {
     const date = url.searchParams.get("date");
 
     const response = await fetch(
-      `${process.env.SUB_API}/reservation/daily/occupied?date=${date}`,
+      `${process.env.BASE_URL}/reservation/daily/occupied?date=${date}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

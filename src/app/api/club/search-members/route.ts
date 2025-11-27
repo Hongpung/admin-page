@@ -24,17 +24,17 @@ export async function GET(req: Request) {
     }
 
     const response = await fetch(
-      `${process.env.SUB_API}/member/search-user?${queryString.join("&")}`,
+      `${process.env.BASE_URL}/member/search-user?${queryString.join("&")}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      },
+      }
     );
 
     if (!response.ok)
       throw Error(
-        "Response Error" + ` (${response.status}) :` + response.statusText,
+        "Response Error" + ` (${response.status}) :` + response.statusText
       );
 
     const authData = await response.json();

@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-const SUB_PRIMARY_MEMBERS_PATH = `${process.env.SUB_API}/club/sub/primary-members`;
+const SUB_PRIMARY_MEMBERS_PATH = `${process.env.BASE_URL}/club/sub/primary-members`;
 
 type UpdateClubPrimaryMembersBody = {
   memberIds?: unknown;

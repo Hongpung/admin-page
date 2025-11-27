@@ -10,7 +10,9 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const skip = url.searchParams.get("skip");
 
-    const requestURL = new URL(`${process.env.SUB_API}/admin/session-log/list`);
+    const requestURL = new URL(
+      `${process.env.BASE_URL}/admin/session-log/list`
+    );
     if (skip) requestURL.searchParams.set("skip", skip);
 
     const response = await fetch(requestURL, {

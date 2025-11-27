@@ -13,7 +13,7 @@ export async function GET() {
       });
     }
 
-    const response = await fetch(`${process.env.SUB_API}/banner`, {
+    const response = await fetch(`${process.env.BASE_URL}/banner`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,

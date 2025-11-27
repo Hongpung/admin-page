@@ -1,4 +1,7 @@
-import { decodeJwtPayload, pickAdminRole } from "@admin/shared/lib/auth/admin-auth";
+import {
+  decodeJwtPayload,
+  pickAdminRole,
+} from "@admin/shared/lib/auth/admin-auth";
 
 const COOKIE_MAX_AGE = 60 * 60;
 const COOKIE_SECURE = process.env.NODE_ENV === "production";
@@ -7,7 +10,7 @@ export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
 
-    const response = await fetch(`${process.env.SUB_API}/auth/admin/login`, {
+    const response = await fetch(`${process.env.BASE_URL}/auth/admin/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -28,7 +31,9 @@ export async function POST(req: Request) {
     const headers = new Headers();
     headers.append(
       "Set-Cookie",
-      `token=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${COOKIE_MAX_AGE}${COOKIE_SECURE ? "; Secure" : ""}`
+      `token=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${COOKIE_MAX_AGE}${
+        COOKIE_SECURE ? "; Secure" : ""
+      }`
     );
     headers.append(
       "Set-Cookie",
@@ -40,7 +45,9 @@ export async function POST(req: Request) {
       "Set-Cookie",
       `role=${encodeURIComponent(
         roleStr
-      )}; Path=/; Max-Age=${COOKIE_MAX_AGE}; SameSite=Strict; HttpOnly${COOKIE_SECURE ? "; Secure" : ""}`
+      )}; Path=/; Max-Age=${COOKIE_MAX_AGE}; SameSite=Strict; HttpOnly${
+        COOKIE_SECURE ? "; Secure" : ""
+      }`
     );
 
     return Response.json({ message: "success" }, { headers });

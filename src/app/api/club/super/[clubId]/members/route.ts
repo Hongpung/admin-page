@@ -24,18 +24,18 @@ export async function GET(_req: Request, { params }: RouteContext) {
     if (clubId === null || clubId === undefined) {
       return Response.json(
         { message: "clubId가 올바르지 않습니다." },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     const response = await fetch(
-      `${process.env.SUB_API}/club/${clubId}/members`,
+      `${process.env.BASE_URL}/club/${clubId}/members`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
-      },
+      }
     );
 
     const text = await response.text();

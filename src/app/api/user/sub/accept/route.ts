@@ -6,7 +6,7 @@ export async function GET() {
     const token = cookieStore.get("token")?.value;
 
     const response = await fetch(
-      `${process.env.SUB_API}/auth/admin/signup/sub`,
+      `${process.env.BASE_URL}/auth/admin/signup/sub`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

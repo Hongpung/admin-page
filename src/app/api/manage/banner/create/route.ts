@@ -36,7 +36,7 @@ export async function POST(req: Request) {
       bannerImgUrl: toStorageImagePath(data.bannerImgUrl),
     };
 
-    const createResponse = await fetch(`${process.env.SUB_API}/banner`, {
+    const createResponse = await fetch(`${process.env.BASE_URL}/banner`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

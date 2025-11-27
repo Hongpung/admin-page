@@ -36,19 +36,19 @@ export async function GET(req: Request) {
     }
 
     const response = await fetch(
-      `${process.env.SUB_API}/member/search-user?${queryString
+      `${process.env.BASE_URL}/member/search-user?${queryString
         .map((string) => string)
         .join("&")}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      },
+      }
     );
 
     if (!response.ok)
       throw Error(
-        "Response Error" + ` (${response.status}) :` + response.statusText,
+        "Response Error" + ` (${response.status}) :` + response.statusText
       );
 
     const authData = await response.json();
@@ -77,7 +77,7 @@ export async function PATCH(req: Request) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ role }),
-      },
+      }
     );
 
     if (!response.ok) {
@@ -108,12 +108,12 @@ export async function DELETE(req: Request) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ password }),
-      },
+      }
     );
 
     if (!response.ok)
       throw Error(
-        "Response Error" + ` (${response.status}) :` + response.statusText,
+        "Response Error" + ` (${response.status}) :` + response.statusText
       );
 
     return new Response("Success to Patch Role", { status: 200 });

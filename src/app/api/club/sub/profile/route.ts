@@ -70,7 +70,7 @@ export async function GET() {
     }
 
     const response = await fetch(
-      `${process.env.SUB_API}/club/sub/club-profile`,
+      `${process.env.BASE_URL}/club/sub/club-profile`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -133,7 +133,7 @@ export async function PATCH(req: Request) {
     }
 
     const response = await fetch(
-      `${process.env.SUB_API}/club/sub/club-profile`,
+      `${process.env.BASE_URL}/club/sub/club-profile`,
       {
         method: "PATCH",
         headers: {

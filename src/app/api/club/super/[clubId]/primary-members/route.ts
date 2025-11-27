@@ -41,18 +41,18 @@ export async function GET(_req: Request, { params }: RouteContext) {
     if (clubId === null || clubId === undefined) {
       return Response.json(
         { message: "clubId가 올바르지 않습니다." },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     const response = await fetch(
-      `${process.env.SUB_API}/club/${clubId}/primary-members`,
+      `${process.env.BASE_URL}/club/${clubId}/primary-members`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
-      },
+      }
     );
 
     const text = await response.text();
@@ -80,7 +80,7 @@ export async function PATCH(req: Request, { params }: RouteContext) {
     if (clubId === null || clubId === undefined) {
       return Response.json(
         { message: "clubId가 올바르지 않습니다." },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -90,12 +90,12 @@ export async function PATCH(req: Request, { params }: RouteContext) {
     if (!memberIds) {
       return Response.json(
         { message: "memberIds는 1개 이상의 정수 배열이어야 합니다." },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     const response = await fetch(
-      `${process.env.SUB_API}/club/${clubId}/primary-members`,
+      `${process.env.BASE_URL}/club/${clubId}/primary-members`,
       {
         method: "PATCH",
         headers: {
@@ -103,7 +103,7 @@ export async function PATCH(req: Request, { params }: RouteContext) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ memberIds }),
-      },
+      }
     );
 
     const text = await response.text();

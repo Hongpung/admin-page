@@ -12,17 +12,17 @@ export async function GET(req: Request) {
     const take = url.searchParams.get("take") ?? "20";
 
     const response = await fetch(
-      `${process.env.SUB_API}/admin/reservation/discarded?skip=${skip}&take=${take}`,
+      `${process.env.BASE_URL}/admin/reservation/discarded?skip=${skip}&take=${take}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      },
+      }
     );
 
     if (!response.ok) {
       throw Error(
-        "Response Error" + ` (${response.status}) :` + response.statusText,
+        "Response Error" + ` (${response.status}) :` + response.statusText
       );
     }
 

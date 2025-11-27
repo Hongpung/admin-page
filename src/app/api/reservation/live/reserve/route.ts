@@ -9,7 +9,7 @@ export async function GET(req: Request) {
     const reservationId = url.searchParams.get("reservationId");
 
     const response = await fetch(
-      `${process.env.SUB_API}/reservation/${reservationId}`,
+      `${process.env.BASE_URL}/reservation/${reservationId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -40,7 +40,7 @@ export async function DELETE(req: Request) {
     const reservationId = url.searchParams.get("reservationId");
 
     const response = await fetch(
-      `${process.env.SUB_API}/admin/reservation/${reservationId}`,
+      `${process.env.BASE_URL}/admin/reservation/${reservationId}`,
       {
         method: "DELETE",
         headers: {
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
 
     const body = await req.json();
 
-    const response = await fetch(`${process.env.SUB_API}/admin/reservation`, {
+    const response = await fetch(`${process.env.BASE_URL}/admin/reservation`, {
       method: "POST",
       headers: {
         "Content-Type": "Application/json",
@@ -107,7 +107,7 @@ export async function PATCH(req: Request) {
     const reservationId = url.searchParams.get("reservationId");
 
     const response = await fetch(
-      `${process.env.SUB_API}/admin/reservation/${reservationId}`,
+      `${process.env.BASE_URL}/admin/reservation/${reservationId}`,
       {
         method: "PATCH",
         headers: {
