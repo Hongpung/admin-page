@@ -13,6 +13,8 @@ export const ASSISTANT_LABELS = {
   cancel: "취소",
   scrollToBottom: "아래로 이동",
   analysisDetails: "분석 상세",
+  monthlyUsage: (used: number, limit: number) =>
+    `이번 달 사용량 ${used}/${limit}`,
 } as const;
 
 export const ASSISTANT_ATTACHMENT_LIMITS = {

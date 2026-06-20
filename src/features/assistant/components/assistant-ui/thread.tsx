@@ -6,6 +6,7 @@ import {
   UserMessageAttachments,
 } from "@admin/features/assistant/components/assistant-ui/attachment";
 import { AssistantAnalysisDetails } from "@admin/features/assistant/components/assistant-ui/assistant-analysis-details";
+import { AssistantMonthlyUsage } from "@admin/features/assistant/components/assistant-ui/monthly-usage";
 import { MarkdownText } from "@admin/features/assistant/components/assistant-ui/markdown-text";
 import { TooltipIconButton } from "@admin/features/assistant/components/assistant-ui/tooltip-icon-button";
 import { Button } from "@admin/shared/components/ui/button";
@@ -68,6 +69,7 @@ export const AssistantThread: FC = () => {
           <ThreadPrimitive.ViewportFooter className="sticky bottom-0 mt-auto flex flex-col gap-3 bg-white pb-4 pt-2">
             <ThreadScrollToBottom />
             <Composer />
+            <AssistantMonthlyUsage />
           </ThreadPrimitive.ViewportFooter>
         </div>
       </ThreadPrimitive.Viewport>
