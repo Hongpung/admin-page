@@ -17,7 +17,7 @@ import { cn } from "@admin/shared/lib/cn";
 const MarkdownTextImpl = () => {
   return (
     <MarkdownTextPrimitive
-      remarkPlugins={[remarkGfm]}
+      remarkPlugins={[[remarkGfm, { singleTilde: false }]]}
       className="aui-md text-sm"
       components={defaultComponents}
     />
