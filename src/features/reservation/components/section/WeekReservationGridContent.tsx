@@ -39,7 +39,7 @@ function WeekReservationGridWithStore({
 }) {
   const { selectedDate, startOfWeek, endOfWeek } = useDateStore();
   const modal = useStore(store, (s) => s.modal);
-  const { openReservationDetail } = useReservationDetailNavigation();
+  const { openReservationDetail } = useReservationDetailNavigation({ store });
   const { weekDates, weeklyReservations } = useWeeklyReservationsGrid(
     startOfWeek,
     endOfWeek,

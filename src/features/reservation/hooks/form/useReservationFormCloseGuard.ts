@@ -24,15 +24,18 @@ export function useReservationFormCloseGuard({
       return;
     }
 
-    if (!isDirty) {
+    const closeParent = () => {
       onReset?.();
       onClose();
+    };
+
+    if (!isDirty) {
+      closeParent();
       return;
     }
 
     if (confirm(RESERVATION_MESSAGE.closeConfirm)) {
-      onReset?.();
-      onClose();
+      closeParent();
     }
   }, [isDirty, modalState, onClose, onReset, setModalState]);
 

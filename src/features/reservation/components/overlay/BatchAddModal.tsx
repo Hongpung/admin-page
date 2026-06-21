@@ -105,7 +105,7 @@ export function BatchAddModal({
           {modalState == "Creator" && (
             <CreatorSelectModal
               onClose={() => setModalState("None")}
-              visible={true}
+              visible={modalState == "Creator"}
               setCreator={handleCreatorSelect}
             />
           )}

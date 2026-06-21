@@ -1,12 +1,31 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useEffect } from "react";
 import FAB from "@admin/shared/components/FAB";
-import { ReservationWeekUiProvider } from "../../provider/ReservationWeekUiContext";
+import { ReservationWeekUiProvider, useReservationWeekUiStore } from "../../provider/ReservationWeekUiContext";
 import { useReservationWeekModalRouting } from "../../hooks/action";
+import { RESERVATION_WEEK_DISMISS_EVENT } from "../../lib/reservation-week-dismiss-event";
 import { BatchAddModal } from "../overlay/BatchAddModal";
 import { CreateReservationModal } from "../overlay/CreateReservationModal";
 import { EditReservationModal } from "../overlay/EditReservationModal";
+
+function ReservationWeekDismissListener() {
+  const store = useReservationWeekUiStore();
+
+  useEffect(() => {
+    const onDismiss = () => {
+      store.getState().suppressNextDetailSync();
+      store.getState().close();
+    };
+    window.addEventListener(RESERVATION_WEEK_DISMISS_EVENT, onDismiss);
+    return () => {
+      window.removeEventListener(RESERVATION_WEEK_DISMISS_EVENT, onDismiss);
+    };
+  }, [store]);
+
+  return null;
+}
 
 function ReservationWeekFabAndModals() {
   const {
@@ -59,6 +78,7 @@ export function ReservationWeekUiBoundary({
 }) {
   return (
     <ReservationWeekUiProvider>
+      <ReservationWeekDismissListener />
       <ReservationWeekFabAndModals />
       {children}
     </ReservationWeekUiProvider>

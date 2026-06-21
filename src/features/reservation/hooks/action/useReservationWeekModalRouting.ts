@@ -4,6 +4,7 @@ import { useCallback, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useStore } from "zustand/react";
 import { useReservationWeekUiStore } from "../../provider/ReservationWeekUiContext";
+import { syncReservationModalFromDetailQuery } from "./sync-reservation-modal-from-detail-query";
 
 export function useReservationWeekModalRouting() {
   const router = useRouter();
@@ -28,28 +29,23 @@ export function useReservationWeekModalRouting() {
     [pathname, router, searchParams],
   );
 
+  const detailQuery = searchParams.get("detail");
+  const detailQueryKey = searchParams.toString();
+
   useEffect(() => {
-    const detailParam = searchParams.get("detail");
-    if (!detailParam) {
-      if (modal === "Edit") store.getState().close();
+    if (store.getState().consumeDetailSyncSuppress()) {
       return;
     }
-
-    const parsed = Number(detailParam);
-    if (!Number.isInteger(parsed) || parsed <= 0) {
-      if (modal === "Edit") store.getState().close();
-      return;
-    }
-
-    if (modal !== "Edit" || editReservationId !== parsed) {
-      store.getState().openEdit(parsed);
-    }
-  }, [editReservationId, modal, searchParams, store]);
+    syncReservationModalFromDetailQuery(store, detailQuery);
+  }, [detailQuery, detailQueryKey, store]);
 
   const closeModal = useCallback(() => {
+    const currentModal = store.getState().modal;
+    if (currentModal === "Edit") {
+      updateDetailQuery(null);
+    }
     close();
-    if (modal === "Edit") updateDetailQuery(null);
-  }, [close, modal, updateDetailQuery]);
+  }, [close, store, updateDetailQuery]);
 
   const openCreateModal = useCallback(() => {
     updateDetailQuery(null);

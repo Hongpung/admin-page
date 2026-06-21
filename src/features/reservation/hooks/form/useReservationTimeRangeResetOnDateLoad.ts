@@ -18,10 +18,14 @@ export function useReservationTimeRangeResetOnDateLoad({
   const latestLoadedDateRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
-    if (!date || !isLoaded || !shouldReset) return;
-    if (latestLoadedDateRef.current === date) return;
+    if (!date || !isLoaded) return;
 
+    const previousLoadedDate = latestLoadedDateRef.current;
+    const isNewDate = previousLoadedDate !== date;
     latestLoadedDateRef.current = date;
+
+    if (!isNewDate || !shouldReset) return;
+
     clearTimeRange();
   }, [clearTimeRange, date, isLoaded, shouldReset]);
 }

@@ -6,6 +6,7 @@ import {
   reservationGhostButtonStyle,
   reservationInputStyle,
 } from "../../constants/constants";
+import { getReservationCreatorDisplayLines } from "../../lib/format-reservation-creator-display";
 import type { ReservationFormValues } from "../../types/schemas";
 
 export type ReservationCreator = {
@@ -50,10 +51,15 @@ export function ReservationOwnerSection({
           예약자
           {selectedCreator?.creatorId ? (
             <div className="flex flex-row items-center gap-2 max-w-xs w-full">
-              <span className="flex-1 text-right truncate">
-                {selectedCreator.creatorName}{" "}
-                {selectedCreator.creatorNickname?.trim() &&
-                  `(${selectedCreator.creatorNickname})`}
+              <span className="flex flex-1 flex-col items-end truncate text-right">
+                {getReservationCreatorDisplayLines(
+                  selectedCreator.creatorName ?? "",
+                  selectedCreator.creatorNickname,
+                ).map((line) => (
+                  <span key={line} className="truncate">
+                    {line}
+                  </span>
+                ))}
               </span>
               <button
                 type="button"

@@ -6,13 +6,13 @@ import type { MonthCalendarDayContext, MonthCalendarProps } from "./types";
 import { buildDaysInMonth, pickWeekDays } from "./utils";
 
 const defaultWeekdayLabels = [
-  "일",
   "월",
   "화",
   "수",
   "목",
   "금",
   "토",
+  "일",
 ] as const;
 
 /**
@@ -119,11 +119,11 @@ export default function MonthCalendar({
         <div
           key={`week-${weeks.length}`}
           className={`mx-4 my-1 justify-between flex flex-row text-center ${isSelectedWeek &&
-          selectedDate.getMonth() === month &&
-          selectedDate.getFullYear() === year
+            selectedDate.getMonth() === month &&
+            selectedDate.getFullYear() === year
             ? "rounded-md bg-blue-100"
             : ""
-          }`}
+            }`}
         >
           {days}
         </div>,
