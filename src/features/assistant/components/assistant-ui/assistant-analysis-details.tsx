@@ -21,43 +21,6 @@ function isAssistantAnalysis(value: unknown): value is AssistantAnalysis {
   );
 }
 
-function AssistantAnalysisDetailsContent({
-  analysis,
-}: {
-  analysis: AssistantAnalysis;
-}) {
-  const detectedText = analysis.detected_text.trim();
-  const recommendedAction = analysis.recommended_action.trim();
-  const missingFields = analysis.action?.missing_fields ?? [];
-
-  return (
-    <div className="space-y-3 text-xs leading-relaxed text-gray-600">
-      {detectedText ? (
-        <section>
-          <p className="mb-1 font-medium text-gray-700">인식된 텍스트</p>
-          <p className="whitespace-pre-wrap rounded-md border border-gray-100 bg-gray-50 px-3 py-2">
-            {detectedText}
-          </p>
-        </section>
-      ) : null}
-
-      {recommendedAction ? (
-        <section>
-          <p className="mb-1 font-medium text-gray-700">권장 작업</p>
-          <p className="whitespace-pre-wrap">{recommendedAction}</p>
-        </section>
-      ) : null}
-
-      {missingFields.length > 0 ? (
-        <section>
-          <p className="mb-1 font-medium text-gray-700">추가 입력 필요</p>
-          <p>{missingFields.join(", ")}</p>
-        </section>
-      ) : null}
-    </div>
-  );
-}
-
 export const AssistantAnalysisDetails: FC = () => {
   const rawAnalysis = useAuiState(
     (state) => state.message.metadata?.custom?.analysis,
@@ -71,6 +34,8 @@ export const AssistantAnalysisDetails: FC = () => {
   if (!analysis || !hasAssistantDetails(analysis)) {
     return null;
   }
+
+  const detectedText = analysis.detected_text.trim();
 
   return (
     <div className="mt-3 border-t border-gray-100 pt-2">
@@ -90,7 +55,9 @@ export const AssistantAnalysisDetails: FC = () => {
       </button>
       {open ? (
         <div className="pt-2">
-          <AssistantAnalysisDetailsContent analysis={analysis} />
+          <p className="whitespace-pre-wrap rounded-md border border-gray-100 bg-gray-50 px-3 py-2 text-xs leading-relaxed text-gray-600">
+            {detectedText}
+          </p>
         </div>
       ) : null}
     </div>

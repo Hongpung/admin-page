@@ -1,9 +1,17 @@
 "use client";
 
-import { AssistantModalPrimitive } from "@assistant-ui/react";
+import { AssistantModalPrimitive, useAuiState } from "@assistant-ui/react";
 import { BotIcon, ChevronDownIcon } from "lucide-react";
-import { type FC, forwardRef, type ReactNode } from "react";
+import {
+  type FC,
+  forwardRef,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { TooltipIconButton } from "@admin/features/assistant/components/assistant-ui/tooltip-icon-button";
+import { ASSISTANT_LABELS } from "@admin/features/assistant/constants/assistant-labels";
 
 type AssistantModalProps = {
   triggerLabel: string;
@@ -49,7 +57,30 @@ const AssistantModalButton = forwardRef<
   HTMLButtonElement,
   AssistantModalButtonProps
 >(({ "data-state": state, triggerLabel, closeLabel, ...rest }, ref) => {
-  const tooltip = state === "open" ? closeLabel : triggerLabel;
+  const isRunning = useAuiState((s) => s.thread.isRunning);
+  const wasRunningRef = useRef(false);
+  const [hasUnread, setHasUnread] = useState(false);
+
+  useEffect(() => {
+    if (wasRunningRef.current && !isRunning && state === "closed") {
+      setHasUnread(true);
+    }
+    wasRunningRef.current = isRunning;
+  }, [isRunning, state]);
+
+  useEffect(() => {
+    if (state === "open") {
+      setHasUnread(false);
+    }
+  }, [state]);
+
+  const showUnreadBadge = hasUnread && state === "closed";
+  const tooltip =
+    state === "open"
+      ? closeLabel
+      : showUnreadBadge
+        ? `${triggerLabel} · ${ASSISTANT_LABELS.modalUnread}`
+        : triggerLabel;
 
   return (
     <TooltipIconButton
@@ -57,7 +88,7 @@ const AssistantModalButton = forwardRef<
       tooltip={tooltip}
       side="left"
       {...rest}
-      className="size-full rounded-full bg-gray-900 text-white shadow-lg hover:bg-gray-800"
+      className="relative size-full rounded-full bg-gray-900 text-white shadow-lg hover:bg-gray-800"
       ref={ref}
     >
       {state === "open" ? (
@@ -65,6 +96,12 @@ const AssistantModalButton = forwardRef<
       ) : (
         <BotIcon className="size-6" />
       )}
+      {showUnreadBadge ? (
+        <span
+          aria-hidden
+          className="absolute top-0.5 right-0.5 size-2.5 rounded-full bg-red-500 ring-2 ring-gray-900"
+        />
+      ) : null}
     </TooltipIconButton>
   );
 });

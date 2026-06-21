@@ -3,7 +3,9 @@ import {
   assistantAnalysisSchema,
   formatAssistantSummary,
 } from "@admin/features/assistant/types/assistant-analysis.types";
+import type { AssistantStreamEvent } from "@admin/features/assistant/types/assistant-stream.types";
 import { ensureAssistantRoom } from "@admin/features/assistant/lib/assistant-room";
+import { setStoredAssistantAnalysis } from "@admin/features/assistant/lib/assistant-session-storage";
 
 type HongpungAssistantAdapterOptions = {
   getRoomId: () => string | null;
@@ -81,7 +83,6 @@ function extractImageFromMessage(message: ThreadMessage) {
     if (info) return info;
   }
 
-  // assistant-ui는 첨부 이미지를 content가 아닌 attachments에 둡니다.
   for (const attachment of message.attachments ?? []) {
     if (attachment.type !== "image") continue;
 
@@ -94,17 +95,72 @@ function extractImageFromMessage(message: ThreadMessage) {
   return null;
 }
 
+function parseStreamLine(line: string): AssistantStreamEvent | null {
+  const trimmed = line.trim();
+  if (!trimmed) return null;
+
+  try {
+    return JSON.parse(trimmed) as AssistantStreamEvent;
+  } catch {
+    return null;
+  }
+}
+
+async function* readAssistantStreamEvents(
+  response: Response,
+  abortSignal: AbortSignal,
+): AsyncGenerator<AssistantStreamEvent> {
+  if (!response.body) {
+    throw new Error("스트리밍 응답 본문이 없습니다.");
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  try {
+    while (true) {
+      if (abortSignal.aborted) {
+        await reader.cancel();
+        break;
+      }
+
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? "";
+
+      for (const line of lines) {
+        const event = parseStreamLine(line);
+        if (event) {
+          yield event;
+        }
+      }
+    }
+
+    const trailing = parseStreamLine(buffer);
+    if (trailing) {
+      yield trailing;
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+
 export function createHongpungAssistantAdapter({
   getRoomId,
   setRoomId,
 }: HongpungAssistantAdapterOptions): ChatModelAdapter {
   return {
-    async run({ messages, abortSignal }) {
+    async *run({ messages, abortSignal }) {
       const lastUserMessage = getLastUserMessage(messages);
       if (!lastUserMessage) {
-        return {
+        yield {
           content: [{ type: "text", text: "메시지를 입력해주세요." }],
         };
+        return;
       }
 
       const text = lastUserMessage.content
@@ -116,7 +172,7 @@ export function createHongpungAssistantAdapter({
       const imageInfo = extractImageFromMessage(lastUserMessage);
 
       if (!text && !imageInfo) {
-        return {
+        yield {
           content: [
             {
               type: "text",
@@ -124,6 +180,7 @@ export function createHongpungAssistantAdapter({
             },
           ],
         };
+        return;
       }
 
       const formData = new FormData();
@@ -135,7 +192,7 @@ export function createHongpungAssistantAdapter({
           imageInfo.filename,
         );
         if (!file) {
-          return {
+          yield {
             content: [
               {
                 type: "text",
@@ -144,6 +201,7 @@ export function createHongpungAssistantAdapter({
             ],
             status: { type: "incomplete", reason: "error" },
           };
+          return;
         }
         formData.set("image", file);
       }
@@ -152,7 +210,7 @@ export function createHongpungAssistantAdapter({
         const roomId = await ensureAssistantRoom({ getRoomId, setRoomId });
         formData.set("roomId", roomId);
 
-        const response = await fetch("/api/assistant/analyze", {
+        const response = await fetch("/api/assistant/analyze/stream", {
           method: "POST",
           body: formData,
           credentials: "include",
@@ -183,38 +241,78 @@ export function createHongpungAssistantAdapter({
             }
           }
 
-          return {
+          yield {
             content: [{ type: "text", text: message }],
             status: { type: "incomplete", reason: "error" },
           };
+          return;
         }
 
-        const payload: unknown = await response.json();
-        const parsed = assistantAnalysisSchema.safeParse(payload);
-        if (!parsed.success) {
-          return {
-            content: [
-              {
-                type: "text",
-                text: "분석 응답 형식이 올바르지 않습니다. 잠시 후 다시 시도해주세요.",
+        for await (const event of readAssistantStreamEvents(
+          response,
+          abortSignal,
+        )) {
+          if (event.type === "status") {
+            yield {
+              content: [{ type: "text", text: event.message }],
+            };
+            continue;
+          }
+
+          if (event.type === "text") {
+            yield {
+              content: [{ type: "text", text: event.text }],
+            };
+            continue;
+          }
+
+          if (event.type === "error") {
+            yield {
+              content: [{ type: "text", text: event.message }],
+              status: { type: "incomplete", reason: "error" },
+            };
+            return;
+          }
+
+          if (event.type === "done") {
+            const parsed = assistantAnalysisSchema.safeParse(event.analysis);
+            if (!parsed.success) {
+              yield {
+                content: [
+                  {
+                    type: "text",
+                    text: "분석 응답 형식이 올바르지 않습니다. 잠시 후 다시 시도해주세요.",
+                  },
+                ],
+                status: { type: "incomplete", reason: "error" },
+              };
+              return;
+            }
+
+            yield {
+              content: [
+                {
+                  type: "text",
+                  text: formatAssistantSummary(parsed.data),
+                },
+              ],
+              metadata: {
+                custom: {
+                  analysis: parsed.data,
+                  roomId: event.roomId,
+                },
               },
-            ],
-            status: { type: "incomplete", reason: "error" },
-          };
+            };
+            setStoredAssistantAnalysis(event.roomId, parsed.data);
+            return;
+          }
         }
-
-        return {
-          content: [{ type: "text", text: formatAssistantSummary(parsed.data) }],
-          metadata: {
-            custom: { analysis: parsed.data },
-          },
-        };
       } catch (error) {
         if (error instanceof DOMException && error.name === "AbortError") {
           throw error;
         }
 
-        return {
+        yield {
           content: [
             {
               type: "text",

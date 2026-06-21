@@ -66,8 +66,12 @@ const AttachmentPreview: FC<{ src: string }> = ({ src }) => (
   <Image
     src={src}
     alt="첨부 이미지 미리보기"
-    fill
-    className="block h-auto max-h-[80vh] w-auto max-w-full object-contain"
+    width={0}
+    height={0}
+    sizes="100vw"
+    unoptimized={src.startsWith("blob:") || src.startsWith("data:")}
+    className="h-auto max-h-[80dvh] w-auto max-w-full object-contain"
+    style={{ width: "auto", height: "auto" }}
   />
 );
 
@@ -83,7 +87,7 @@ const AttachmentPreviewDialog: FC<PropsWithChildren> = ({ children }) => {
         className="z-[110] max-w-3xl p-2 sm:max-w-3xl"
       >
         <DialogTitle className="sr-only">이미지 미리보기</DialogTitle>
-        <div className="relative mx-auto flex max-h-[80dvh] w-full items-center justify-center overflow-hidden">
+        <div className="mx-auto flex w-full items-center justify-center">
           <AttachmentPreview src={src} />
         </div>
       </DialogContent>

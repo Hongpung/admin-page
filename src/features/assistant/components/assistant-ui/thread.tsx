@@ -5,10 +5,12 @@ import {
   ComposerAttachments,
   UserMessageAttachments,
 } from "@admin/features/assistant/components/assistant-ui/attachment";
+import { AssistantMutationFlow } from "@admin/features/assistant/components/assistant-ui/assistant-mutation-flow";
 import { AssistantAnalysisDetails } from "@admin/features/assistant/components/assistant-ui/assistant-analysis-details";
 import { AssistantMonthlyUsage } from "@admin/features/assistant/components/assistant-ui/monthly-usage";
 import { MarkdownText } from "@admin/features/assistant/components/assistant-ui/markdown-text";
 import { TooltipIconButton } from "@admin/features/assistant/components/assistant-ui/tooltip-icon-button";
+import { useAssistantSession } from "@admin/features/assistant/components/assistant-session-context";
 import { Button } from "@admin/shared/components/ui/button";
 import {
   AuiIf,
@@ -22,6 +24,7 @@ import {
   ArrowDownIcon,
   ArrowUpIcon,
   BotIcon,
+  SquarePenIcon,
   SquareIcon,
 } from "lucide-react";
 import type { FC } from "react";
@@ -46,12 +49,13 @@ export const AssistantThread: FC = () => {
         <div className="flex size-8 items-center justify-center rounded-full bg-gray-900 text-white">
           <BotIcon className="size-4" />
         </div>
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-gray-900">
             {ASSISTANT_LABELS.title}
           </p>
           <p className="text-xs text-gray-500">{ASSISTANT_LABELS.subtitle}</p>
         </div>
+        <AssistantNewSessionButton />
       </div>
 
       <ThreadPrimitive.Viewport className="relative flex flex-1 flex-col overflow-y-auto scroll-smooth">
@@ -92,6 +96,45 @@ const ThreadWelcome: FC<{ welcome: ThreadWelcomeContent }> = ({ welcome }) => (
     <p className="mt-2 text-sm leading-6 text-gray-600">{welcome.subtitle}</p>
   </div>
 );
+
+const AssistantNewSessionButton: FC = () => {
+  const { startNewSession, isResetting } = useAssistantSession();
+  const isRunning = useAuiState((s) => s.thread.isRunning);
+  const isEmpty = useAuiState((s) => s.thread.isEmpty);
+  const disabled = isRunning || isResetting;
+
+  const handleClick = async () => {
+    if (disabled) return;
+
+    if (!isEmpty) {
+      const confirmed = window.confirm(ASSISTANT_LABELS.newSessionConfirm);
+      if (!confirmed) return;
+    }
+
+    await startNewSession();
+  };
+
+  return (
+    <TooltipIconButton
+      tooltip={
+        isRunning
+          ? ASSISTANT_LABELS.newSessionRunning
+          : ASSISTANT_LABELS.newSessionTooltip
+      }
+      side="bottom"
+      type="button"
+      variant="ghost"
+      className="shrink-0 text-gray-500 hover:text-gray-900"
+      aria-label={ASSISTANT_LABELS.newSession}
+      disabled={disabled}
+      onClick={() => {
+        void handleClick();
+      }}
+    >
+      <SquarePenIcon className="size-4" />
+    </TooltipIconButton>
+  );
+};
 
 const Composer: FC = () => (
   <ComposerPrimitive.Root className="relative flex w-full flex-col">
@@ -173,6 +216,7 @@ const AssistantMessage: FC = () => (
         }}
       />
       <AssistantAnalysisDetails />
+      <AssistantMutationFlow />
       <MessageError />
     </div>
   </MessagePrimitive.Root>

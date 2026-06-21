@@ -9,7 +9,6 @@ import type { AdminRole } from "@admin/shared/lib/auth/admin-auth";
 import { SidebarPanel } from "./SidebarPanel";
 import { DashboardHeaderActions } from "./DashboardHeaderActions";
 import type { SidebarSection } from "../../../constants/sidebar-config";
-import { AiAssistantRoot } from "@admin/features/assistant/components";
 
 export default function DashboardShell({
   initialRemainSeconds,
@@ -47,8 +46,7 @@ export default function DashboardShell({
   };
 
   return (
-    <AiAssistantRoot>
-      <div className="flex h-full min-h-[100dvh] w-full flex-col z-40">
+    <div className="flex h-full min-h-[100dvh] w-full flex-col z-40">
       <div className="flex min-h-0 flex-1">
         <aside
           id="dashboard-sidebar"
@@ -113,7 +111,6 @@ export default function DashboardShell({
           </div>
         </div>
       </div>
-      </div>
-    </AiAssistantRoot>
+    </div>
   );
 }

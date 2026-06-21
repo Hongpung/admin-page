@@ -1,1 +1,1 @@
-export { AiAssistantRoot } from "./AiAssistantRoot";
+export { AssistantGlobalHost } from "./AssistantGlobalHost";

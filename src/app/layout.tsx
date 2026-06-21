@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { geistMono, geistSans } from "@fonts";
-import { QueryProvider } from "@admin/shared/components/QueryProvider";
+import { AppProviders } from "@admin/shared/components/AppProviders";
 import { ConditionalFooter } from "@admin/shared/components/layout/ConditionalFooter";
 import { ConditionalHeader } from "@admin/shared/components/layout/ConditionalHeader";
 import { ConditionalMain } from "@admin/shared/components/layout/ConditionalMain";
 import "@admin/app/globals.css";
+
+/** 어시스턴트·인증 쿠키 등 클라이언트 상태가 route 이동마다 초기화되지 않도록 전역 dynamic */
+export const dynamic = "force-dynamic";
 
 /** 파비콘 파일을 바꿨는데 탭 아이콘이 그대로면 숫자만 올려서 캐시 무력화 */
 const FAVICON_REVISION = "1";
@@ -33,11 +36,11 @@ export default function HomeLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        <QueryProvider>
+        <AppProviders>
           <ConditionalHeader />
           <ConditionalMain>{children}</ConditionalMain>
           <ConditionalFooter />
-        </QueryProvider>
+        </AppProviders>
       </body>
     </html>
   );
