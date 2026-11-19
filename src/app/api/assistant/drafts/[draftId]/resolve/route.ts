@@ -17,7 +17,7 @@ export async function POST(
   { params }: { params: Promise<{ draftId: string }> },
 ) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
     if (!token) {
       return Response.json({ message: "인증이 필요합니다." }, { status: 401 });

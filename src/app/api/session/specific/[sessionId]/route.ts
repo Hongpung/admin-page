@@ -4,15 +4,16 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   _req: Request,
-  { params }: { params: { sessionId: string } }
+  { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
-    const id = Number(params.sessionId);
+    const { sessionId } = await params;
+    const id = Number(sessionId);
     if (!Number.isFinite(id)) {
       return new Response("invalid sessionId", { status: 400 });
     }
 
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
     const requestURL = new URL(

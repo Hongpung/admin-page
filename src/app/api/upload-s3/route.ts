@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   const signal = controller.signal;
   const timeoutId = setTimeout(() => controller.abort(), 8000);
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
     if (!token) {

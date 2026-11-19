@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 
 export const dynamic = "force-dynamic";
 
-type RouteContext = { params: { clubId: string } };
+type RouteContext = { params: Promise<{ clubId: string }> };
 
 function parseClubId(raw: string): number | null {
   if (!/^\d+$/.test(raw)) return null;
@@ -15,14 +15,15 @@ function parseClubId(raw: string): number | null {
 
 export async function GET(_req: Request, { params }: RouteContext) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
     if (!token) {
       return Response.json({ message: "인증이 필요합니다." }, { status: 401 });
     }
 
-    const clubId = parseClubId(params.clubId);
+    const { clubId: clubIdParam } = await params;
+    const clubId = parseClubId(clubIdParam);
     if (clubId === null || clubId === undefined) {
       return Response.json(
         { message: "clubId가 올바르지 않습니다." },

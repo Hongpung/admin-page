@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
     const response = await fetch(`${process.env.BASE_URL}/auth/admin/signup`, {
@@ -29,7 +29,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
     const body = await req.json();

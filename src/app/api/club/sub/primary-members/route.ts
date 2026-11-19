@@ -24,7 +24,7 @@ function normalizeMemberIds(memberIds: unknown): number[] | null {
 /** SUB 관리자: 토큰의 동아리 기준 주요 활동 멤버 조회 */
 export async function GET() {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
     if (!token) {
@@ -53,7 +53,7 @@ export async function GET() {
 /** SUB 관리자: 토큰의 동아리 기준 주요 활동 멤버 업데이트 */
 export async function PATCH(req: Request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
     if (!token) {

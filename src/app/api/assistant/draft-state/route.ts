@@ -29,7 +29,7 @@ const patchDraftBodySchema = z.object({
 
 export async function PATCH(req: Request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
     if (!token) {
       return Response.json({ message: "인증이 필요합니다." }, { status: 401 });
@@ -195,7 +195,7 @@ export async function PATCH(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
     if (!token) {
       return Response.json({ message: "인증이 필요합니다." }, { status: 401 });

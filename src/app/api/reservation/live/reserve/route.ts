@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
     const url = new URL(req.url);
@@ -35,7 +35,7 @@ export async function GET(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
     const url = new URL(req.url);
@@ -67,7 +67,7 @@ export async function DELETE(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
     const body = await req.json();
@@ -100,7 +100,7 @@ export async function POST(req: Request) {
 
 export async function PATCH(req: Request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
     const body = await req.json();

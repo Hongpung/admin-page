@@ -7,7 +7,7 @@ export async function DELETE(
   { params }: { params: Promise<{ bannerId: string }> }
 ) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
     if (!token) {

@@ -11,7 +11,7 @@ function toStorageImagePath(rawUrl: string): string {
 
 export async function POST(req: Request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
     if (!token) {

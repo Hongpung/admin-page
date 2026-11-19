@@ -4,8 +4,8 @@ import { BlockedAccessAlert } from "./_components/BlockedAccessAlert";
 import { HomeDashboardPage } from "./_components/HomeDashboardPage";
 import { SubHomeDashboardPage } from "./_components/SubHomeDashboardPage";
 
-export default function HomePage() {
-  const cookieStore = cookies();
+export default async function HomePage() {
+  const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   const payload = token ? decodeJwtPayload(token) : null;
   const role = pickAdminRole(payload);

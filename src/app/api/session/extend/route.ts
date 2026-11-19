@@ -6,7 +6,7 @@ const EXTEND_SECONDS = 60 * 60;
 const COOKIE_SECURE = process.env.NODE_ENV === "production";
 
 export async function POST(): Promise<Response> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   const adminUser = cookieStore.get("admin_user")?.value;
 
