@@ -4,6 +4,7 @@ import Modal from "@admin/shared/components/Modal";
 import Line from "@admin/shared/components/Line";
 import { reservationSecondaryButtonStyle } from "../../constants/constants";
 import {
+  formatDiscardedReservationSchedule,
   formatDiscardedRowCreatedAt,
   DISCARD_REASON_LABELS,
 } from "../../lib/discarded";
@@ -11,11 +12,6 @@ import type {
   DiscardedReservationItem,
   DiscardedReservationMemberSnapshot,
 } from "../../types";
-import dayjs from "dayjs";
-import "dayjs/locale/ko";
-import utc from "dayjs/plugin/utc";
-
-dayjs.extend(utc);
 
 function getReservationTypeLabel(
   reservationType: string,
@@ -92,14 +88,11 @@ export function DiscardedReservationDetailModal({
 
         <ReadOnlyRow
           label="예약 일시"
-          value={
-            dayjs
-              .utc(reservation.date)
-              .locale("ko")
-              .format("YYYY-MM-DD (ddd)") +
-            "\n" +
-            `${dayjs.utc(reservation.startTime).locale("ko").format("A h시 mm분")} ~ ${dayjs.utc(reservation.endTime).locale("ko").format("A h시 mm분")}`
-          }
+          value={formatDiscardedReservationSchedule(
+            reservation.date,
+            reservation.startTime,
+            reservation.endTime,
+          )}
         />
 
         <Line />
