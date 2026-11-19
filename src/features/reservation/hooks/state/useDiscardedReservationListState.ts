@@ -9,7 +9,6 @@ export function useDiscardedReservationListState() {
   const [selectedDetailItem, setSelectedDetailItem] =
     useState<DiscardedReservationItem | null>(null);
 
-  const skip = page * take;
   const getTotalPages = useCallback(
     (total: number) => (total > 0 ? Math.ceil(total / take) : 1),
     [take],
@@ -25,7 +24,6 @@ export function useDiscardedReservationListState() {
     setPage,
     take,
     changeTake,
-    skip,
     getTotalPages,
     selectedDetailItem,
     setSelectedDetailItem,

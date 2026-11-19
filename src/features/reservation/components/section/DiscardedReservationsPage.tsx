@@ -23,12 +23,11 @@ export default function DiscardedReservationsPage() {
     setPage,
     take,
     changeTake,
-    skip,
     getTotalPages,
     selectedDetailItem,
     setSelectedDetailItem,
   } = useDiscardedReservationListState();
-  const { items, total, loading, error } = useDiscardedReservations(skip, take);
+  const { items, total, loading, error } = useDiscardedReservations(page, take);
   const totalPages = getTotalPages(total);
   const columns = useDiscardedReservationColumns({
     onDetailOpen: setSelectedDetailItem,

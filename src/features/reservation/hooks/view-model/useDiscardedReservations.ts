@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { discardedReservationsQueryOptions } from "../../queries";
 
-export function useDiscardedReservations(skip: number, take: number) {
-  const discardedQuery = useQuery(discardedReservationsQueryOptions(skip, take));
+export function useDiscardedReservations(page: number, take: number) {
+  const discardedQuery = useQuery(discardedReservationsQueryOptions(page, take));
 
   return {
     items: discardedQuery.data?.items ?? [],

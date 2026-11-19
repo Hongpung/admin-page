@@ -25,8 +25,8 @@ export const reservationQueryKeys = {
     [...reservationQueryKeys.all, "monthly", year, month] as const,
   detail: (reservationId: number) =>
     [...reservationQueryKeys.all, "detail", reservationId] as const,
-  discarded: (skip: number, take: number) =>
-    [...reservationQueryKeys.all, "discarded", skip, take] as const,
+  discarded: (page: number, take: number) =>
+    [...reservationQueryKeys.all, "discarded", page, take] as const,
   memberSearch: (params: {
     username?: string;
     clubId?: string;
@@ -83,10 +83,10 @@ export function reservationDetailQueryOptions(reservationId: number) {
   });
 }
 
-export function discardedReservationsQueryOptions(skip = 0, take = 20) {
+export function discardedReservationsQueryOptions(page = 0, take = 20) {
   return queryOptions<DiscardedReservationListResponse>({
-    queryKey: reservationQueryKeys.discarded(skip, take),
-    queryFn: async () => loadDiscardedReservations(skip, take),
+    queryKey: reservationQueryKeys.discarded(page, take),
+    queryFn: async () => loadDiscardedReservations(page, take),
   });
 }
 

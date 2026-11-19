@@ -261,11 +261,11 @@ export async function loadMonthlyReserves(calendar: {
 }
 
 export async function loadDiscardedReservations(
-  skip = 0,
+  page = 0,
   take = 20,
 ): Promise<DiscardedReservationListResponse> {
   const response = await fetch(
-    `/api/reservation/discarded/load?skip=${skip}&take=${take}`,
+    `/api/reservation/discarded/load?skip=${page}&take=${take}`,
     {
       method: "GET",
       headers: { "Content-Type": "application/json" },
